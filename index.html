@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<title>聚合信息面板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#0a0a0f;color:#e4e4e7;line-height:1.5}
+.header{background:#141418;border-bottom:1px solid #1e1e24;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.header h1{font-size:18px;color:#fff}
+.header-btns{display:flex;gap:12px}
+.header-btns span{font-size:20px;cursor:pointer}
+@media(min-width:768px){.app{display:flex;height:100vh}.sidebar{width:320px;background:#141418;border-right:1px solid #1e1e24;overflow-y:auto;padding:16px;flex-shrink:0}.main{flex:1;overflow-y:auto;padding:16px}.mobile-nav{display:none}}
+@media(max-width:767px){.app{display:flex;flex-direction:column;height:100vh}.sidebar{display:none}.main{flex:1;overflow-y:auto;padding:12px 12px 70px}.mobile-nav{display:flex}.desktop-tabs{display:none}}
+.card{background:#141418;border-radius:12px;border:1px solid #1e1e24;padding:14px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.btn{padding:8px 14px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-size:13px;cursor:pointer}
+.btn:active{background:#1d4ed8}.btn-sm{padding:5px 10px;font-size:12px}
+.btn-ghost{background:transparent;border:1px solid #27272a;color:#a1a1aa}
+.inp{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #27272a;background:#0a0a0f;color:#e4e4e7;font-size:13px;outline:none}
+.inp:focus{border-color:#2563eb}
+.tag{display:inline-block;padding:4px 10px;border-radius:14px;font-size:12px;border:1px solid #27272a;color:#a1a1aa;margin:2px}
+.tag.blue{border-color:#2563eb;color:#93c5fd;background:#1e3a5f}
+.tag.green{border-color:#22c55e;color:#86efac;background:#052e16}
+.tag.set{border-color:#2563eb;color:#93c5fd;background:#1e3a5f}
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,24,.95);backdrop-filter:blur(12px);border-top:1px solid #1e1e24;justify-content:space-around;padding:6px 0 10px;z-index:50}
+.nav-btn{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#52525b;border:none;background:none;gap:2px;padding:6px 10px;min-width:44px;cursor:pointer}
+.nav-btn.on{color:#60a5fa}.nav-btn span{font-size:20px}
+.page{display:none}.page.on{display:block}
+.topic-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#0a0a0f;border-radius:8px;border:1px solid #1e1e24;margin-bottom:6px;cursor:pointer}
+.topic-row:hover{border-color:#27272a}
+.topic-votes{font-size:12px;color:#f59e0b;font-weight:600;flex-shrink:0}
+.topic-rank{font-size:11px;color:#52525b;width:20px;text-align:center;flex-shrink:0}
+.topic-detail{padding:10px;background:#0a0a0f;border-radius:0 0 8px 8px;margin-bottom:6px;margin-top:-6px;border:1px solid #1e1e24;border-top:none;display:none}
+.topic-detail.open{display:block}
+.cm{margin-bottom:8px}.cm-head{display:flex;gap:6px;align-items:center;margin-bottom:3px}
+.cm-author{font-size:12px;color:#60a5fa;font-weight:500}.cm-time{font-size:10px;color:#3f3f46}
+.cm-text{font-size:13px;color:#a1a1aa}
+.weather-mini{display:flex;align-items:center;gap:8px;font-size:13px}
+.weather-temp{font-size:22px;font-weight:700;color:#60a5fa}
+.todo{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1a1a1f;font-size:13px}
+.todo:last-child{border:none}
+.todo-check{width:16px;height:16px;accent-color:#2563eb;flex-shrink:0}
+.todo-detail{font-size:11px;color:#52525b;margin-top:2px}
+.todo-done{text-decoration:line-through;color:#3f3f46}
+.sub-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.sub-tabs::-webkit-scrollbar{display:none}
+.sub-tab{padding:5px 12px;border-radius:16px;font-size:12px;cursor:pointer;border:1px solid #27272a;background:transparent;color:#a1a1aa;white-space:nowrap}
+.sub-tab.on{background:#1e3a5f;border-color:#2563eb;color:#93c5fd}
+.section-tabs{display:flex;gap:6px;margin-bottom:16px}
+.section-tab{padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #27272a;background:transparent;color:#a1a1aa}
+.section-tab.on{background:#2563eb;border-color:#2563eb;color:#fff}
+.mood-row{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.mood-btn{width:44px;height:44px;border-radius:50%;border:2px solid #27272a;background:#0a0a0f;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mood-btn.sel{border-color:#2563eb;transform:scale(1.1)}
+.energy-row{display:flex;gap:6px;justify-content:center;margin:6px 0}
+.e-dot{width:10px;height:10px;border-radius:50%;background:#27272a;cursor:pointer}.e-dot.on{background:#2563eb}
+.mood-rec{background:#0a0a0f;border-radius:8px;padding:10px 12px;border:1px solid #1e1e24;margin-top:8px}
+.cl{list-style:none}.cli{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #1a1a1f}.cli:last-child{border:none}.cli input{accent-color:#2563eb;width:16px;height:16px}.cli.done{color:#3f3f46;text-decoration:line-through}
+.sleep-time{text-align:center;font-size:32px;font-weight:700;color:#60a5fa;margin:8px 0}
+.sleep-sub{text-align:center;font-size:12px;color:#52525b}
+.sym-item{background:#0a0a0f;border-radius:8px;padding:10px 12px;border:1px solid #1e1e24;margin-bottom:6px}
+.sym-meta{font-size:11px;color:#3f3f46;margin-top:4px}
+.sym-pattern{font-size:12px;color:#f59e0b;margin-top:6px;padding:6px 8px;background:#1a1205;border-radius:6px}
+.ph{text-align:center;padding:20px 10px;color:#3f3f46;font-size:13px}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:#18181b;border-radius:16px;padding:20px;width:100%;max-width:400px;max-height:80vh;overflow-y:auto;border:1px solid #27272a}
+.modal h3{margin-bottom:14px;font-size:16px}
+.modal .close{float:right;background:none;border:none;color:#71717a;font-size:20px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<div class="card"><div class="weather-mini"><span style="font-size:28px" id="sb-weather-icon">☀️</span><div><div class="weather-temp" id="sb-temp">--°C</div><div style="font-size:11px;color:#71717a" id="sb-weather-desc">加载中...</div></div></div><div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:#71717a" id="sb-forecast"></div></div>
+<div class="card"><div class="card-title">💼 待办</div><div id="sidebar-todos"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="todo-input" placeholder="添加待办..." onkeydown="if(event.key==='Enter')addTodo()" style="flex:1"><button class="btn btn-sm" onclick="addTodo()">+</button></div></div>
+<div class="card"><div class="card-title">✨ 今日推荐</div><div style="font-size:13px;color:#a1a1aa;font-style:italic;line-height:1.6">"千里之行，始于足下。"<div style="font-size:11px;color:#52525b;margin-top:4px">— 老子</div></div><div style="font-size:12px;color:#71717a;margin-top:8px">💡 每天进步一点点</div></div>
+<div class="card"><div class="card-title">💬 AI 助手</div><div id="chat-messages" style="height:140px;overflow-y:auto;background:#0a0a0f;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #1e1e24;font-size:13px"><div style="color:#52525b;text-align:center;padding:20px">点击 ⚙️ 配置API</div></div><div style="display:flex;gap:6px"><input class="inp" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1"><button class="btn btn-sm" id="chat-send" onclick="sendChat()" disabled style="opacity:0.5">发送</button></div></div>
+</div>
+<div class="main">
+<div class="header" style="margin:-12px -16px 16px -16px"><h1>聚合信息面板</h1><div class="header-btns"><span onclick="openApiSettings()">⚙️</span><span onclick="openProfile()">👤</span></div></div>
+<div class="section-tabs desktop-tabs">
+<span class="section-tab on" onclick="showSection('collab',this)">💡 共创</span>
+<span class="section-tab" onclick="showSection('life',this)">🌿 生活</span>
+<span class="section-tab" onclick="showSection('grow',this)">📖 成长</span>
+<span class="section-tab" onclick="showSection('health',this)">❤️ 健康</span>
+</div>
+<div class="page on" id="page-collab">
+<div class="card"><div class="card-title">💡 共创 · 本周</div><div style="font-size:12px;color:#52525b;margin-bottom:10px">按投票数排名 · 周五结束</div><div id="topic-list"></div><div style="margin-top:12px"><button class="btn btn-ghost" style="width:100%" onclick="createTopic()">+ 发起话题</button></div></div>
+<div class="card" style="text-align:center"><div style="font-size:12px;color:#52525b">今日一问</div><div style="font-size:16px;font-weight:600;margin:10px 0">你后悔没早点知道的一件事是什么？</div><div style="display:flex;gap:6px;justify-content:center"><input class="inp" style="max-width:240px" id="daily-ans" placeholder="你的回答..." onkeydown="if(event.key==='Enter')submitDaily()"><button class="btn btn-sm" onclick="submitDaily()">发</button></div><div id="daily-answers" style="text-align:left;margin-top:10px"></div></div>
+</div>
+<div class="page" id="page-life">
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('life',this,'weather')">天气</span><span class="sub-tab" onclick="switchSub('life',this,'mood')">心情</span><span class="sub-tab" onclick="switchSub('life',this,'habit')">习惯</span><span class="sub-tab" onclick="switchSub('life',this,'money')">记账</span></div>
+<div id="life-weather"><div class="card" style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div><div style="margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-advice">时令：春笋、草莓、荠菜</div></div></div>
+<div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div></div>
+<div id="life-habit" style="display:none"><div class="card"><div class="card-title">习惯打卡</div><ul class="cl" id="habit-list"></ul><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
+<div id="life-money" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">本月支出</div><div style="text-align:center;font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div style="display:flex;gap:6px;margin:10px 0"><input class="inp" id="money-desc" placeholder="项目" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><ul style="list-style:none;max-height:160px;overflow-y:auto" id="expense-list"></ul></div></div>
+</div>
+<div class="page" id="page-grow">
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('grow',this,'career')">职业</span><span class="sub-tab" onclick="switchSub('grow',this,'skills')">必修课</span><span class="sub-tab" onclick="switchSub('grow',this,'stage')">阶段</span></div>
+<div id="grow-career"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="career-tags"><span class="tag set" onclick="pickCareer(this)">UI设计</span><span class="tag" onclick="pickCareer(this)">软件开发</span><span class="tag" onclick="pickCareer(this)">产品经理</span><span class="tag" onclick="pickCareer(this)">会计</span><span class="tag" onclick="pickCareer(this)">教师</span><span class="tag" onclick="pickCareer(this)">护理</span><span class="tag" onclick="pickCareer(this)">市场营销</span><span class="tag" onclick="pickCareer(this)">人力资源</span></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="career-info">路径：Adobe认证 → 交互设计 → 设计管理<br>平均薪资：8-25K<br>核心技能：Figma、用户研究、设计系统</div></div></div>
+<div id="grow-skills" style="display:none"><div class="card"><ul class="cl" id="skills-list"></ul></div></div>
+<div id="grow-stage" style="display:none"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="stage-tags"><span class="tag" onclick="pickStage(this,'teen')">青春期 12-17</span><span class="tag set" onclick="pickStage(this,'young')">青年期 18-25</span><span class="tag" onclick="pickStage(this,'adult')">成年期 26-35</span></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="stage-info">青年期（18-25岁）<br>- 独立生活基础<br>- 心理健康自我觉察<br>- 职业规划入门<br>- 建立健康的社交边界<br>- 学会理财基础<br><span style="color:#52525b">引用：WHO青年健康指南</span></div></div></div>
+</div>
+<div class="page" id="page-health">
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡前</span><span class="sub-tab" onclick="switchSub('health',this,'body')">身体</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span></div>
+<div id="health-sleep"><div class="card" style="text-align:center"><div class="sleep-time">23:00</div><div class="sleep-sub">建议入睡时间（保证8小时）</div><div style="text-align:left;margin-top:12px"><div class="todo"><input type="checkbox" class="todo-check"> 刷牙</div><div class="todo"><input type="checkbox" class="todo-check"> 设备充电</div><div class="todo"><input type="checkbox" class="todo-check"> 明天的待办看一眼</div><div class="todo"><input type="checkbox" class="todo-check"> 门窗检查</div></div></div></div></div>
+<div id="health-body" style="display:none"><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#0a0a0f;padding:12px;text-align:center;border-radius:8px"><div style="font-size:11px;color:#52525b">BMI</div><div style="font-size:24px;font-weight:700;color:#60a5fa">22.4</div><div style="font-size:11px;color:#22c55e">正常</div></div><div style="background:#0a0a0f;padding:12px;text-align:center;border-radius:8px"><div style="font-size:11px;color:#52525b">体检</div><div style="font-size:13px;margin-top:4px">建议每年一次</div><div style="font-size:11px;color:#f59e0b">引用卫健委指南</div></div></div></div></div>
+<div id="health-symptom" style="display:none"><div class="card"><div id="symptom-list"></div><button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="addSymptom()">+ 记录症状</button></div></div>
+</div>
+</div>
+<div class="mobile-nav">
+<button class="nav-btn on" onclick="showMobile('collab',this)"><span>💡</span>共创</button>
+<button class="nav-btn" onclick="showMobile('life',this)"><span>🌿</span>生活</button>
+<button class="nav-btn" onclick="showMobile('grow',this)"><span>📖</span>成长</button>
+<button class="nav-btn" onclick="showMobile('health',this)"><span>❤️</span>健康</button>
+<button class="nav-btn" onclick="showMobile('more',this)"><span>≡</span>更多</button>
+</div>
+<div class="modal-bg" id="api-modal"><div class="modal"><button class="close" onclick="closeApiSettings()">✕</button><h3>⚙️ API 设置</h3><div style="font-size:12px;color:#71717a;margin-bottom:12px">支持 OpenAI 兼容格式（DeepSeek、Moonshot、智谱等）</div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">API 地址</div><input class="inp" id="api-endpoint" placeholder="https://api.openai.com/v1/chat/completions"></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">API Key</div><input class="inp" id="api-key" type="password" placeholder="sk-..."></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">模型名称</div><input class="inp" id="api-model" placeholder="gpt-4o-mini"></div><div style="background:#0a0a0f;border-radius:8px;padding:10px;font-size:11px;color:#52525b;margin-bottom:12px"><div style="color:#a1a1aa;margin-bottom:4px">常见配置：</div><div>🔹 DeepSeek: api.deepseek.com/v1/chat/completions</div><div>🔹 Moonshot: api.moonshot.cn/v1/chat/completions</div></div><div style="font-size:11px;color:#3f3f46;margin-bottom:12px">🔒 Key 仅存在浏览器本地</div><button class="btn" style="width:100%" onclick="closeApiSettings()">保存</button></div></div>
+<div class="modal-bg" id="profile-modal"><div class="modal"><button class="close" onclick="closeProfile()">✕</button><h3>👤 我的档案</h3><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">年龄</div><input class="inp" id="prof-age" value="24" style="width:80px"></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">性别</div><div id="prof-gender"><span class="tag set" data-v="男" onclick="togTag(this)">♂ 男</span><span class="tag" data-v="女" onclick="togTag(this)">♀ 女</span></div></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">城市</div><input class="inp" id="prof-city" value="上海"></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">职业</div><div id="prof-job"><span class="tag set" data-v="UI设计" onclick="togTag(this)">UI设计</span><span class="tag" data-v="软件开发" onclick="togTag(this)">软件开发</span><span class="tag" data-v="会计" onclick="togTag(this)">会计</span><span class="tag" data-v="教师" onclick="togTag(this)">教师</span><span class="tag" data-v="护理" onclick="togTag(this)">护理</span></div></div><button class="btn" style="width:100%" onclick="closeProfile()">保存</button></div></div>
+<script>
+// Layout
+function showSection(id,el){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});document.getElementById('page-'+id).classList.add('on');if(el){document.querySelectorAll('.section-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on')}}
+function showMobile(id,el){if(id==='more'){document.getElementById('api-modal').classList.add('open');return}showSection(id);document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.querySelector('.main').scrollTop=0}
+function switchSub(prefix,el,id){el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on');var panels=['weather','mood','habit','money','career','skills','stage','sleep','body','symptom'];panels.forEach(function(p){var e=document.getElementById(prefix+'-'+p);if(e)e.style.display=p===id?'block':'none'})}
+function togTag(el){el.classList.toggle('set')}
+
+// Weather
+var WMO={0:'☀️ 晴',1:'🌤 大部晴',2:'⛅ 多云',3:'☁️ 阴',45:'🌫 雾',51:'🌦 小毛毛雨',53:'🌦 毛毛雨',61:'🌧 小雨',63:'🌧 中雨',65:'🌧 大雨',71:'🌨 小雪',73:'🌨 中雪',80:'🌦 阵雨',82:'⛈ 大阵雨',95:'⛈ 雷暴'};
+var WMO_ADV={0:'紫外线较强，建议涂防晒',1:'适合外出',2:'可带薄外套',3:'阴天体感偏凉',61:'小雨带伞',63:'中雨带伞',65:'大雨不出门',80:'可能阵雨带伞'};
+function loadWeather(){try{fetch('https://api.open-meteo.com/v1/forecast?latitude=31.23&longitude=121.47&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Shanghai&forecast_days=3').then(function(r){return r.json()}).then(function(d){try{var c=d.current;var emoji=WMO[c.weather_code]||'🌤';document.getElementById('wt-temp').textContent=Math.round(c.temperature_2m)+'°C';document.getElementById('wt-icon').textContent=emoji.split(' ')[0]||emoji;document.getElementById('wt-desc').textContent=emoji+' · 风速'+c.wind_speed_10m+'km/h · 湿度'+c.relative_humidity_2m+'%';document.getElementById('sb-temp').textContent=Math.round(c.temperature_2m)+'°C';document.getElementById('sb-weather-desc').textContent=emoji+' 上海';document.getElementById('wt-advice').innerHTML=(WMO_ADV[c.weather_code]||'')+'<br>🍓 草莓 · 🌱 春笋 · 🥬 荠菜';var days=d.daily;var labels=['今天','明天','后天'];var h='',sh='';for(var i=0;i<3;i++){h+='<div><div>'+labels[i]+'</div><div style="font-size:16px;margin:4px 0">'+(WMO[days.weather_code[i]]||'?').split(' ')[0]+'</div><div>'+Math.round(days.temperature_2m_min[i])+'°~'+Math.round(days.temperature_2m_max[i])+'°</div></div>';sh+='<span>'+labels[i]+' '+(days.temperature_2m_max[i])+'°</span>'}document.getElementById('wt-forecast').innerHTML=h;document.getElementById('sb-forecast').innerHTML=sh}catch(e){console.error(e)}}).catch(function(){document.getElementById('wt-temp').textContent='离线模式'})}catch(e){}}
+loadWeather();
+
+// Todo
+var todos=JSON.parse(localStorage.getItem('td')||'null');
+if(!todos)todos=[{t:'去市里开会',d:false,dl:'地铁1转2 · 9:00前出发'},{t:'回复客户邮件',d:false,dl:'王总方案反馈，下班前'},{t:'整理周报',d:false,dl:'本周进度+下周计划，周五17:00前'}];
+function rTodos(){var html='';for(var i=0;i<todos.length;i++){var t=todos[i];html+='<div class="todo"><input type="checkbox" class="todo-check" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div><div class="'+(t.d?'todo-done':'')+'">'+t.t+'</div>'+(t.dl?'<div class="todo-detail">'+t.dl+'</div>':'')+'</div></div>'}document.getElementById('sidebar-todos').innerHTML=html}
+function addTodo(){var v=document.getElementById('todo-input');if(!v||!v.value.trim())return;todos.push({t:v.value.trim(),d:false,dl:''});v.value='';sTodos()}
+function togT(i){todos[i].d=!todos[i].d;sTodos()}
+function sTodos(){localStorage.setItem('td',JSON.stringify(todos));rTodos()}
+rTodos();
+
+// Topics
+var topics=JSON.parse(localStorage.getItem('topics')||'null');
+if(!topics)topics=[
+{id:0,type:'official',title:'你希望健康区加什么功能？',votes:1289,voted:false,comments:[{a:'官方团队',t:'本周',text:'投票结果直接影响开发排期。'}]},
+{id:1,type:'community',title:'经期到底能不能运动？',votes:1024,voted:false,comments:[{a:'张医生',t:'3天前',text:'适度运动有益，建议快走、瑜伽。'},{a:'小王',t:'2天前',text:'要听身体信号。'}]},
+{id:2,type:'community',title:'30岁前最重要的能力',votes:891,voted:false,comments:[{a:'匿名用户',t:'5天前',text:'学会拒绝。讨好所有人只会失去自己。'}]},
+{id:3,type:'official',title:'下版本数据存储方案选择',votes:567,voted:false,comments:[{a:'官方团队',t:'本周',text:'A:云端 B:本地 请选择'}]},
+{id:4,type:'community',title:'被套多久换洗一次',votes:234,voted:false,comments:[{a:'生活达人',t:'1周前',text:'建议1-2周换洗。'}]}
+];
+function renderTopics(){topics.sort(function(a,b){return b.votes-a.votes});var html='';for(var i=0;i<topics.length;i++){var t=topics[i];var badge=t.type==='official'?'<span class="tag blue">官方</span>':'<span class="tag green">社区</span>';html+='<div class="topic-row" onclick="toggleTopic('+i+')"><div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0"><span class="topic-rank">'+(i+1)+'</span>'+badge+'<span style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+t.title+'</span></div><span class="topic-votes">'+t.votes+'票</span></div><div class="topic-detail" id="td-'+i+'">';for(var j=0;j<t.comments.length;j++){var c=t.comments[j];html+='<div class="cm"><div class="cm-head"><span class="cm-author">'+c.a+'</span><span class="cm-time">'+c.t+'</span></div><div class="cm-text">'+c.text+'</div></div>'}html+='<div style="display:flex;gap:6px;margin-top:8px"><input class="inp" placeholder="说说你的看法..." id="ri-'+i+'" style="flex:1"><button class="btn btn-sm" onclick="event.stopPropagation();addReply('+i+')">发</button></div><div style="text-align:right;margin-top:6px"><button class="btn btn-sm '+(t.voted?'btn-ghost':'')+'" onclick="event.stopPropagation();vote('+i+')" '+(t.voted?'disabled':'')+'>'+(t.voted?'已投票':'投票')+'</button></div></div>'}document.getElementById('topic-list').innerHTML=html}
+function toggleTopic(i){var d=document.getElementById('td-'+i);if(d)d.classList.toggle('open')}
+function vote(i){if(topics[i].voted)return;topics[i].votes++;topics[i].voted=true;localStorage.setItem('topics',JSON.stringify(topics));renderTopics()}
+function addReply(i){var inp=document.getElementById('ri-'+i);if(!inp||!inp.value.trim())return;topics[i].comments.push({a:'我',t:'刚刚',text:inp.value.trim()});inp.value='';localStorage.setItem('topics',JSON.stringify(topics));renderTopics();document.getElementById('td-'+i).classList.add('open')}
+function createTopic(){var title=prompt('话题标题：');if(!title||!title.trim())return;topics.push({id:Date.now(),type:'community',title:title.trim(),votes:1,voted:true,comments:[]});localStorage.setItem('topics',JSON.stringify(topics));renderTopics()}
+function submitDaily(){var v=document.getElementById('daily-ans');if(!v||!v.value.trim())return;document.getElementById('daily-answers').innerHTML+='<div class="cm"><div class="cm-head"><span class="cm-author">我</span><span class="cm-time">刚刚</span></div><div class="cm-text">'+v.value.trim().replace(/</g,'&lt;')+'</div></div>';v.value=''}
+renderTopics();
+
+// Mood
+var moodRec={'😔':['读《被讨厌的勇气》','散步20分钟','轻音乐'],'😤':['读《当下的力量》','跳绳5分钟','写三件感恩的事'],'😐':['随便翻翻','拉伸10分钟','lo-fi音乐'],'😊':['读《人类简史》','跑步30分钟','欢快歌单'],'🤩':['挑战深度阅读','高强度运动','最爱的歌单']};
+var moodState=JSON.parse(localStorage.getItem('mood')||'{}');
+function selMood(el,m){el.parentNode.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('sel')});el.classList.add('sel');moodState.mood=m;saveMood();var r=moodRec[m];if(r){document.getElementById('mood-rec').innerHTML=r.map(function(x){return '<div style="font-size:13px;margin:4px 0;color:#a1a1aa">'+x+'</div>'}).join('');document.getElementById('mood-rec').style.display='block'}}
+function saveMood(){localStorage.setItem('mood',JSON.stringify(moodState))}
+var energyLv=moodState.energy||3;
+document.getElementById('energy-dots').innerHTML=[1,2,3,4,5].map(function(i){return '<span class="e-dot'+(i<=energyLv?' on':'')+'" onclick="selEnergy(this,'+i+')"></span>'}).join('');
+function selEnergy(el,n){el.parentNode.querySelectorAll('.e-dot').forEach(function(d,i){d.classList.toggle('on',i<n)});moodState.energy=n;saveMood()}
+
+// Habits
+function loadHabits(){var items=JSON.parse(localStorage.getItem('habits')||'null');if(!items)items=[{text:'喝水 8杯',done:false},{text:'运动 30分钟',done:false},{text:'23:00前入睡',done:false}];renderHabits(items)}
+function renderHabits(items){document.getElementById('habit-list').innerHTML=items.map(function(h,i){return '<li class="cli'+(h.done?' done':'')+'"><input type="checkbox" '+(h.done?'checked':'')+' onchange="toggleHabit('+i+')">'+h.text+'<button class="btn-ghost" onclick="delHabit('+i+')" style="margin-left:auto;border:none;color:#52525b;cursor:pointer;font-size:16px;padding:0 4px">×</button></li>'}).join('');localStorage.setItem('habits',JSON.stringify(items))}
+function toggleHabit(i){var items=JSON.parse(localStorage.getItem('habits'));items[i].done=!items[i].done;renderHabits(items)}
+function addHabit(){var v=document.getElementById('habit-inp');if(!v||!v.value.trim())return;var items=JSON.parse(localStorage.getItem('habits'));items.push({text:v.value.trim(),done:false});v.value='';renderHabits(items)}
+function delHabit(i){var items=JSON.parse(localStorage.getItem('habits'));items.splice(i,1);renderHabits(items)}
+loadHabits();
+
+// Expenses
+function getExpenses(){return JSON.parse(localStorage.getItem('expenses')||'[]')}
+function renderExpenses(){var items=getExpenses();var month=new Date().toISOString().slice(0,7);var total=items.filter(function(e){return e.date.startsWith(month)}).reduce(function(s,e){return s+e.amount},0);document.getElementById('money-total').textContent='¥'+total;document.getElementById('expense-list').innerHTML=items.slice(-10).reverse().map(function(e,i){return '<li class="todo"><span style="flex:1">'+e.desc+' <span style="color:#f59e0b">¥'+e.amount+'</span></span><span style="font-size:10px;color:#52525b">'+e.date.slice(5)+'</span><button onclick="delExpense('+(items.length-1-i)+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px">×</button></li>'}).join('')}
+function addExpense(){var desc=document.getElementById('money-desc');var amt=document.getElementById('money-amt');if(!desc.value.trim()||!amt.value)return;var items=getExpenses();items.push({desc:desc.value.trim(),amount:parseFloat(amt.value),date:new Date().toISOString().slice(0,10)});localStorage.setItem('expenses',JSON.stringify(items));desc.value='';amt.value='';renderExpenses()}
+function delExpense(i){var items=getExpenses();items.splice(i,1);localStorage.setItem('expenses',JSON.stringify(items));renderExpenses()}
+renderExpenses();
+
+// Career
+var careerPaths={'UI设计':'路径：Adobe认证 → 交互设计 → 设计管理<br>平均薪资：8-25K<br>核心技能：Figma、用户研究、设计系统','软件开发':'编程基础 → 全栈 → 架构师<br>平均薪资：12-40K<br>核心技能：算法、系统设计、云服务','产品经理':'需求分析 → 产品规划 → 产品总监<br>平均薪资：15-35K<br>核心技能：用户洞察、数据分析','会计':'初级会计 → CPA → 财务总监<br>平均薪资：6-20K','教师':'教师资格证 → 学科带头人 → 教研主任<br>平均薪资：6-15K','护理':'护士证 → 护师 → 主管护师<br>平均薪资：5-12K','市场营销':'市场专员 → 品牌经理 → CMO<br>平均薪资：8-30K','人力资源':'HR专员 → HRBP → HRD<br>平均薪资：6-20K'};
+function pickCareer(el){el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});el.classList.add('set');document.getElementById('career-info').innerHTML=careerPaths[el.textContent]||'选择职业查看详情';localStorage.setItem('career',el.textContent)}
+
+// Skills
+function loadSkills(){var items=JSON.parse(localStorage.getItem('skills')||'null');if(!items)items=[{text:'巴氏刷牙法',done:false},{text:'被套1-2周换洗',done:false},{text:'煮饭煮面',done:false},{text:'烫伤冷水冲15分钟',done:false},{text:'社保怎么查',done:false}];renderSkills(items)}
+function renderSkills(items){document.getElementById('skills-list').innerHTML=items.map(function(s,i){return '<li class="cli'+(s.done?' done':'')+'"><input type="checkbox" '+(s.done?'checked':'')+' onchange="toggleSkill('+i+')">'+s.text+'<button class="btn-ghost" onclick="delSkill('+i+')" style="margin-left:auto;border:none;color:#52525b;cursor:pointer;font-size:16px;padding:0 4px">×</button></li>'}).join('');localStorage.setItem('skills',JSON.stringify(items))}
+function toggleSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items[i].done=!items[i].done;renderSkills(items)}
+function delSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items.splice(i,1);renderSkills(items)}
+loadSkills();
+
+// Stage
+var stageData={teen:{title:'青春期（12-17岁）',items:['身体发育与性教育','学习方法与时间管理','情绪管理初步','同伴关系处理','网络安全意识','基本生活自理'],src:'国家卫健委青少年健康指南'},young:{title:'青年期（18-25岁）',items:['独立生活基础','心理健康自我觉察','职业规划入门','建立健康的社交边界','学会理财基础','基本法律常识'],src:'WHO青年健康指南'},adult:{title:'成年期（26-35岁）',items:['职业深耕或转型','长期伴侣关系经营','理财进阶','定期体检习惯','父母健康关注','工作-生活平衡'],src:'国家卫健委成年期健康管理'}};
+function pickStage(el,key){el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});el.classList.add('set');var d=stageData[key];document.getElementById('stage-info').innerHTML=d.title+'<br>'+d.items.map(function(i){return '- '+i}).join('<br>')+'<br><span style="color:#52525b">'+d.src+'</span>';localStorage.setItem('stage',key)}
+
+// Symptoms
+function getSymptoms(){return JSON.parse(localStorage.getItem('symptoms')||'[]')}
+function renderSymptoms(){var items=getSymptoms();if(!items.length){document.getElementById('symptom-list').innerHTML='<div class="ph">暂无记录</div>';return}document.getElementById('symptom-list').innerHTML=items.map(function(s,i){var p=items.filter(function(x){return x.symptom===s.symptom}).length;return '<div class="sym-item"><div style="font-size:13px;display:flex;justify-content:space-between"><span>'+s.symptom+'</span><button onclick="delSymptom('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px">×</button></div><div class="sym-meta">'+s.date+' · '+(s.env||'-')+'</div>'+(p>1?'<div class="sym-pattern">已记录'+p+'次类似症状</div>':'')+'</div>'}).reverse().join('')}
+function addSymptom(){var s=prompt('什么症状？');if(!s)return;var e=prompt('当时环境？（可选）')||'';var items=getSymptoms();items.push({symptom:s.trim(),env:e.trim(),date:new Date().toISOString().slice(0,10)});localStorage.setItem('symptoms',JSON.stringify(items));renderSymptoms()}
+function delSymptom(i){var items=getSymptoms();items.splice(i,1);localStorage.setItem('symptoms',JSON.stringify(items));renderSymptoms()}
+renderSymptoms();
+
+// API & Chat
+function getApiConfig(){return JSON.parse(localStorage.getItem('userapi')||'{}')}
+function openApiSettings(){var p=getApiConfig();document.getElementById('api-endpoint').value=p.endpoint||'https://api.openai.com/v1/chat/completions';document.getElementById('api-key').value=p.key||'';document.getElementById('api-model').value=p.model||'gpt-4o-mini';document.getElementById('api-modal').classList.add('open')}
+function closeApiSettings(){localStorage.setItem('userapi',JSON.stringify({endpoint:document.getElementById('api-endpoint').value.trim(),key:document.getElementById('api-key').value.trim(),model:document.getElementById('api-model').value.trim()}));document.getElementById('api-modal').classList.remove('open');initChat()}
+var chatHistory=[];
+function initChat(){var cfg=getApiConfig();var btn=document.getElementById('chat-send');if(cfg.key&&cfg.endpoint){btn.disabled=false;btn.textContent='发送';btn.style.opacity='1'}else{btn.disabled=true;btn.textContent='配置API';btn.style.opacity='0.5'}}
+function sendChat(){var cfg=getApiConfig();if(!cfg.key)return;var input=document.getElementById('chat-input');var msg=input.value.trim();if(!msg)return;input.value='';chatHistory.push({role:'user',content:msg});var ctx='[用户数据]\n';var tds=JSON.parse(localStorage.getItem('td')||'[]');if(tds.length){ctx+='待办：\n';tds.forEach(function(t){ctx+=(t.d?'✅':'⬜')+' '+t.t+(t.dl?' ('+t.dl+')':'')+'\n'})}var mds=JSON.parse(localStorage.getItem('mood')||'{}');if(mds.mood)ctx+='心情：'+mds.mood+' 能量：'+(mds.energy||'-')+'/5\n';renderChat();document.getElementById('chat-send').disabled=true;document.getElementById('chat-send').textContent='思考中...';fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:ctx+'请根据用户数据回答，简洁实用。'}].concat(chatHistory)})}).then(function(r){return r.json()}).then(function(d){var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'无回复';chatHistory.push({role:'assistant',content:reply});renderChat()}).catch(function(e){chatHistory.push({role:'assistant',content:'请求失败'});renderChat()}).finally(function(){document.getElementById('chat-send').disabled=false;document.getElementById('chat-send').textContent='发送'})}
+function renderChat(){var el=document.getElementById('chat-messages');el.innerHTML=chatHistory.map(function(m){var isU=m.role==='user';return '<div style="margin-bottom:8px;text-align:'+(isU?'right':'left')+'"><div style="display:inline-block;max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.5;background:'+(isU?'#2563eb':'#1e1e24')+';color:'+(isU?'#fff':'#e4e4e7')+'">'+m.content.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div></div>'}).join('');el.scrollTop=el.scrollHeight}
+initChat();
+
+// Profile
+function openProfile(){var p=JSON.parse(localStorage.getItem('profile')||'{}');document.getElementById('prof-age').value=p.age||'24';document.getElementById('prof-city').value=p.city||'上海';document.getElementById('profile-modal').classList.add('open')}
+function closeProfile(){var jobs=[];document.querySelectorAll('#prof-job .tag.set').forEach(function(t){jobs.push(t.dataset.v)});localStorage.setItem('profile',JSON.stringify({age:document.getElementById('prof-age').value,city:document.getElementById('prof-city').value,gender:document.querySelector('#prof-gender .tag.set')?document.querySelector('#prof-gender .tag.set').dataset.v:'',jobs:jobs}));document.getElementById('profile-modal').classList.remove('open')}
+</script>
+</body>
+</html>
