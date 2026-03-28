@@ -392,6 +392,18 @@ h1 span{font-size:11px;color:#52525b;display:block;margin-top:2px}
     </div>
   </div>
 
+
+<div class="modal-bg" id="crypto-modal">
+  <div class="modal">
+    <button class="close" onclick="closeCryptoModal()">✕</button>
+    <h3 id="crypto-title">🔐 设置安全密码</h3>
+    <div style="font-size:12px;color:#71717a;margin-bottom:12px" id="crypto-desc">设置密码后，健康数据将加密存储。忘记密码将无法恢复数据。</div>
+    <div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">密码</div><input class="inp" id="crypto-pw" type="password" placeholder="输入密码"></div>
+    <div id="crypto-confirm-wrap" style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">确认密码</div><input class="inp" id="crypto-pw2" type="password" placeholder="再次输入"></div>
+    <div style="font-size:11px;color:#ef4444;margin-bottom:12px" id="crypto-error"></div>
+    <button class="btn" style="width:100%" onclick="submitCrypto()" id="crypto-btn">确认</button>
+  </div>
+</div>
 </div>
 
 <!-- API Settings Modal -->
@@ -429,6 +441,111 @@ h1 span{font-size:11px;color:#52525b;display:block;margin-top:2px}
 </div>
 
 <script>
+// ===== Encryption Module (Web Crypto API) =====
+var CryptoHelper = (function(){
+  var ALGO = 'AES-GCM';
+  var KEY_LEN = 256;
+  var ITERATIONS = 100000;
+  var SALT_LEN = 16;
+  var IV_LEN = 12;
+
+  var _key = null; // in-memory key, destroyed on page close
+
+  function buf2hex(buf){return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
+  function hex2buf(hex){var a=new Uint8Array(hex.length/2);for(var i=0;i<hex.length;i+=2)a[i/2]=parseInt(hex.substr(i,2),16);return a.buffer}
+  function str2buf(str){return new TextEncoder().encode(str)}
+  function buf2str(buf){return new TextDecoder().decode(buf)}
+
+  async function deriveKey(password, salt){
+    var keyMaterial = await crypto.subtle.importKey('raw', str2buf(password), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      {name:'PBKDF2', salt:salt, iterations:ITERATIONS, hash:'SHA-256'},
+      keyMaterial,
+      {name:ALGO, length:KEY_LEN},
+      false,
+      ['encrypt','decrypt']
+    );
+  }
+
+  async function encrypt(plaintext){
+    if(!_key) throw new Error('Not unlocked');
+    var iv = crypto.getRandomValues(new Uint8Array(IV_LEN));
+    var enc = await crypto.subtle.encrypt({name:ALGO, iv:iv}, _key, str2buf(plaintext));
+    var combined = new Uint8Array(iv.length + enc.byteLength);
+    combined.set(iv);
+    combined.set(new Uint8Array(enc), iv.length);
+    return buf2hex(combined.buffer);
+  }
+
+  async function decrypt(hexStr){
+    if(!_key) throw new Error('Not unlocked');
+    var combined = new Uint8Array(hex2buf(hexStr));
+    var iv = combined.slice(0, IV_LEN);
+    var data = combined.slice(IV_LEN);
+    var dec = await crypto.subtle.decrypt({name:ALGO, iv:iv}, _key, data);
+    return buf2str(dec);
+  }
+
+  return {
+    isUnlocked: function(){return _key !== null},
+    
+    setupPassword: async function(password){
+      var salt = crypto.getRandomValues(new Uint8Array(SALT_LEN));
+      _key = await deriveKey(password, salt);
+      var saltHex = buf2hex(salt.buffer);
+      localStorage.setItem('_crypto_salt', saltHex);
+      localStorage.setItem('_crypto_test', await encrypt('__test__'));
+      return true;
+    },
+
+    unlock: async function(password){
+      var saltHex = localStorage.getItem('_crypto_salt');
+      if(!saltHex) return false;
+      var salt = hex2buf(saltHex);
+      _key = await deriveKey(password, salt);
+      try{
+        var test = await decrypt(localStorage.getItem('_crypto_test'));
+        if(test === '__test__') return true;
+      }catch(e){}
+      _key = null;
+      return false;
+    },
+
+    lock: function(){_key = null},
+
+    hasPassword: function(){return !!localStorage.getItem('_crypto_salt')},
+
+    encrypt: encrypt,
+    decrypt: decrypt,
+
+    // Encrypted storage helpers
+    saveEncrypted: async function(key, value){
+      var encrypted = await encrypt(JSON.stringify(value));
+      localStorage.setItem('_enc_'+key, encrypted);
+    },
+
+    loadEncrypted: async function(key){
+      var raw = localStorage.getItem('_enc_'+key);
+      if(!raw) return null;
+      try{
+        return JSON.parse(await decrypt(raw));
+      }catch(e){return null}
+    },
+
+    // Migrate existing unencrypted data
+    migrate: async function(keys){
+      for(var i=0;i<keys.length;i++){
+        var k = keys[i];
+        var raw = localStorage.getItem(k);
+        if(raw && !localStorage.getItem('_enc_'+k)){
+          await CryptoHelper.saveEncrypted(k, JSON.parse(raw));
+          localStorage.removeItem(k);
+        }
+      }
+    }
+  };
+})();
+
 // News
 var news=[
 {c:"🇨🇳 中国",hot:true,items:[{t:"国务院发布2026年经济工作重点部署",s:"新华社",w:"今天"},{t:"两会聚焦新质生产力与高质量发展",s:"人民日报",w:"今天"},{t:"央行宣布新一轮金融支持实体经济政策",s:"央视新闻",w:"昨天"}]},
@@ -953,6 +1070,88 @@ function loadRecs(){
   .catch(function(){document.getElementById('rec-activity').textContent='🎯 出门散步15分钟'});
 }
 loadRecs();
+
+// ===== Crypto UI =====
+function openCryptoModal(isSetup){
+  var modal = document.getElementById('crypto-modal');
+  document.getElementById('crypto-pw').value = '';
+  document.getElementById('crypto-pw2').value = '';
+  document.getElementById('crypto-error').textContent = '';
+  if(isSetup){
+    document.getElementById('crypto-title').textContent = '🔐 设置安全密码';
+    document.getElementById('crypto-desc').textContent = '健康数据将加密存储。忘记密码无法恢复。';
+    document.getElementById('crypto-confirm-wrap').style.display = '';
+    document.getElementById('crypto-btn').textContent = '确认设置';
+  }else{
+    document.getElementById('crypto-title').textContent = '🔐 输入密码解锁';
+    document.getElementById('crypto-desc').textContent = '输入密码查看加密的健康数据。';
+    document.getElementById('crypto-confirm-wrap').style.display = 'none';
+    document.getElementById('crypto-btn').textContent = '解锁';
+  }
+  modal.classList.add('open');
+}
+function closeCryptoModal(){document.getElementById('crypto-modal').classList.remove('open')}
+
+async function submitCrypto(){
+  var pw = document.getElementById('crypto-pw').value;
+  var err = document.getElementById('crypto-error');
+  if(!pw){err.textContent = '请输入密码';return}
+  
+  if(!CryptoHelper.hasPassword()){
+    // Setup
+    var pw2 = document.getElementById('crypto-pw2').value;
+    if(pw !== pw2){err.textContent = '两次密码不一致';return}
+    if(pw.length < 4){err.textContent = '密码至少4位';return}
+    await CryptoHelper.setupPassword(pw);
+    // Migrate existing data
+    await CryptoHelper.migrate(['emergency_card','health_profile','period_data','symptoms','medications','body_data','mood','profile']);
+    closeCryptoModal();
+    alert('✅ 加密已开启，健康数据已加密存储');
+    renderEmergency();
+    renderHealthProfile();
+    renderPeriod();
+  }else{
+    // Unlock
+    var ok = await CryptoHelper.unlock(pw);
+    if(ok){
+      closeCryptoModal();
+      renderEmergency();
+      renderHealthProfile();
+      renderPeriod();
+      renderSymptoms();
+      renderBodyData();
+    }else{
+      err.textContent = '密码错误';
+    }
+  }
+}
+
+// Check if encryption is set up on page load
+function checkCrypto(){
+  if(!CryptoHelper.hasPassword()){
+    // Show prompt to set up encryption
+    var healthSection = document.getElementById('section-health');
+    if(healthSection){
+      var banner = document.createElement('div');
+      banner.id = 'crypto-banner';
+      banner.style.cssText = 'background:#1a1205;border:1px solid #92400e;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;justify-content:space-between';
+      banner.innerHTML = '<span>🔐 加密保护健康数据</span><button class="btn btn-sm" onclick="openCryptoModal(true);document.getElementById(\'crypto-banner\').remove()">开启</button>';
+      healthSection.querySelector('.body').insertBefore(banner, healthSection.querySelector('.body').firstChild);
+    }
+  }else if(!CryptoHelper.isUnlocked()){
+    // Show unlock prompt
+    var healthSection = document.getElementById('section-health');
+    if(healthSection){
+      var banner = document.createElement('div');
+      banner.id = 'crypto-banner';
+      banner.style.cssText = 'background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;justify-content:space-between';
+      banner.innerHTML = '<span>🔒 数据已加密</span><button class="btn btn-sm" onclick="openCryptoModal(false);document.getElementById(\'crypto-banner\').remove()">解锁查看</button>';
+      healthSection.querySelector('.body').insertBefore(banner, healthSection.querySelector('.body').firstChild);
+    }
+  }
+}
+checkCrypto();
+
 </script>
 <style>.mobile-nav{position:fixed;bottom:0;left:0;right:0;background:#141418;border-top:1px solid #1e1e24;display:none;justify-content:space-around;padding:6px 0;z-index:50;backdrop-filter:blur(10px)}@media(max-width:480px){.mobile-nav{display:flex}}.nav-item{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#71717a;cursor:pointer;padding:4px 8px;border:none;background:none}.nav-item.on{color:#60a5fa}.nav-item span{font-size:18px;margin-bottom:2px}</style><div class="mobile-nav"><button class="nav-item on" onclick="scrollTo(0,0)"><span>📰</span>首页</button><button class="nav-item" onclick="document.getElementById('section-life').scrollIntoView({behavior:'smooth'})"><span>🌿</span>生活</button><button class="nav-item" onclick="document.getElementById('section-grow').scrollIntoView({behavior:'smooth'})"><span>📖</span>成长</button><button class="nav-item" onclick="document.getElementById('section-health').scrollIntoView({behavior:'smooth'})"><span>❤️</span>健康</button><button class="nav-item" onclick="document.getElementById('chat-messages').scrollIntoView({behavior:'smooth'})"><span>💬</span>AI</button></div>`n<style>
 .mobile-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,24,.95);backdrop-filter:blur(12px);border-top:1px solid #1e1e24;display:none;justify-content:space-around;padding:6px 0 10px;z-index:50}
@@ -990,6 +1189,88 @@ var pages={
 'health':[4]// health card
 };
 }
+
+// ===== Crypto UI =====
+function openCryptoModal(isSetup){
+  var modal = document.getElementById('crypto-modal');
+  document.getElementById('crypto-pw').value = '';
+  document.getElementById('crypto-pw2').value = '';
+  document.getElementById('crypto-error').textContent = '';
+  if(isSetup){
+    document.getElementById('crypto-title').textContent = '🔐 设置安全密码';
+    document.getElementById('crypto-desc').textContent = '健康数据将加密存储。忘记密码无法恢复。';
+    document.getElementById('crypto-confirm-wrap').style.display = '';
+    document.getElementById('crypto-btn').textContent = '确认设置';
+  }else{
+    document.getElementById('crypto-title').textContent = '🔐 输入密码解锁';
+    document.getElementById('crypto-desc').textContent = '输入密码查看加密的健康数据。';
+    document.getElementById('crypto-confirm-wrap').style.display = 'none';
+    document.getElementById('crypto-btn').textContent = '解锁';
+  }
+  modal.classList.add('open');
+}
+function closeCryptoModal(){document.getElementById('crypto-modal').classList.remove('open')}
+
+async function submitCrypto(){
+  var pw = document.getElementById('crypto-pw').value;
+  var err = document.getElementById('crypto-error');
+  if(!pw){err.textContent = '请输入密码';return}
+  
+  if(!CryptoHelper.hasPassword()){
+    // Setup
+    var pw2 = document.getElementById('crypto-pw2').value;
+    if(pw !== pw2){err.textContent = '两次密码不一致';return}
+    if(pw.length < 4){err.textContent = '密码至少4位';return}
+    await CryptoHelper.setupPassword(pw);
+    // Migrate existing data
+    await CryptoHelper.migrate(['emergency_card','health_profile','period_data','symptoms','medications','body_data','mood','profile']);
+    closeCryptoModal();
+    alert('✅ 加密已开启，健康数据已加密存储');
+    renderEmergency();
+    renderHealthProfile();
+    renderPeriod();
+  }else{
+    // Unlock
+    var ok = await CryptoHelper.unlock(pw);
+    if(ok){
+      closeCryptoModal();
+      renderEmergency();
+      renderHealthProfile();
+      renderPeriod();
+      renderSymptoms();
+      renderBodyData();
+    }else{
+      err.textContent = '密码错误';
+    }
+  }
+}
+
+// Check if encryption is set up on page load
+function checkCrypto(){
+  if(!CryptoHelper.hasPassword()){
+    // Show prompt to set up encryption
+    var healthSection = document.getElementById('section-health');
+    if(healthSection){
+      var banner = document.createElement('div');
+      banner.id = 'crypto-banner';
+      banner.style.cssText = 'background:#1a1205;border:1px solid #92400e;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;justify-content:space-between';
+      banner.innerHTML = '<span>🔐 加密保护健康数据</span><button class="btn btn-sm" onclick="openCryptoModal(true);document.getElementById(\'crypto-banner\').remove()">开启</button>';
+      healthSection.querySelector('.body').insertBefore(banner, healthSection.querySelector('.body').firstChild);
+    }
+  }else if(!CryptoHelper.isUnlocked()){
+    // Show unlock prompt
+    var healthSection = document.getElementById('section-health');
+    if(healthSection){
+      var banner = document.createElement('div');
+      banner.id = 'crypto-banner';
+      banner.style.cssText = 'background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;justify-content:space-between';
+      banner.innerHTML = '<span>🔒 数据已加密</span><button class="btn btn-sm" onclick="openCryptoModal(false);document.getElementById(\'crypto-banner\').remove()">解锁查看</button>';
+      healthSection.querySelector('.body').insertBefore(banner, healthSection.querySelector('.body').firstChild);
+    }
+  }
+}
+checkCrypto();
+
 </script>
 </body>
 </html>
