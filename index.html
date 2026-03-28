@@ -76,7 +76,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div class="app">
 <div class="sidebar">
 <div class="card"><div class="weather-mini"><span style="font-size:28px" id="sb-weather-icon">☀️</span><div><div class="weather-temp" id="sb-temp">--°C</div><div style="font-size:11px;color:#71717a" id="sb-weather-desc">加载中...</div></div></div><div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:#71717a" id="sb-forecast"></div></div>
-<div class="card"><div class="card-title">💼 待办</div><div id="sidebar-todos"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="todo-input" placeholder="添加待办... ✨自动解析" onkeydown="if(event.key==='Enter')addTodo()" style="flex:1"><button class="btn btn-sm" onclick="addTodo()">+</button></div></div>
+<div class="card"><div class="card-title">💼 待办</div><div id="sidebar-todos"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="todo-input" placeholder="添加待办... ✨自动解析" onkeydown="if(event.key==='Enter')addTodo()" style="flex:1"><button class="btn btn-sm" id="voice-btn" onclick="startVoiceInput()" title="语音输入">🎙️</button><button class="btn btn-sm" onclick="addTodo()">+</button></div></div>
 <div class="card"><div class="card-title">✨ 今日推荐</div><div style="font-size:13px;color:#a1a1aa;font-style:italic;line-height:1.6">"千里之行，始于足下。"<div style="font-size:11px;color:#52525b;margin-top:4px">— 老子</div></div><div style="font-size:12px;color:#71717a;margin-top:8px">💡 每天进步一点点</div></div>
 <div class="card"><div class="card-title">💬 AI 助手</div><div id="chat-messages" style="height:140px;overflow-y:auto;background:#0a0a0f;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #1e1e24;font-size:13px"><div style="color:#52525b;text-align:center;padding:20px">点击 ⚙️ 配置API</div></div><div style="display:flex;gap:6px"><input class="inp" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1"><button class="btn btn-sm" id="chat-send" onclick="sendChat()" disabled style="opacity:0.5">发送</button></div></div>
 </div>
@@ -137,7 +137,6 @@ loadWeather();
 // Todo
 var todos=JSON.parse(localStorage.getItem('td')||'null');
 if(!todos)todos=[{t:'去市里开会',d:false,dl:'地铁1转2 · 9:00前出发'},{t:'回复客户邮件',d:false,dl:'王总方案反馈，下班前'},{t:'整理周报',d:false,dl:'本周进度+下周计划，周五17:00前'}];
-function rTodos(){var html='';for(var i=0;i<todos.length;i++){var t=todos[i];html+='<div class="todo"><input type="checkbox" class="todo-check" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div><div class="'+(t.d?'todo-done':'')+'">'+t.t+'</div>'+(t.dl?'<div class="todo-detail">'+t.dl+'</div>':'')+'</div></div>'}document.getElementById('sidebar-todos').innerHTML=html}
 // Action link generators
 var actionBuilders={
 navigation:function(loc){return '<a href="https://uri.amap.com/navigation?to=&mode=car&keyword='+encodeURIComponent(loc)+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">📍 导航</a>'},
@@ -150,6 +149,7 @@ health:function(kw){return '<a href="https://www.guahao.com/search?q='+encodeURI
 study:function(kw){return '<a href="https://search.douban.com/book/subject_search?search_text='+encodeURIComponent(kw||'')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">📚 搜索</a>'}
 };
 var catColors={工作:'#2563eb',生活:'#22c55e',学习:'#a855f7',健康:'#ef4444',财务:'#f59e0b',社交:'#ec4899',休闲:'#06b6d4'};
+var remindDefaults={navigation:45,shopping:0,call:15,mail:30,movie:60,food:60,health:60,study:0};
 
 function buildActions(parsed){
 var links=[];
@@ -167,16 +167,174 @@ else if(a==='study'&&parsed.keyword)links.push(actionBuilders.study(parsed.keywo
 return links.join(' · ');
 }
 
-function addTodo(){var v=document.getElementById('todo-input');if(!v||!v.value.trim())return;var raw=v.value.trim();v.value='';var cfg=getApiConfig();if(cfg.key&&cfg.endpoint){
-// AI解析模式
-var inp=document.getElementById('todo-input');inp.style.borderColor='#f59e0b';var now=new Date();var dateStr=now.toISOString().slice(0,10);var weekday=['日','一','二','三','四','五','六'][now.getDay()];fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:'你是待办解析器。用户输入一句话，返回JSON。\n格式：{"t":"精简标题","dl":"截止时间或备注","cat":"工作|生活|学习|健康|财务|社交|休闲","actions":["navigation","shopping","call","mail","movie","food","health","study"],"location":"地点","keyword":"搜索关键词","contact":"联系方式","remind_min":提前分钟数}\n规则：只返回JSON；没有的字段可省略；cat从给定选项选；actions数组可为空；今天是'+dateStr+' 星期'+weekday+'。'},{role:'user',content:raw}])}).then(function(r){return r.json()}).then(function(d){var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';try{var p=JSON.parse(reply.trim().replace(/```json\n?/g,'').replace(/```\n?/g,''));todos.push({t:p.t||raw,d:false,dl:p.dl||'',cat:p.cat||'',actions:buildActions(p),remind:p.remind_min||0,raw:raw})}catch(e){todos.push({t:raw,d:false,dl:''})}}).catch(function(){todos.push({t:raw,d:false,dl:''})}).finally(function(){inp.style.borderColor='#27272a';sTodos()})}
-else{todos.push({t:raw,d:false,dl:''});sTodos()}}
+// AI 待办解析 → 预览 → 确认添加
+var todoPreview=[];
+function addTodo(){
+var v=document.getElementById('todo-input');
+if(!v||!v.value.trim())return;
+var raw=v.value.trim();
+v.value='';
+var cfg=getApiConfig();
+if(cfg.key&&cfg.endpoint){
+  parseWithAI(raw);
+}else{
+  todos.push({t:raw,d:false,dl:''});
+  sortTodos();sTodos();
+}
+}
 
-function rTodos(){var html='';for(var i=0;i<todos.length;i++){var t=todos[i];var catBadge=t.cat?'<span style="display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;color:#fff;background:'+(catColors[t.cat]||'#52525b')+';margin-left:6px">'+t.cat+'</span>':'';html+='<div class="todo"><input type="checkbox" class="todo-check" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div style="flex:1;min-width:0"><div class="'+(t.d?'todo-done':'')+'">'+t.t+catBadge+'</div>'+(t.dl?'<div class="todo-detail">'+t.dl+'</div>':'')+(t.actions?'<div style="margin-top:3px">'+t.actions+'</div>':'')+'</div><button onclick="delTodo('+i+')" style="background:none;border:none;color:#3f3f46;cursor:pointer;font-size:14px;padding:0 2px">×</button></div>'}document.getElementById('sidebar-todos').innerHTML=html}
+function parseWithAI(raw){
+var cfg=getApiConfig();
+var inp=document.getElementById('todo-input');
+inp.placeholder='✨ 解析中...';
+inp.disabled=true;
+var now=new Date();
+var dateStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+var timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+var weekday=['日','一','二','三','四','五','六'][now.getDay()];
+
+var sysPrompt='你是待办解析器。用户输入一句话，可能包含多个待办事项。\n'+
+'返回JSON格式：\n'+
+'{"todos":[{"t":"精简标题（动词开头）","dl":"截止时间或备注，可为空","time":"YYYY-MM-DD HH:mm，可为空","cat":"工作|生活|学习|健康|财务|社交|休闲","actions":["navigation","shopping","call","mail","movie","food","health","study"],"location":"地点","keyword":"搜索关键词","contact":"联系方式","remind_min":提前分钟数}],"follow_up":"智能追问，可为空"}\n'+
+'规则：\n'+
+'- 一句话可能拆出多个待办（如"出差北京，见张总，买伴手礼"=3个）\n'+
+'- 没有时间的待办不设提醒\n'+
+'- 有明确截止日但无时间的类型（还信用卡、交房租），follow_up问用户要不要设提醒\n'+
+'- today是'+dateStr+' '+timeStr+' 星期'+weekday+'\n'+
+'- 只返回JSON，不要其他文字';
+
+fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},
+body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:sysPrompt},{role:'user',content:raw}]})
+}).then(function(r){return r.json()}).then(function(d){
+var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
+try{
+  var cleaned=reply.trim().replace(/```json\n?/g,'').replace(/```\n?/g,'');
+  var p=JSON.parse(cleaned);
+  todoPreview=[];
+  if(p.todos&&p.todos.length){
+    p.todos.forEach(function(item){
+      todoPreview.push({t:item.t||raw,d:false,dl:item.dl||'',time:item.time||'',cat:item.cat||'',actions:buildActions(item),remind:item.remind_min||0,raw:raw});
+    });
+  }else{
+    todoPreview=[{t:raw,d:false,dl:''}];
+  }
+  showTodoPreview(p.follow_up||'');
+}catch(e){
+  todos.push({t:raw,d:false,dl:''});sortTodos();sTodos();
+}
+}).catch(function(){todos.push({t:raw,d:false,dl:''});sortTodos();sTodos()}).finally(function(){
+inp.placeholder='添加待办... ✨自动解析';inp.disabled=false;
+})}
+
+function showTodoPreview(followUp){
+var html='<div id="todo-preview" style="background:#1a1a22;border:1px solid #2563eb;border-radius:10px;padding:10px;margin-top:6px;font-size:12px">';
+html+='<div style="color:#60a5fa;font-weight:600;margin-bottom:6px">✨ 解析结果：</div>';
+todoPreview.forEach(function(t,i){
+var catBadge=t.cat?'<span style="display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;color:#fff;background:'+(catColors[t.cat]||'#52525b')+';margin-left:4px">'+t.cat+'</span>':'';
+html+='<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #1e1e24">';
+html+='<span style="color:#e4e4e7">'+t.t+'</span>'+catBadge;
+if(t.dl)html+='<span style="color:#52525b;font-size:11px">'+t.dl+'</span>';
+if(t.actions)html+='<span style="margin-left:auto">'+t.actions+'</span>';
+html+='</div>';
+});
+if(followUp){
+html+='<div style="color:#f59e0b;margin-top:6px;padding:6px 8px;background:#1a1205;border-radius:6px">'+followUp+'</div>';
+}
+html+='<div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-sm" onclick="confirmTodoPreview()">全部确认</button><button class="btn btn-sm btn-ghost" onclick="cancelTodoPreview()">取消</button></div>';
+html+='</div>';
+// Insert after input
+var inputRow=document.getElementById('todo-input').parentNode;
+var existing=document.getElementById('todo-preview');
+if(existing)existing.remove();
+inputRow.insertAdjacentHTML('afterend',html);
+}
+
+function confirmTodoPreview(){
+todoPreview.forEach(function(t){todos.push(t)});
+todoPreview=[];
+sortTodos();sTodos();
+var el=document.getElementById('todo-preview');if(el)el.remove();
+// Check for follow-up reminder
+var lastTodo=todos[todos.length-1];
+if(lastTodo.remind>0&&lastTodo.time){
+  setReminder(lastTodo);
+}
+}
+
+function cancelTodoPreview(){todoPreview=[];var el=document.getElementById('todo-preview');if(el)el.remove()}
+
+// Sorting: time-based by urgency, no-time below
+function sortTodos(){
+todos.sort(function(a,b){
+  if(a.time&&b.time)return new Date(a.time)-new Date(b.time);
+  if(a.time)return -1;
+  if(b.time)return 1;
+  return 0;
+});
+}
+
+// Browser notification reminder
+function setReminder(todo){
+if(!todo.time||!todo.remind)return;
+if(Notification&&Notification.permission!=='granted')Notification.requestPermission();
+var target=new Date(todo.time).getTime()-todo.remind*60*1000;
+var delay=target-Date.now();
+if(delay>0&&delay<24*60*60*1000){
+  setTimeout(function(){
+    if(Notification&&Notification.permission==='granted'){
+      new Notification('⏰ '+todo.t,{body:todo.dl||'待办提醒',icon:'⏰'});
+    }
+  },delay);
+}
+}
+
+// 22:30 daily summary
+function scheduleDailySummary(){
+var now=new Date();
+var target=new Date(now);
+target.setHours(22,30,0,0);
+if(target<now)target.setDate(target.getDate()+1);
+var delay=target-now;
+setTimeout(function(){
+  var noTime=todos.filter(function(t){return !t.d&&!t.time});
+  if(noTime.length>0&&Notification.permission==='granted'){
+    var summary=noTime.map(function(t){return '⬜ '+t.t}).join('\n');
+    new Notification('📋 今日待办清理',{body:noTime.length+'个未完成待办',tag:'daily-summary'});
+  }
+  scheduleDailySummary();
+},delay);
+}
+
+// Voice input
+function startVoiceInput(){
+if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){alert('浏览器不支持语音输入');return}
+var SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+var rec=new SpeechRecognition();
+rec.lang='zh-CN';rec.interimResults=false;rec.maxAlternatives=1;
+var btn=document.getElementById('voice-btn');
+btn.textContent='🔴';btn.style.color='#ef4444';
+rec.onresult=function(e){var text=e.results[0][0].transcript;document.getElementById('todo-input').value=text;addTodo()};
+rec.onerror=function(){btn.textContent='🎙️';btn.style.color=''};
+rec.onend=function(){btn.textContent='🎙️';btn.style.color=''};
+rec.start();
+}
+
+function rTodos(){
+sortTodos();
+var html='';
+for(var i=0;i<todos.length;i++){
+  var t=todos[i];
+  var catBadge=t.cat?'<span style="display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;color:#fff;background:'+(catColors[t.cat]||'#52525b')+';margin-left:6px">'+t.cat+'</span>':'';
+  var timeBadge=t.time?'<span style="font-size:10px;color:#f59e0b;margin-left:6px">⏰ '+t.time.slice(5)+'</span>':'';
+  html+='<div class="todo"><input type="checkbox" class="todo-check" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div style="flex:1;min-width:0"><div class="'+(t.d?'todo-done':'')+'">'+t.t+catBadge+timeBadge+'</div>'+(t.dl?'<div class="todo-detail">'+t.dl+'</div>':'')+(t.actions?'<div style="margin-top:3px">'+t.actions+'</div>':'')+'</div><button onclick="delTodo('+i+')" style="background:none;border:none;color:#3f3f46;cursor:pointer;font-size:14px;padding:0 2px">×</button></div>';
+}
+document.getElementById('sidebar-todos').innerHTML=html;
+}
 function delTodo(i){todos.splice(i,1);sTodos()}
 function togT(i){todos[i].d=!todos[i].d;sTodos()}
 function sTodos(){localStorage.setItem('td',JSON.stringify(todos));rTodos()}
 rTodos();
+if('Notification' in window){Notification.requestPermission();scheduleDailySummary()}
 
 // Topics
 var topics=JSON.parse(localStorage.getItem('topics')||'null');
