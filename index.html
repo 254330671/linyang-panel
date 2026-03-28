@@ -96,7 +96,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('life',this,'weather')">天气</span><span class="sub-tab" onclick="switchSub('life',this,'mood')">心情</span><span class="sub-tab" onclick="switchSub('life',this,'habit')">习惯</span><span class="sub-tab" onclick="switchSub('life',this,'money')">记账</span></div>
 <div id="life-weather"><div class="card" style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div><div style="margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-advice">时令：春笋、草莓、荠菜</div></div></div>
 <div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div></div>
-<div id="life-habit" style="display:none"><div class="card"><div class="card-title">习惯打卡</div><ul class="cl" id="habit-list"></ul><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
+<div id="life-habit" style="display:none"><div class="card"><div class="card-title">🔥 连续打卡 <span id="habit-streak" style="color:#f59e0b;font-size:13px;margin-left:auto">0天</span></div><div id="habit-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px"></div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="habit-cats"><span class="sub-tab on" onclick="filterHabitCat('all',this)">全部</span><span class="sub-tab" onclick="filterHabitCat('健康',this)">🏥</span><span class="sub-tab" onclick="filterHabitCat('生活',this)">🏠</span><span class="sub-tab" onclick="filterHabitCat('学习',this)">📚</span></div><ul class="cl" id="habit-list"></ul><div id="habit-suggestions" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><select class="inp" id="habit-cat-sel" style="width:60px;padding:4px"><option value="健康">🏥</option><option value="生活">🏠</option><option value="学习">📚</option></select><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
 <div id="life-money" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">本月支出</div><div style="text-align:center;font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div style="display:flex;gap:6px;margin:10px 0"><input class="inp" id="money-desc" placeholder="项目" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><ul style="list-style:none;max-height:160px;overflow-y:auto" id="expense-list"></ul></div></div>
 </div>
 <div class="page" id="page-grow">
@@ -362,13 +362,155 @@ var energyLv=moodState.energy||3;
 document.getElementById('energy-dots').innerHTML=[1,2,3,4,5].map(function(i){return '<span class="e-dot'+(i<=energyLv?' on':'')+'" onclick="selEnergy(this,'+i+')"></span>'}).join('');
 function selEnergy(el,n){el.parentNode.querySelectorAll('.e-dot').forEach(function(d,i){d.classList.toggle('on',i<n)});moodState.energy=n;saveMood()}
 
-// Habits
-function loadHabits(){var items=JSON.parse(localStorage.getItem('habits')||'null');if(!items)items=[{text:'喝水 8杯',done:false},{text:'运动 30分钟',done:false},{text:'23:00前入睡',done:false}];renderHabits(items)}
-function renderHabits(items){document.getElementById('habit-list').innerHTML=items.map(function(h,i){return '<li class="cli'+(h.done?' done':'')+'"><input type="checkbox" '+(h.done?'checked':'')+' onchange="toggleHabit('+i+')">'+h.text+'<button class="btn-ghost" onclick="delHabit('+i+')" style="margin-left:auto;border:none;color:#52525b;cursor:pointer;font-size:16px;padding:0 4px">×</button></li>'}).join('');localStorage.setItem('habits',JSON.stringify(items))}
-function toggleHabit(i){var items=JSON.parse(localStorage.getItem('habits'));items[i].done=!items[i].done;renderHabits(items)}
-function addHabit(){var v=document.getElementById('habit-inp');if(!v||!v.value.trim())return;var items=JSON.parse(localStorage.getItem('habits'));items.push({text:v.value.trim(),done:false});v.value='';renderHabits(items)}
-function delHabit(i){var items=JSON.parse(localStorage.getItem('habits'));items.splice(i,1);renderHabits(items)}
-loadHabits();
+// Habits — 完整版：连续天数/日历/分类/今日建议/每日重置
+var habitCat='all';
+var catEmojis={健康:'🏥',生活:'🏠',学习:'📚'};
+
+function getHabits(){return JSON.parse(localStorage.getItem('habits')||'null')||[{text:'喝水 8杯',cat:'健康',done:false,streak:0,longest:0,history:{}},{text:'运动 30分钟',cat:'健康',done:false,streak:0,longest:0,history:{}},{text:'23:00前入睡',cat:'健康',done:false,streak:0,longest:0,history:{}}]}
+function saveHabits(items){localStorage.setItem('habits',JSON.stringify(items))}
+
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function yesterdayKey(){var d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10)}
+
+function calcStreak(h){
+  var count=0;var d=new Date();
+  // Check today first
+  var key=d.toISOString().slice(0,10);
+  if(!h.history||!h.history[key]){d.setDate(d.getDate()-1)} // if not done today, start from yesterday
+  while(true){
+    key=d.toISOString().slice(0,10);
+    if(h.history&&h.history[key]){count++;d.setDate(d.getDate()-1)}
+    else break;
+  }
+  return count;
+}
+
+function renderHabits(){
+  var items=getHabits();
+  var today=todayKey();
+  // Daily reset: if today not in history, mark as not done
+  items.forEach(function(h){
+    if(!h.history)h.history={};
+    h.done=!!h.history[today];
+    h.streak=calcStreak(h);
+    if(h.streak>h.longest)h.longest=h.streak;
+  });
+  saveHabits(items);
+  
+  // Overall streak (min across all habits)
+  var minStreak=items.length?Math.min.apply(null,items.map(function(h){return h.streak})):0;
+  document.getElementById('habit-streak').textContent=minStreak+'天 · 最长'+Math.max.apply(null,items.map(function(h){return h.longest||0}))+'天';
+  
+  // Calendar (last 28 days)
+  var cal='';
+  var dayNames=['日','一','二','三','四','五','六'];
+  // Day headers
+  dayNames.forEach(function(d){cal+='<div style="font-size:9px;color:#52525b;text-align:center">'+d+'</div>'});
+  // Fill from 28 days ago to today
+  var start=new Date();start.setDate(start.getDate()-27);
+  var startDay=start.getDay();
+  for(var i=0;i<startDay;i++)cal+='<div></div>'; // padding
+  for(var d=new Date(start);d<=new Date();d.setDate(d.getDate()+1)){
+    var key=d.toISOString().slice(0,10);
+    var total=items.length;
+    var done=items.filter(function(h){return h.history&&h.history[key]}).length;
+    var pct=total?done/total:0;
+    var bg=pct===0?'#1a1a1f':pct<0.5?'#1a3a1f':pct<1?'#0d4a1f':'#0a6b2a';
+    cal+='<div style="background:'+bg+';border-radius:3px;aspect-ratio:1" title="'+key+': '+done+'/'+total+'"></div>';
+  }
+  document.getElementById('habit-calendar').innerHTML=cal;
+  
+  // Habit list
+  var filtered=habitCat==='all'?items:items.filter(function(h){return h.cat===habitCat});
+  var html='';
+  filtered.forEach(function(h){
+    var idx=items.indexOf(h);
+    var catIcon=catEmojis[h.cat]||'';
+    html+='<li class="cli'+(h.done?' done':'')+'"><input type="checkbox" '+(h.done?'checked':'')+' onchange="toggleHabit('+idx+')"><span style="flex:1">'+catIcon+' '+h.text+'</span>';
+    if(h.streak>0)html+='<span style="font-size:10px;color:#f59e0b">🔥'+h.streak+'</span>';
+    html+='<button onclick="delHabit('+idx+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px;padding:0 4px">×</button></li>';
+  });
+  document.getElementById('habit-list').innerHTML=html;
+  
+  // Today suggestions based on weather
+  showHabitSuggestions(items);
+}
+
+function toggleHabit(i){
+  var items=getHabits();
+  var today=todayKey();
+  if(!items[i].history)items[i].history={};
+  items[i].done=!items[i].done;
+  if(items[i].done){items[i].history[today]=true}
+  else{delete items[i].history[today]}
+  saveHabits(items);
+  renderHabits();
+}
+
+function addHabit(){
+  var v=document.getElementById('habit-inp');
+  var cat=document.getElementById('habit-cat-sel').value;
+  if(!v||!v.value.trim())return;
+  var items=getHabits();
+  items.push({text:v.value.trim(),cat:cat,done:false,streak:0,longest:0,history:{}});
+  v.value='';saveHabits(items);renderHabits();
+}
+
+function delHabit(i){
+  if(!confirm('删除习惯？历史记录也会丢失'))return;
+  var items=getHabits();items.splice(i,1);saveHabits(items);renderHabits();
+}
+
+function filterHabitCat(cat,el){
+  habitCat=cat;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  renderHabits();
+}
+
+// Weather-based daily suggestions
+function showHabitSuggestions(items){
+  var sug=document.getElementById('habit-suggestions');
+  var hints=[];
+  var existingTexts=items.map(function(h){return h.text});
+  
+  // Weather suggestions (read from weather state if available)
+  var wtEl=document.getElementById('wt-temp');
+  var temp=wtEl?parseInt(wtEl.textContent):20;
+  var descEl=document.getElementById('wt-desc');
+  var desc=descEl?descEl.textContent:'';
+  
+  if(temp>28&&!existingTexts.some(function(t){return t.indexOf('防晒')>-1}))
+    hints.push({text:'涂防晒霜',cat:'健康',reason:'今天'+temp+'°C，紫外线强'});
+  if(temp>30&&!existingTexts.some(function(t){return t.indexOf('多喝水')>-1}))
+    hints.push({text:'多喝水（+2杯）',cat:'健康',reason:'高温天气注意补水'});
+  if(desc.indexOf('雨')>-1&&!existingTexts.some(function(t){return t.indexOf('带伞')>-1}))
+    hints.push({text:'出门带伞',cat:'生活',reason:'今天有雨'});
+  if(temp<10&&!existingTexts.some(function(t){return t.indexOf('保暖')>-1}))
+    hints.push({text:'注意保暖',cat:'健康',reason:'今天只有'+temp+'°C'});
+  
+  // Time-based suggestions
+  var dow=new Date().getDay();
+  if(dow===0||dow===6){ // Weekend
+    if(!existingTexts.some(function(t){return t.indexOf('大扫除')>-1}))
+      hints.push({text:'整理房间',cat:'生活',reason:'周末适合整理'});
+  }
+  
+  if(!hints.length){sug.innerHTML='';return}
+  sug.innerHTML='<div style="font-size:11px;color:#52525b;margin-bottom:4px">💡 今日建议</div>'+
+  hints.map(function(h){
+    return '<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:4px;font-size:12px"><span style="flex:1;color:#a1a1aa">'+(catEmojis[h.cat]||'')+' '+h.text+' <span style="color:#52525b;font-size:10px">'+h.reason+'</span></span><button onclick="adoptSuggestion(\''+h.text.replace(/'/g,"\\'")+'\',\''+h.cat+'\')" style="background:none;border:1px solid #27272a;color:#60a5fa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">+固定</button></div>';
+  }).join('');
+}
+
+function adoptSuggestion(text,cat){
+  var items=getHabits();
+  if(items.some(function(h){return h.text===text}))return;
+  items.push({text:text,cat:cat,done:false,streak:0,longest:0,history:{}});
+  saveHabits(items);renderHabits();
+}
+
+renderHabits();
 
 // Expenses
 function getExpenses(){return JSON.parse(localStorage.getItem('expenses')||'[]')}
