@@ -94,7 +94,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 </div>
 <div class="page" id="page-life">
 <div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('life',this,'weather')">天气</span><span class="sub-tab" onclick="switchSub('life',this,'mood')">心情</span><span class="sub-tab" onclick="switchSub('life',this,'habit')">习惯</span><span class="sub-tab" onclick="switchSub('life',this,'money')">记账</span></div>
-<div id="life-weather"><div class="card" style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div><div style="margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-advice">时令：春笋、草莓、荠菜</div></div></div>
+<div id="life-weather"><div class="card"><div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none" id="weather-city-tabs"></div><div style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div id="wt-advice" style="margin-top:10px;padding:8px 10px;background:#0a0a0f;border-radius:8px;font-size:12px;color:#a1a1aa;text-align:left;line-height:1.6"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div></div><div style="margin-top:8px;display:flex;gap:6px;align-items:center"><input class="inp" id="city-input" placeholder="添加城市昵称·城市名" style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addCity()"><button class="btn btn-sm" onclick="addCity()">+</button></div></div></div>
 <div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="mood-note" placeholder="一句话记录为什么..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')saveMoodNote()"><button class="btn btn-sm" onclick="saveMoodNote()" style="font-size:11px">记</button></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div><div class="card"><div class="card-title">📊 本周心情</div><div id="mood-trend" style="display:flex;align-items:flex-end;gap:4px;height:60px;justify-content:center"></div><div id="mood-trend-labels" style="display:flex;gap:4px;justify-content:center;font-size:9px;color:#52525b;margin-top:4px"></div><div id="mood-insight" style="font-size:11px;color:#a1a1aa;margin-top:8px;padding:6px 8px;background:#0a0a0f;border-radius:6px;display:none"></div></div></div>
 <div id="life-habit" style="display:none"><div class="card"><div class="card-title">🔥 连续打卡 <span id="habit-streak" style="color:#f59e0b;font-size:13px;margin-left:auto">0天</span></div><div id="habit-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px"></div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="habit-cats"><span class="sub-tab on" onclick="filterHabitCat('all',this)">全部</span><span class="sub-tab" onclick="filterHabitCat('健康',this)">🏥</span><span class="sub-tab" onclick="filterHabitCat('生活',this)">🏠</span><span class="sub-tab" onclick="filterHabitCat('学习',this)">📚</span></div><ul class="cl" id="habit-list"></ul><div id="habit-suggestions" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><select class="inp" id="habit-cat-sel" style="width:60px;padding:4px"><option value="健康">🏥</option><option value="生活">🏠</option><option value="学习">📚</option></select><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
 <div id="life-money" style="display:none"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="card-title" style="margin:0">💰 记账</span><div style="display:flex;gap:4px"><span class="sub-tab on" onclick="switchMoneyType('expense',this)">支出</span><span class="sub-tab" onclick="switchMoneyType('income',this)">收入</span></div></div><div style="text-align:center"><div style="font-size:11px;color:#71717a" id="money-month-label">本月支出</div><div style="font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div id="money-compare" style="font-size:11px;color:#52525b;margin-top:2px"></div><div id="money-budget-bar" style="display:none;margin-top:6px"><div style="background:#1e1e24;border-radius:4px;height:6px;overflow:hidden"><div id="money-budget-fill" style="height:100%;background:#22c55e;border-radius:4px;transition:width .3s"></div></div><div style="font-size:10px;color:#52525b;margin-top:2px" id="money-budget-text"></div></div></div><div id="money-pie" style="margin:12px auto;width:120px;height:120px;border-radius:50%;position:relative" title="分类饼图"><div style="position:absolute;inset:20px;background:#141418;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#a1a1aa" id="money-pie-center">暂无数据</div></div><div id="money-cats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;justify-content:center"></div><div style="display:flex;gap:6px;margin:10px 0"><select class="inp" id="money-cat" style="width:65px;padding:4px;font-size:12px"></select><input class="inp" id="money-desc" placeholder="备注" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><div style="margin-bottom:8px;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#52525b">月预算</span><input class="inp" id="money-budget-inp" placeholder="设预算" type="number" style="width:80px;font-size:12px" onchange="setBudget()"><span style="font-size:10px;color:#52525b" id="money-budget-cur"></span></div><ul style="list-style:none;max-height:180px;overflow-y:auto" id="expense-list"></ul></div></div>
@@ -128,11 +128,121 @@ function showMobile(id,el){if(id==='more'){document.getElementById('api-modal').
 function switchSub(prefix,el,id){el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on');var panels=['weather','mood','habit','money','career','skills','stage','sleep','body','symptom'];panels.forEach(function(p){var e=document.getElementById(prefix+'-'+p);if(e)e.style.display=p===id?'block':'none'})}
 function togTag(el){el.classList.toggle('set')}
 
-// Weather
+// Weather — 完整版：多城市/昵称/智能穿衣
 var WMO={0:'☀️ 晴',1:'🌤 大部晴',2:'⛅ 多云',3:'☁️ 阴',45:'🌫 雾',51:'🌦 小毛毛雨',53:'🌦 毛毛雨',61:'🌧 小雨',63:'🌧 中雨',65:'🌧 大雨',71:'🌨 小雪',73:'🌨 中雪',80:'🌦 阵雨',82:'⛈ 大阵雨',95:'⛈ 雷暴'};
-var WMO_ADV={0:'紫外线较强，建议涂防晒',1:'适合外出',2:'可带薄外套',3:'阴天体感偏凉',61:'小雨带伞',63:'中雨带伞',65:'大雨不出门',80:'可能阵雨带伞'};
-function loadWeather(){try{fetch('https://api.open-meteo.com/v1/forecast?latitude=31.23&longitude=121.47&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Shanghai&forecast_days=3').then(function(r){return r.json()}).then(function(d){try{var c=d.current;var emoji=WMO[c.weather_code]||'🌤';document.getElementById('wt-temp').textContent=Math.round(c.temperature_2m)+'°C';document.getElementById('wt-icon').textContent=emoji.split(' ')[0]||emoji;document.getElementById('wt-desc').textContent=emoji+' · 风速'+c.wind_speed_10m+'km/h · 湿度'+c.relative_humidity_2m+'%';document.getElementById('sb-temp').textContent=Math.round(c.temperature_2m)+'°C';document.getElementById('sb-weather-desc').textContent=emoji+' 上海';document.getElementById('wt-advice').innerHTML=(WMO_ADV[c.weather_code]||'')+'<br>🍓 草莓 · 🌱 春笋 · 🥬 荠菜';var days=d.daily;var labels=['今天','明天','后天'];var h='',sh='';for(var i=0;i<3;i++){h+='<div><div>'+labels[i]+'</div><div style="font-size:16px;margin:4px 0">'+(WMO[days.weather_code[i]]||'?').split(' ')[0]+'</div><div>'+Math.round(days.temperature_2m_min[i])+'°~'+Math.round(days.temperature_2m_max[i])+'°</div></div>';sh+='<span>'+labels[i]+' '+(days.temperature_2m_max[i])+'°</span>'}document.getElementById('wt-forecast').innerHTML=h;document.getElementById('sb-forecast').innerHTML=sh}catch(e){console.error(e)}}).catch(function(){document.getElementById('wt-temp').textContent='离线模式'})}catch(e){}}
-loadWeather();
+var weatherCache={};
+
+function getCities(){
+  var cities=JSON.parse(localStorage.getItem('weatherCities')||'null');
+  if(!cities)cities=[{nick:'我',name:'上海',lat:31.23,lon:121.47}];
+  return cities;
+}
+function saveCities(c){localStorage.setItem('weatherCities',JSON.stringify(c))}
+
+function addCity(){
+  var v=document.getElementById('city-input');
+  if(!v||!v.value.trim())return;
+  var parts=v.value.trim().split(/[·.]/);
+  var nick=parts[0].trim();var name=(parts[1]||parts[0]).trim();
+  // Default coords for common cities
+  var coords={北京:{lat:39.9,lon:116.4},上海:{lat:31.23,lon:121.47},广州:{lat:23.13,lon:113.26},深圳:{lat:22.54,lon:114.06},杭州:{lat:30.27,lon:120.15},成都:{lat:30.57,lon:104.07},武汉:{lat:30.59,lon:114.3},南京:{lat:32.06,lon:118.8},重庆:{lat:29.56,lon:106.55},西安:{lat:34.26,lon:108.94},长沙:{lat:28.23,lon:112.94},厦门:{lat:24.48,lon:118.09}};
+  var c=coords[name];
+  if(!c){alert('暂不支持'+name+'，试试：北京/上海/广州/深圳/杭州/成都/武汉/南京/重庆/西安/长沙/厦门');return}
+  var cities=getCities();
+  if(cities.length>=5){alert('最多5个城市');return}
+  cities.push({nick:nick,name:name,lat:c.lat,lon:c.lon});
+  saveCities(cities);v.value='';
+  renderCityTabs();loadWeatherFor(cities.length-1);
+}
+
+function removeCity(i){
+  var cities=getCities();if(cities.length<=1)return;
+  cities.splice(i,1);saveCities(cities);
+  renderCityTabs();loadWeatherFor(0);
+}
+
+var currentCityIdx=0;
+function renderCityTabs(){
+  var cities=getCities();
+  var html='';
+  cities.forEach(function(c,i){
+    var temp=weatherCache[i]?Math.round(weatherCache[i].temp)+'°':'--';
+    var cls=i===currentCityIdx?'sub-tab on':'sub-tab';
+    html+='<span class="'+cls+'" onclick="loadWeatherFor('+i+')" style="white-space:nowrap">'+c.nick+' '+temp;
+    if(cities.length>1)html+='<span onclick="event.stopPropagation();removeCity('+i+')" style="margin-left:4px;color:#52525b;cursor:pointer">×</span>';
+    html+='</span>';
+  });
+  document.getElementById('weather-city-tabs').innerHTML=html;
+}
+
+function clothingAdvice(c){
+  var t=c.temperature_2m;var w=c.wind_speed_10m;var h=c.relative_humidity_2m;var code=c.weather_code;
+  var tips=[];
+  // Temperature
+  if(t<5)tips.push('很冷，穿厚羽绒服+围巾手套');
+  else if(t<10)tips.push('偏冷，穿棉服或厚外套');
+  else if(t<15)tips.push('微凉，穿夹克或薄毛衣');
+  else if(t<20)tips.push('舒适，长袖+薄外套');
+  else if(t<25)tips.push('暖和，短袖或薄长袖');
+  else if(t<30)tips.push('热，短袖短裤');
+  else tips.push('很热，注意防晒补水');
+  // Wind
+  if(w>30)tips.push('大风，注意防风');
+  else if(w>20&&t<15)tips.push('风大体感更冷');
+  // Humidity
+  if(h>85&&t>25)tips.push('闷热');
+  else if(h<30)tips.push('干燥，多喝水');
+  // Rain
+  if(code>=61&&code<=67)tips.push('带伞🌂');
+  else if(code>=80&&code<=82)tips.push('可能阵雨，带伞');
+  else if(code>=71&&code<=77)tips.push('下雪，注意保暖');
+  else if(code===0&&t>25)tips.push('紫外线强，涂防晒');
+  return tips.join('，');
+}
+
+function seasonalFood(){
+  var m=new Date().getMonth()+1;
+  var foods={1:'冬笋、白菜、萝卜',2:'草莓、春卷、年糕',3:'草莓、荠菜、春笋',4:'香椿、蚕豆、枇杷',5:'樱桃、枇杷、小龙虾',6:'杨梅、荔枝、西瓜',7:'西瓜、桃子、葡萄',8:'葡萄、哈密瓜、秋葵',9:'柿子、板栗、螃蟹',10:'橘子、柿子、大闸蟹',11:'甘蔗、红薯、羊肉',12:'冬笋、羊肉、腊肉'};
+  return foods[m]||'';
+}
+
+function loadWeatherFor(idx){
+  currentCityIdx=idx;
+  var cities=getCities();
+  var city=cities[idx];
+  renderCityTabs();
+  try{
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lon+'&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Shanghai&forecast_days=3')
+    .then(function(r){return r.json()})
+    .then(function(d){
+      try{
+        var c=d.current;
+        var emoji=WMO[c.weather_code]||'🌤';
+        weatherCache[idx]={temp:c.temperature_2m,code:c.weather_code};
+        document.getElementById('wt-temp').textContent=Math.round(c.temperature_2m)+'°C';
+        document.getElementById('wt-icon').textContent=emoji.split(' ')[0]||emoji;
+        document.getElementById('wt-desc').textContent=emoji+' · '+city.name+' · 风速'+c.wind_speed_10m+'km/h · 湿度'+c.relative_humidity_2m+'%';
+        // Clothing advice
+        var advice=clothingAdvice(c);
+        document.getElementById('wt-advice').innerHTML='🧥 '+advice+'<br>🥗 时令：'+seasonalFood();
+        // Forecast
+        var days=d.daily;var labels=['今天','明天','后天'];
+        var h='';
+        for(var i=0;i<3;i++){
+          h+='<div><div>'+labels[i]+'</div><div style="font-size:16px;margin:4px 0">'+(WMO[days.weather_code[i]]||'?').split(' ')[0]+'</div><div>'+Math.round(days.temperature_2m_min[i])+'°~'+Math.round(days.temperature_2m_max[i])+'°</div>'+(days.precipitation_probability_max[i]>30?'<div style="font-size:10px;color:#60a5fa">💧'+days.precipitation_probability_max[i]+'%</div>':'')+'</div>';
+        }
+        document.getElementById('wt-forecast').innerHTML=h;
+        // Sidebar
+        document.getElementById('sb-temp').textContent=Math.round(c.temperature_2m)+'°C';
+        document.getElementById('sb-weather-desc').textContent=emoji+' '+city.nick+'·'+city.name;
+        renderCityTabs();
+      }catch(e){console.error(e)}
+    }).catch(function(){document.getElementById('wt-temp').textContent='离线模式'});
+  }catch(e){}
+}
+
+renderCityTabs();
+loadWeatherFor(0);
 
 // Todo
 var todos=JSON.parse(localStorage.getItem('td')||'null');
