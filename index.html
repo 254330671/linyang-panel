@@ -100,10 +100,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div id="life-money" style="display:none"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="card-title" style="margin:0">💰 记账</span><div style="display:flex;gap:4px"><span class="sub-tab on" onclick="switchMoneyType('expense',this)">支出</span><span class="sub-tab" onclick="switchMoneyType('income',this)">收入</span></div></div><div style="text-align:center"><div style="font-size:11px;color:#71717a" id="money-month-label">本月支出</div><div style="font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div id="money-compare" style="font-size:11px;color:#52525b;margin-top:2px"></div><div id="money-budget-bar" style="display:none;margin-top:6px"><div style="background:#1e1e24;border-radius:4px;height:6px;overflow:hidden"><div id="money-budget-fill" style="height:100%;background:#22c55e;border-radius:4px;transition:width .3s"></div></div><div style="font-size:10px;color:#52525b;margin-top:2px" id="money-budget-text"></div></div></div><div id="money-pie" style="margin:12px auto;width:120px;height:120px;border-radius:50%;position:relative" title="分类饼图"><div style="position:absolute;inset:20px;background:#141418;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#a1a1aa" id="money-pie-center">暂无数据</div></div><div id="money-cats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;justify-content:center"></div><div style="display:flex;gap:6px;margin:10px 0"><select class="inp" id="money-cat" style="width:65px;padding:4px;font-size:12px"></select><input class="inp" id="money-desc" placeholder="备注" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><div style="margin-bottom:8px;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#52525b">月预算</span><input class="inp" id="money-budget-inp" placeholder="设预算" type="number" style="width:80px;font-size:12px" onchange="setBudget()"><span style="font-size:10px;color:#52525b" id="money-budget-cur"></span></div><ul style="list-style:none;max-height:180px;overflow-y:auto" id="expense-list"></ul></div></div>
 </div>
 <div class="page" id="page-grow">
-<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('grow',this,'career')">职业</span><span class="sub-tab" onclick="switchSub('grow',this,'skills')">必修课</span><span class="sub-tab" onclick="switchSub('grow',this,'stage')">阶段</span></div>
-<div id="grow-career"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="career-tags"><span class="tag set" onclick="pickCareer(this)">UI设计</span><span class="tag" onclick="pickCareer(this)">软件开发</span><span class="tag" onclick="pickCareer(this)">产品经理</span><span class="tag" onclick="pickCareer(this)">会计</span><span class="tag" onclick="pickCareer(this)">教师</span><span class="tag" onclick="pickCareer(this)">护理</span><span class="tag" onclick="pickCareer(this)">市场营销</span><span class="tag" onclick="pickCareer(this)">人力资源</span></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="career-info">路径：Adobe认证 → 交互设计 → 设计管理<br>平均薪资：8-25K<br>核心技能：Figma、用户研究、设计系统</div></div></div>
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('grow',this,'career')">职业</span><span class="sub-tab" onclick="switchSub('grow',this,'exam')">考试</span><span class="sub-tab" onclick="switchSub('grow',this,'skills')">必修课</span><span class="sub-tab" onclick="switchSub('grow',this,'letter')">信</span><span class="sub-tab" onclick="switchSub('grow',this,'stage')">阶段</span></div>
+<div id="grow-career"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="career-tags"><span class="tag set" onclick="pickCareer(this)">UI设计</span><span class="tag" onclick="pickCareer(this)">软件开发</span><span class="tag" onclick="pickCareer(this)">产品经理</span><span class="tag" onclick="pickCareer(this)">会计</span><span class="tag" onclick="pickCareer(this)">教师</span><span class="tag" onclick="pickCareer(this)">护理</span><span class="tag" onclick="pickCareer(this)">市场营销</span><span class="tag" onclick="pickCareer(this)">人力资源</span></div><div id="career-roadmap" style="margin-bottom:10px"></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="career-info">路径：Adobe认证 → 交互设计 → 设计管理<br>平均薪资：8-25K<br>核心技能：Figma、用户研究、设计系统</div><div id="career-next" style="margin-top:8px;padding:8px 10px;background:#0a0a0f;border-radius:8px;font-size:12px;color:#a1a1aa;display:none"></div></div></div>
+<div id="grow-exam" style="display:none"><div class="card"><div class="card-title">📋 考试时间库</div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="exam-filters"><span class="sub-tab on" onclick="filterExam('all',this)">全部</span><span class="sub-tab" onclick="filterExam('财会',this)">财会</span><span class="sub-tab" onclick="filterExam('教育',this)">教育</span><span class="sub-tab" onclick="filterExam('IT',this)">IT</span><span class="sub-tab" onclick="filterExam('语言',this)">语言</span></div><div id="exam-list"></div></div></div>
 <div id="grow-skills" style="display:none"><div class="card"><ul class="cl" id="skills-list"></ul></div></div>
-<div id="grow-stage" style="display:none"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="stage-tags"><span class="tag" onclick="pickStage(this,'teen')">青春期 12-17</span><span class="tag set" onclick="pickStage(this,'young')">青年期 18-25</span><span class="tag" onclick="pickStage(this,'adult')">成年期 26-35</span></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="stage-info">青年期（18-25岁）<br>- 独立生活基础<br>- 心理健康自我觉察<br>- 职业规划入门<br>- 建立健康的社交边界<br>- 学会理财基础<br><span style="color:#52525b">引用：WHO青年健康指南</span></div></div></div>
+<div id="grow-letter" style="display:none"><div class="card"><div class="card-title">✉️ 写给未来的信</div><div style="font-size:12px;color:#52525b;margin-bottom:8px">写一段话给未来的自己，设定打开时间</div><textarea class="inp" id="letter-text" rows="5" placeholder="写点什么..." style="resize:vertical;font-size:13px;line-height:1.6"></textarea><div style="display:flex;gap:6px;margin-top:8px;align-items:center"><span style="font-size:11px;color:#52525b">打开时间</span><input class="inp" id="letter-date" type="date" style="width:140px;font-size:12px"><button class="btn btn-sm" onclick="saveLetter()">封存</button></div></div><div class="card"><div class="card-title">📬 我的信</div><div id="letter-list"></div></div></div>
 </div>
 <div class="page" id="page-health">
 <div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡眠</span><span class="sub-tab" onclick="switchSub('health',this,'body')">档案</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span><span class="sub-tab" onclick="switchSub('health',this,'med')">用药</span></div>
@@ -893,20 +894,121 @@ function setBudget(){
 updateCatSelect();
 renderExpenses();
 
-// Career
-var careerPaths={'UI设计':'路径：Adobe认证 → 交互设计 → 设计管理<br>平均薪资：8-25K<br>核心技能：Figma、用户研究、设计系统','软件开发':'编程基础 → 全栈 → 架构师<br>平均薪资：12-40K<br>核心技能：算法、系统设计、云服务','产品经理':'需求分析 → 产品规划 → 产品总监<br>平均薪资：15-35K<br>核心技能：用户洞察、数据分析','会计':'初级会计 → CPA → 财务总监<br>平均薪资：6-20K','教师':'教师资格证 → 学科带头人 → 教研主任<br>平均薪资：6-15K','护理':'护士证 → 护师 → 主管护师<br>平均薪资：5-12K','市场营销':'市场专员 → 品牌经理 → CMO<br>平均薪资：8-30K','人力资源':'HR专员 → HRBP → HRD<br>平均薪资：6-20K'};
-function pickCareer(el){el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});el.classList.add('set');document.getElementById('career-info').innerHTML=careerPaths[el.textContent]||'选择职业查看详情';localStorage.setItem('career',el.textContent)}
+// Career — 增强版：进度条+下一步
+var careerData={
+UI设计:{path:['Adobe认证','交互设计','视觉设计主管','设计总监'],avg:'8-25K',skills:'Figma、用户研究、设计系统',next:'① Adobe认证（3个月）→ 跳槽涨薪30%\n② Figma高级功能（1个月）→ 面试必问\n③ 做1个完整交互项目 → 作品集必备'},
+软件开发:{path:['编程基础','全栈开发','架构师','技术总监'],avg:'12-40K',skills:'算法、系统设计、云服务',next:'① 刷LeetCode 100题\n② 做1个完整项目部署上线\n③ 学Docker+K8s → 进大厂必备'},
+产品经理:{path:['需求分析','产品规划','产品总监','VP'],avg:'15-35K',skills:'用户洞察、数据分析',next:'① 学SQL → 数据驱动决策\n② 做竞品分析报告\n③ 看《启示录》'},
+会计:{path:['初级会计','中级会计','CPA','财务总监'],avg:'6-20K',skills:'财务报表、税务筹划',next:'① 初级会计考试（每年5月）\n② 积累实操经验\n③ 准备CPA'},
+教师:{path:['教师资格证','学科带头人','教研主任','校长'],avg:'6-15K',skills:'教学设计、课堂管理',next:'① 教师资格证（3月/11月）\n② 准备试讲\n③ 选学科方向'},
+护理:{path:['护士证','护师','主管护师','护士长'],avg:'5-12K',skills:'临床护理、急救技能',next:'① 护士资格证考试\n② 积累临床经验\n③ 选专科方向'},
+市场营销:{path:['市场专员','品牌经理','市场总监','CMO'],avg:'8-30K',skills:'品牌策划、数据分析',next:'① 学Google Analytics\n② 做1个完整的营销案例\n③ 积累媒体资源'},
+人力资源:{path:['HR专员','HRBP','HRD','CHO'],avg:'6-20K',skills:'招聘、绩效、劳动法',next:'① 学劳动法基础\n② 考人力资源管理师\n③ 积累面试经验'}
+};
 
-// Skills
+function pickCareer(el){
+  el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});
+  el.classList.add('set');
+  var name=el.textContent;
+  var d=careerData[name];
+  if(!d){document.getElementById('career-info').innerHTML='';return}
+  // Progress bar
+  var steps=d.path;
+  var html='<div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;overflow-x:auto">';
+  steps.forEach(function(s,i){
+    html+='<div style="padding:4px 8px;border-radius:6px;font-size:11px;white-space:nowrap;background:#0a0a0f;border:1px solid '+(i===0?'#2563eb':'#1e1e24')+';color:'+(i===0?'#93c5fd':'#52525b')+'">'+s+'</div>';
+    if(i<steps.length-1)html+='<span style="color:#27272a">→</span>';
+  });
+  html+='</div>';
+  document.getElementById('career-roadmap').innerHTML=html;
+  document.getElementById('career-info').innerHTML='💰 平均薪资：'+d.avg+'<br>🔧 核心技能：'+d.skills;
+  var nextEl=document.getElementById('career-next');
+  nextEl.innerHTML=d.next.replace(/\n/g,'<br>');
+  nextEl.style.display='block';
+  localStorage.setItem('career',name);
+}
+
+// Exam time database
+var examData=[
+{name:'CPA注册会计师',cat:'财会',signup:'4月',exam:'8月/10月',note:'6科，难度大'},
+{name:'初级会计',cat:'财会',signup:'12月',exam:'5月',note:'入门必备'},
+{name:'中级会计',cat:'财会',signup:'6月',exam:'9月',note:'需要工作经验'},
+{name:'教师资格证',cat:'教育',signup:'1月/9月',exam:'3月/11月',note:'笔试+面试'},
+{name:'考研',cat:'教育',signup:'10月',exam:'12月',note:'提前一年准备'},
+{name:'PMP项目管理',cat:'IT',signup:'随时',exam:'每季度',note:'需要项目经验'},
+{name:'软考',cat:'IT',signup:'3月/8月',exam:'5月/11月',note:'中级/高级'},
+{name:'计算机二级',cat:'IT',signup:'12月/6月',exam:'3月/9月',note:'基础认证'},
+{name:'雅思IELTS',cat:'语言',signup:'随时',exam:'每月多次',note:'留学/移民'},
+{name:'托福TOEFL',cat:'语言',signup:'随时',exam:'每月多次',note:'留学'},
+{name:'日语N1-N5',cat:'语言',signup:'3月/8月',exam:'7月/12月',note:'5级分级'},
+{name:'驾照C1/C2',cat:'其他',signup:'随时',exam:'随时',note:'平均3.5个月'}
+];
+var examCat='all';
+function filterExam(cat,el){
+  examCat=cat;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  renderExams();
+}
+function renderExams(){
+  var items=examCat==='all'?examData:examData.filter(function(e){return e.cat===examCat});
+  document.getElementById('exam-list').innerHTML=items.map(function(e){
+    return '<div style="padding:8px 10px;border-bottom:1px solid #1a1a1f;font-size:12px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="color:#e4e4e7;font-weight:500">'+e.name+'</span><span style="font-size:10px;color:#52525b">'+e.cat+'</span></div><div style="color:#a1a1aa;margin-top:2px">📝报名：'+e.signup+' · 📅考试：'+e.exam+'</div><div style="font-size:10px;color:#52525b;margin-top:1px">'+e.note+'</div></div>';
+  }).join('');
+}
+renderExams();
+
+// Skills (unchanged)
 function loadSkills(){var items=JSON.parse(localStorage.getItem('skills')||'null');if(!items)items=[{text:'巴氏刷牙法',done:false},{text:'被套1-2周换洗',done:false},{text:'煮饭煮面',done:false},{text:'烫伤冷水冲15分钟',done:false},{text:'社保怎么查',done:false}];renderSkills(items)}
 function renderSkills(items){document.getElementById('skills-list').innerHTML=items.map(function(s,i){return '<li class="cli'+(s.done?' done':'')+'"><input type="checkbox" '+(s.done?'checked':'')+' onchange="toggleSkill('+i+')">'+s.text+'<button class="btn-ghost" onclick="delSkill('+i+')" style="margin-left:auto;border:none;color:#52525b;cursor:pointer;font-size:16px;padding:0 4px">×</button></li>'}).join('');localStorage.setItem('skills',JSON.stringify(items))}
 function toggleSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items[i].done=!items[i].done;renderSkills(items)}
 function delSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items.splice(i,1);renderSkills(items)}
 loadSkills();
 
-// Stage
-var stageData={teen:{title:'青春期（12-17岁）',items:['身体发育与性教育','学习方法与时间管理','情绪管理初步','同伴关系处理','网络安全意识','基本生活自理'],src:'国家卫健委青少年健康指南'},young:{title:'青年期（18-25岁）',items:['独立生活基础','心理健康自我觉察','职业规划入门','建立健康的社交边界','学会理财基础','基本法律常识'],src:'WHO青年健康指南'},adult:{title:'成年期（26-35岁）',items:['职业深耕或转型','长期伴侣关系经营','理财进阶','定期体检习惯','父母健康关注','工作-生活平衡'],src:'国家卫健委成年期健康管理'}};
-function pickStage(el,key){el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});el.classList.add('set');var d=stageData[key];document.getElementById('stage-info').innerHTML=d.title+'<br>'+d.items.map(function(i){return '- '+i}).join('<br>')+'<br><span style="color:#52525b">'+d.src+'</span>';localStorage.setItem('stage',key)}
+// Letters — 写给未来的信
+function getLetters(){return JSON.parse(localStorage.getItem('letters')||'[]')}
+function saveLetter(){
+  var text=document.getElementById('letter-text');
+  var date=document.getElementById('letter-date');
+  if(!text.value.trim()||!date.value)return;
+  var letters=getLetters();
+  letters.push({text:text.value.trim(),openDate:date.value,created:new Date().toISOString().slice(0,10),opened:false});
+  localStorage.setItem('letters',JSON.stringify(letters));
+  text.value='';date.value='';renderLetters();
+}
+function renderLetters(){
+  var letters=getLetters();
+  var today=new Date().toISOString().slice(0,10);
+  if(!letters.length){document.getElementById('letter-list').innerHTML='<div class="ph">还没有写过信</div>';return}
+  // Check for letters that should open
+  letters.forEach(function(l){
+    if(!l.opened&&l.openDate<=today)l.opened=true;
+  });
+  localStorage.setItem('letters',JSON.stringify(letters));
+  document.getElementById('letter-list').innerHTML=letters.map(function(l,i){
+    var isOpen=l.opened;
+    var daysLeft=isOpen?0:Math.ceil((new Date(l.openDate)-new Date(today))/(1000*60*60*24));
+    var status=isOpen?'📬 已开启':'🔒 距开启'+daysLeft+'天';
+    var statusColor=isOpen?'#22c55e':'#f59e0b';
+    return '<div style="padding:10px;border:1px solid '+(isOpen?'#22c55e':'#1e1e24')+';border-radius:8px;margin-bottom:8px;background:'+(isOpen?'#052e16':'#0a0a0f')+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:'+statusColor+'">'+status+'</span><button onclick="delLetter('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px">×</button></div><div style="font-size:11px;color:#52525b;margin-bottom:4px">写于 '+l.created+' · 设定 '+l.openDate+' 开启</div>'+(isOpen?'<div style="font-size:13px;color:#e4e4e7;line-height:1.6">'+l.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>':'<div style="font-size:12px;color:#3f3f46;font-style:italic">内容已封存，到期才能看</div>')+'</div>';
+  }).reverse().join('');
+}
+function delLetter(i){var letters=getLetters();letters.splice(i,1);localStorage.setItem('letters',JSON.stringify(letters));renderLetters()}
+renderLetters();
+
+// Stage (enhanced with milestone actions)
+var stageData={
+teen:{title:'青春期（12-17岁）',items:['身体发育与性教育','学习方法与时间管理','情绪管理初步','同伴关系处理','网络安全意识','基本生活自理'],src:'国家卫健委青少年健康指南'},
+young:{title:'青年期（18-25岁）',items:['独立生活基础','心理健康自我觉察','职业规划入门','建立健康的社交边界','学会理财基础','基本法律常识'],src:'WHO青年健康指南'},
+adult:{title:'成年期（26-35岁）',items:['职业深耕或转型','长期伴侣关系经营','理财进阶','定期体检习惯','父母健康关注','工作-生活平衡'],src:'国家卫健委成年期健康管理'}
+};
+function pickStage(el,key){
+  el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});
+  el.classList.add('set');
+  var d=stageData[key];
+  document.getElementById('stage-info').innerHTML=d.title+'<br>'+d.items.map(function(i){return '- '+i}).join('<br>')+'<br><span style="color:#52525b">'+d.src+'</span>';
+  localStorage.setItem('stage',key);
+}
 
 // Health — 完整版：睡眠追踪/基础档案/症状+用药
 
