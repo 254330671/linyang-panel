@@ -95,7 +95,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div class="page" id="page-life">
 <div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('life',this,'weather')">天气</span><span class="sub-tab" onclick="switchSub('life',this,'mood')">心情</span><span class="sub-tab" onclick="switchSub('life',this,'habit')">习惯</span><span class="sub-tab" onclick="switchSub('life',this,'money')">记账</span></div>
 <div id="life-weather"><div class="card" style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div><div style="margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-advice">时令：春笋、草莓、荠菜</div></div></div>
-<div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div></div>
+<div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="mood-note" placeholder="一句话记录为什么..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')saveMoodNote()"><button class="btn btn-sm" onclick="saveMoodNote()" style="font-size:11px">记</button></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div><div class="card"><div class="card-title">📊 本周心情</div><div id="mood-trend" style="display:flex;align-items:flex-end;gap:4px;height:60px;justify-content:center"></div><div id="mood-trend-labels" style="display:flex;gap:4px;justify-content:center;font-size:9px;color:#52525b;margin-top:4px"></div><div id="mood-insight" style="font-size:11px;color:#a1a1aa;margin-top:8px;padding:6px 8px;background:#0a0a0f;border-radius:6px;display:none"></div></div></div>
 <div id="life-habit" style="display:none"><div class="card"><div class="card-title">🔥 连续打卡 <span id="habit-streak" style="color:#f59e0b;font-size:13px;margin-left:auto">0天</span></div><div id="habit-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px"></div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="habit-cats"><span class="sub-tab on" onclick="filterHabitCat('all',this)">全部</span><span class="sub-tab" onclick="filterHabitCat('健康',this)">🏥</span><span class="sub-tab" onclick="filterHabitCat('生活',this)">🏠</span><span class="sub-tab" onclick="filterHabitCat('学习',this)">📚</span></div><ul class="cl" id="habit-list"></ul><div id="habit-suggestions" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><select class="inp" id="habit-cat-sel" style="width:60px;padding:4px"><option value="健康">🏥</option><option value="生活">🏠</option><option value="学习">📚</option></select><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
 <div id="life-money" style="display:none"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="card-title" style="margin:0">💰 记账</span><div style="display:flex;gap:4px"><span class="sub-tab on" onclick="switchMoneyType('expense',this)">支出</span><span class="sub-tab" onclick="switchMoneyType('income',this)">收入</span></div></div><div style="text-align:center"><div style="font-size:11px;color:#71717a" id="money-month-label">本月支出</div><div style="font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div id="money-compare" style="font-size:11px;color:#52525b;margin-top:2px"></div><div id="money-budget-bar" style="display:none;margin-top:6px"><div style="background:#1e1e24;border-radius:4px;height:6px;overflow:hidden"><div id="money-budget-fill" style="height:100%;background:#22c55e;border-radius:4px;transition:width .3s"></div></div><div style="font-size:10px;color:#52525b;margin-top:2px" id="money-budget-text"></div></div></div><div id="money-pie" style="margin:12px auto;width:120px;height:120px;border-radius:50%;position:relative" title="分类饼图"><div style="position:absolute;inset:20px;background:#141418;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#a1a1aa" id="money-pie-center">暂无数据</div></div><div id="money-cats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;justify-content:center"></div><div style="display:flex;gap:6px;margin:10px 0"><select class="inp" id="money-cat" style="width:65px;padding:4px;font-size:12px"></select><input class="inp" id="money-desc" placeholder="备注" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><div style="margin-bottom:8px;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#52525b">月预算</span><input class="inp" id="money-budget-inp" placeholder="设预算" type="number" style="width:80px;font-size:12px" onchange="setBudget()"><span style="font-size:10px;color:#52525b" id="money-budget-cur"></span></div><ul style="list-style:none;max-height:180px;overflow-y:auto" id="expense-list"></ul></div></div>
 </div>
@@ -353,14 +353,158 @@ function createTopic(){var title=prompt('话题标题：');if(!title||!title.tri
 function submitDaily(){var v=document.getElementById('daily-ans');if(!v||!v.value.trim())return;document.getElementById('daily-answers').innerHTML+='<div class="cm"><div class="cm-head"><span class="cm-author">我</span><span class="cm-time">刚刚</span></div><div class="cm-text">'+v.value.trim().replace(/</g,'&lt;')+'</div></div>';v.value=''}
 renderTopics();
 
-// Mood
-var moodRec={'😔':['读《被讨厌的勇气》','散步20分钟','轻音乐'],'😤':['读《当下的力量》','跳绳5分钟','写三件感恩的事'],'😐':['随便翻翻','拉伸10分钟','lo-fi音乐'],'😊':['读《人类简史》','跑步30分钟','欢快歌单'],'🤩':['挑战深度阅读','高强度运动','最爱的歌单']};
-var moodState=JSON.parse(localStorage.getItem('mood')||'{}');
-function selMood(el,m){el.parentNode.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('sel')});el.classList.add('sel');moodState.mood=m;saveMood();var r=moodRec[m];if(r){document.getElementById('mood-rec').innerHTML=r.map(function(x){return '<div style="font-size:13px;margin:4px 0;color:#a1a1aa">'+x+'</div>'}).join('');document.getElementById('mood-rec').style.display='block'}}
+// Mood — 完整版：推荐池/上下文感知/心情日记/趋势图/×待办联动
+var moodScore={'😔':1,'😤':2,'😐':3,'😊':4,'🤩':5};
+var moodPools={
+  1:{read:['读《被讨厌的勇气》','读《当下的力量》','翻翻漫画'],move:['散步20分钟','拉伸15分钟','深呼吸练习'],listen:['轻音乐','白噪音','雨声'],other:['写三件感恩的事','给朋友发消息','早点睡']},
+  2:{read:['读《被讨厌的勇气》','写日记发泄','看搞笑视频'],move:['跳绳5分钟','跑步10分钟','打球发泄','拳击'],listen:['摇滚歌单','大声唱歌','重金属'],other:['写三件感恩的事','洗个热水澡','找人聊聊']},
+  3:{read:['随便翻翻','刷知乎/即刻','看短篇小说'],move:['散步10分钟','拉伸10分钟','做家务'],listen:['lo-fi音乐','爵士','ASMR'],other:['整理桌面','泡杯茶','看窗外发呆']},
+  4:{read:['读《人类简史》','学点新东西','看纪录片'],move:['跑步30分钟','HIIT训练','游泳'],listen:['欢快歌单','电子音乐','播客'],other:['学做新菜','写周报','搞副业']},
+  5:{read:['挑战深度阅读','读专业书','学新技能'],move:['高强度运动','长跑','篮球'],listen:['最爱的歌单','跟着跳舞','创作音乐'],other:['做有挑战的事','写文章','搞创作']}
+};
+var moodRecent=JSON.parse(localStorage.getItem('moodRecent')||'[]'); // last 6 rec keys
+var moodHistory=JSON.parse(localStorage.getItem('moodHistory')||'{}'); // {date: {mood, energy, note}}
+
+function getMoodRecs(score){
+  var pool=moodPools[score]||moodPools[3];
+  var all=[];
+  Object.keys(pool).forEach(function(cat){pool[cat].forEach(function(item){all.push({text:item,cat:cat})})});
+  // Filter out recent
+  var filtered=all.filter(function(r){return moodRecent.indexOf(r.text)===-1});
+  if(filtered.length<3)filtered=all; // reset if pool exhausted
+  // Shuffle and pick 3
+  for(var i=filtered.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=filtered[i];filtered[i]=filtered[j];filtered[j]=tmp}
+  return filtered.slice(0,3);
+}
+
+function selMood(el,m){
+  el.parentNode.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('sel')});
+  el.classList.add('sel');
+  moodState.mood=m;
+  saveMood();
+  
+  // Show one recommendation with context
+  var score=moodScore[m]||3;
+  var recs=getMoodRecs(score);
+  moodRecent=recs.map(function(r){return r.text}).concat(moodRecent).slice(0,12);
+  localStorage.setItem('moodRecent',JSON.stringify(moodRecent));
+  
+  var recEl=document.getElementById('mood-rec');
+  // Check todos for context
+  var tds=JSON.parse(localStorage.getItem('td')||'[]');
+  var undone=tds.filter(function(t){return !t.d});
+  var contextMsg='';
+  if(score<=2&&undone.length>0){
+    var urgent=undone.filter(function(t){return t.time});
+    if(urgent.length)contextMsg='⚠️ 你有'+urgent.length+'个有时间的待办，先处理必须今天做的。';
+    else contextMsg='💡 '+undone.length+'个待办不急，先照顾好自己。';
+  }
+  
+  var rec=recs[0];
+  recEl.innerHTML=(contextMsg?'<div style="font-size:11px;color:#f59e0b;margin-bottom:6px">'+contextMsg+'</div>':'')+
+    '<div style="display:flex;align-items:center;gap:6px"><span style="font-size:13px;color:#a1a1aa;flex:1">'+rec.text+'</span><button onclick="tryRec()" style="background:none;border:1px solid #27272a;color:#60a5fa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">试试</button><button onclick="swapRec()" style="background:none;border:1px solid #27272a;color:#a1a1aa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">换一个</button></div>';
+  recEl.style.display='block';
+  recEl.dataset.recs=JSON.stringify(recs);
+  recEl.dataset.idx='0';
+  
+  // Save to history
+  var today=new Date().toISOString().slice(0,10);
+  if(!moodHistory[today])moodHistory[today]={};
+  moodHistory[today].mood=m;
+  moodHistory[today].score=score;
+  localStorage.setItem('moodHistory',JSON.stringify(moodHistory));
+  renderMoodTrend();
+}
+
+function tryRec(){document.getElementById('mood-rec').querySelector('button').textContent='✅ 已记录'}
+function swapRec(){
+  var el=document.getElementById('mood-rec');
+  var recs=JSON.parse(el.dataset.recs||'[]');
+  var idx=(parseInt(el.dataset.idx||'0')+1)%recs.length;
+  el.dataset.idx=String(idx);
+  var rec=recs[idx];
+  var btns=el.querySelector('div:last-child');
+  el.querySelector('span').textContent=rec.text;
+}
+
+function saveMoodNote(){
+  var v=document.getElementById('mood-note');
+  if(!v||!v.value.trim())return;
+  var today=new Date().toISOString().slice(0,10);
+  if(!moodHistory[today])moodHistory[today]={};
+  moodHistory[today].note=v.value.trim();
+  localStorage.setItem('moodHistory',JSON.stringify(moodHistory));
+  v.value='';v.placeholder='✅ 已保存';
+  setTimeout(function(){v.placeholder='一句话记录为什么...'},2000);
+}
+
 function saveMood(){localStorage.setItem('mood',JSON.stringify(moodState))}
+
 var energyLv=moodState.energy||3;
 document.getElementById('energy-dots').innerHTML=[1,2,3,4,5].map(function(i){return '<span class="e-dot'+(i<=energyLv?' on':'')+'" onclick="selEnergy(this,'+i+')"></span>'}).join('');
-function selEnergy(el,n){el.parentNode.querySelectorAll('.e-dot').forEach(function(d,i){d.classList.toggle('on',i<n)});moodState.energy=n;saveMood()}
+function selEnergy(el,n){
+  el.parentNode.querySelectorAll('.e-dot').forEach(function(d,i){d.classList.toggle('on',i<n)});
+  moodState.energy=n;saveMood();
+  var today=new Date().toISOString().slice(0,10);
+  if(!moodHistory[today])moodHistory[today]={};
+  moodHistory[today].energy=n;
+  localStorage.setItem('moodHistory',JSON.stringify(moodHistory));
+}
+
+// Mood trend — 7 day bar chart
+function renderMoodTrend(){
+  var barEl=document.getElementById('mood-trend');
+  var labelEl=document.getElementById('mood-trend-labels');
+  var insightEl=document.getElementById('mood-insight');
+  var bars='';var labels='';
+  var scores=[];
+  var dayNames=['日','一','二','三','四','五','六'];
+  for(var i=6;i>=0;i--){
+    var d=new Date();d.setDate(d.getDate()-i);
+    var key=d.toISOString().slice(0,10);
+    var entry=moodHistory[key];
+    var score=entry?entry.score:0;
+    scores.push({day:dayNames[d.getDay()],score:score,key:key});
+    var h=score?score*10+5:3;
+    var bg=score<=2?'#ef4444':score<=3?'#f59e0b':score<=4?'#60a5fa':'#22c55e';
+    bars+='<div style="width:20px;height:'+h+'px;background:'+(score?bg:'#1e1e24')+';border-radius:3px" title="'+key+': '+(score?['','😔','😤','😐','😊','🤩'][score]:'无记录')+'"></div>';
+    labels+='<span style="width:20px;text-align:center">'+dayNames[d.getDay()]+'</span>';
+  }
+  barEl.innerHTML=bars;
+  labelEl.innerHTML=labels;
+  
+  // Insight
+  var recorded=scores.filter(function(s){return s.score>0});
+  if(recorded.length>=3){
+    var avg=recorded.reduce(function(s,x){return s+x.score},0)/recorded.length;
+    var lows=recorded.filter(function(s){return s.score<=2});
+    var highs=recorded.filter(function(s){return s.score>=4});
+    var text='';
+    if(avg>=4)text='😊 这周心情不错，平均'+avg.toFixed(1)+'分';
+    else if(avg<=2.5)text='😔 这周偏低落，'+lows.length+'天心情不太好';
+    else text='😐 这周心情平稳，平均'+avg.toFixed(1)+'分';
+    if(lows.length>0){
+      var lowDays=lows.map(function(s){return s.day}).join('、');
+      text+='<br>低落日：'+lowDays;
+    }
+    insightEl.innerHTML=text;
+    insightEl.style.display='block';
+  }else{
+    insightEl.style.display='none';
+  }
+}
+
+// Restore today's mood if exists
+(function(){
+  var today=new Date().toISOString().slice(0,10);
+  var entry=moodHistory[today];
+  if(entry&&entry.mood){
+    document.querySelectorAll('.mood-btn').forEach(function(b){
+      if(b.textContent.trim()===entry.mood)b.classList.add('sel');
+    });
+  }
+})();
+renderMoodTrend();
 
 // Habits — 完整版：连续天数/日历/分类/今日建议/每日重置
 var habitCat='all';
