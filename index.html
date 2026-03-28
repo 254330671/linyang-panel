@@ -106,10 +106,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div id="grow-stage" style="display:none"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="stage-tags"><span class="tag" onclick="pickStage(this,'teen')">青春期 12-17</span><span class="tag set" onclick="pickStage(this,'young')">青年期 18-25</span><span class="tag" onclick="pickStage(this,'adult')">成年期 26-35</span></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="stage-info">青年期（18-25岁）<br>- 独立生活基础<br>- 心理健康自我觉察<br>- 职业规划入门<br>- 建立健康的社交边界<br>- 学会理财基础<br><span style="color:#52525b">引用：WHO青年健康指南</span></div></div></div>
 </div>
 <div class="page" id="page-health">
-<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡前</span><span class="sub-tab" onclick="switchSub('health',this,'body')">身体</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span></div>
-<div id="health-sleep"><div class="card" style="text-align:center"><div class="sleep-time">23:00</div><div class="sleep-sub">建议入睡时间（保证8小时）</div><div style="text-align:left;margin-top:12px"><div class="todo"><input type="checkbox" class="todo-check"> 刷牙</div><div class="todo"><input type="checkbox" class="todo-check"> 设备充电</div><div class="todo"><input type="checkbox" class="todo-check"> 明天的待办看一眼</div><div class="todo"><input type="checkbox" class="todo-check"> 门窗检查</div></div></div></div></div>
-<div id="health-body" style="display:none"><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#0a0a0f;padding:12px;text-align:center;border-radius:8px"><div style="font-size:11px;color:#52525b">BMI</div><div style="font-size:24px;font-weight:700;color:#60a5fa">22.4</div><div style="font-size:11px;color:#22c55e">正常</div></div><div style="background:#0a0a0f;padding:12px;text-align:center;border-radius:8px"><div style="font-size:11px;color:#52525b">体检</div><div style="font-size:13px;margin-top:4px">建议每年一次</div><div style="font-size:11px;color:#f59e0b">引用卫健委指南</div></div></div></div></div>
-<div id="health-symptom" style="display:none"><div class="card"><div id="symptom-list"></div><button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="addSymptom()">+ 记录症状</button></div></div>
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡眠</span><span class="sub-tab" onclick="switchSub('health',this,'body')">档案</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span><span class="sub-tab" onclick="switchSub('health',this,'med')">用药</span></div>
+<div id="health-sleep"><div class="card"><div class="card-title">😴 睡眠追踪</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><div style="flex:1;text-align:center"><div style="font-size:11px;color:#52525b">昨晚入睡</div><input class="inp" id="sleep-in" type="time" value="23:00" style="text-align:center;font-size:18px;font-weight:700;color:#60a5fa" onchange="logSleep()"></div><div style="flex:1;text-align:center"><div style="font-size:11px;color:#52525b">今早起床</div><input class="inp" id="sleep-out" type="time" value="07:00" style="text-align:center;font-size:18px;font-weight:700;color:#f59e0b" onchange="logSleep()"></div></div><div style="text-align:center;font-size:24px;font-weight:700;color:#60a5fa" id="sleep-hours">8.0h</div><div style="text-align:center;font-size:11px;color:#52525b;margin-bottom:8px">睡眠时长</div><div style="text-align:center;font-size:11px;color:#52525b;margin-bottom:4px">质量</div><div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px" id="sleep-quality-row"><span class="tag" onclick="setSleepQuality(1,this)">😴差</span><span class="tag" onclick="setSleepQuality(2,this)">😐一般</span><span class="tag" onclick="setSleepQuality(3,this)">🙂还行</span><span class="tag" onclick="setSleepQuality(4,this)">😊好</span><span class="tag" onclick="setSleepQuality(5,this)">🤩很好</span></div><div class="card-title">📊 本周</div><div id="sleep-chart" style="display:flex;align-items:flex-end;gap:4px;height:60px;justify-content:center"></div><div id="sleep-avg" style="text-align:center;font-size:11px;color:#52525b;margin-top:4px"></div></div></div>
+<div id="health-body" style="display:none"><div class="card"><div class="card-title">📋 基础档案</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px"><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">血型</div><select class="inp" id="prof-blood" style="font-size:13px" onchange="saveProfile()"><option value="">未填</option><option>A型</option><option>B型</option><option>AB型</option><option>O型</option></select></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">身高(cm)</div><input class="inp" id="prof-height" type="number" placeholder="170" onchange="saveProfile()"></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">体重(kg)</div><input class="inp" id="prof-weight" type="number" placeholder="65" onchange="saveProfile();calcBMI()"></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">BMI</div><div id="prof-bmi" style="font-size:20px;font-weight:700;color:#60a5fa;padding:6px 0">--</div></div></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">⚠️ 过敏</div><input class="inp" id="prof-allergy" placeholder="如：青霉素、花生" onchange="saveProfile()"></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">慢性病</div><input class="inp" id="prof-chronic" placeholder="如：高血压、糖尿病" onchange="saveProfile()"></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">紧急联系人</div><div style="display:flex;gap:6px"><input class="inp" id="prof-emer-name" placeholder="称呼" style="flex:1" onchange="saveProfile()"><input class="inp" id="prof-emer-phone" placeholder="电话" style="flex:1" onchange="saveProfile()"></div></div></div></div>
+<div id="health-symptom" style="display:none"><div class="card"><div class="card-title">🤒 症状记录</div><div id="symptom-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="sym-desc" placeholder="什么症状？" style="flex:1;min-width:100px"><select class="inp" id="sym-level" style="width:65px;font-size:12px"><option value="1">轻微</option><option value="2">中等</option><option value="3">严重</option></select><input class="inp" id="sym-cause" placeholder="可能原因" style="flex:1;min-width:80px"><button class="btn btn-sm" onclick="addSymptom()">+</button></div></div></div>
+<div id="health-med" style="display:none"><div class="card"><div class="card-title">💊 用药记录</div><div id="med-list"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="med-name" placeholder="药名" style="flex:1"><input class="inp" id="med-use" placeholder="用途" style="flex:1"><button class="btn btn-sm" onclick="addMed()">+</button></div></div></div>
 </div>
 </div>
 <div class="mobile-nav">
@@ -907,12 +908,160 @@ loadSkills();
 var stageData={teen:{title:'青春期（12-17岁）',items:['身体发育与性教育','学习方法与时间管理','情绪管理初步','同伴关系处理','网络安全意识','基本生活自理'],src:'国家卫健委青少年健康指南'},young:{title:'青年期（18-25岁）',items:['独立生活基础','心理健康自我觉察','职业规划入门','建立健康的社交边界','学会理财基础','基本法律常识'],src:'WHO青年健康指南'},adult:{title:'成年期（26-35岁）',items:['职业深耕或转型','长期伴侣关系经营','理财进阶','定期体检习惯','父母健康关注','工作-生活平衡'],src:'国家卫健委成年期健康管理'}};
 function pickStage(el,key){el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});el.classList.add('set');var d=stageData[key];document.getElementById('stage-info').innerHTML=d.title+'<br>'+d.items.map(function(i){return '- '+i}).join('<br>')+'<br><span style="color:#52525b">'+d.src+'</span>';localStorage.setItem('stage',key)}
 
-// Symptoms
+// Health — 完整版：睡眠追踪/基础档案/症状+用药
+
+// Sleep
+function getSleepLog(){return JSON.parse(localStorage.getItem('sleepLog')||'{}')}
+function logSleep(){
+  var inn=document.getElementById('sleep-in').value;
+  var out=document.getElementById('sleep-out').value;
+  if(!inn||!out)return;
+  var inMin=parseInt(inn.split(':')[0])*60+parseInt(inn.split(':')[1]);
+  var outMin=parseInt(out.split(':')[0])*60+parseInt(out.split(':')[1]);
+  if(outMin<inMin)outMin+=24*60; // overnight
+  var hours=((outMin-inMin)/60).toFixed(1);
+  document.getElementById('sleep-hours').textContent=hours+'h';
+  document.getElementById('sleep-hours').style.color=hours<6?'#ef4444':hours<7?'#f59e0b':'#60a5fa';
+  var today=new Date().toISOString().slice(0,10);
+  var log=getSleepLog();
+  log[today]={in:inn,out:out,hours:parseFloat(hours),quality:log[today]?log[today].quality:0};
+  localStorage.setItem('sleepLog',JSON.stringify(log));
+  renderSleepChart();
+}
+function setSleepQuality(q,el){
+  el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});
+  el.classList.add('set');
+  var today=new Date().toISOString().slice(0,10);
+  var log=getSleepLog();
+  if(!log[today])log[today]={in:'',out:'',hours:0,quality:0};
+  log[today].quality=q;
+  localStorage.setItem('sleepLog',JSON.stringify(log));
+}
+function renderSleepChart(){
+  var log=getSleepLog();
+  var barEl=document.getElementById('sleep-chart');
+  var avgEl=document.getElementById('sleep-avg');
+  var dayNames=['日','一','二','三','四','五','六'];
+  var bars='';var total=0;var count=0;
+  for(var i=6;i>=0;i--){
+    var d=new Date();d.setDate(d.getDate()-i);
+    var key=d.toISOString().slice(0,10);
+    var entry=log[key];
+    var h=entry?entry.hours:0;
+    if(h>0){total+=h;count++}
+    var barH=h?Math.max(10,h*5):3;
+    var bg=h<6?'#ef4444':h<7?'#f59e0b':h>=8?'#22c55e':'#60a5fa';
+    bars+='<div style="width:20px;height:'+barH+'px;background:'+(h?bg:'#1e1e24')+';border-radius:3px" title="'+key+': '+(h?h+'h':'无记录')+'"></div>';
+  }
+  barEl.innerHTML=bars;
+  avgEl.textContent=count?'本周平均'+(total/count).toFixed(1)+'h':'暂无记录';
+}
+// Restore sleep inputs
+(function(){
+  var log=getSleepLog();
+  var today=new Date().toISOString().slice(0,10);
+  var entry=log[today];
+  if(entry){
+    if(entry.in)document.getElementById('sleep-in').value=entry.in;
+    if(entry.out)document.getElementById('sleep-out').value=entry.out;
+    if(entry.hours){document.getElementById('sleep-hours').textContent=entry.hours+'h';document.getElementById('sleep-hours').style.color=entry.hours<6?'#ef4444':entry.hours<7?'#f59e0b':'#60a5fa'}
+    if(entry.quality){
+      document.querySelectorAll('#sleep-quality-row .tag').forEach(function(t,i){if(i+1===entry.quality)t.classList.add('set')});
+    }
+  }
+  renderSleepChart();
+})();
+
+// Profile (基础档案)
+function getProfile2(){return JSON.parse(localStorage.getItem('healthProfile')||'{}')}
+function saveProfile(){
+  var p={blood:document.getElementById('prof-blood').value,height:parseFloat(document.getElementById('prof-height').value)||0,weight:parseFloat(document.getElementById('prof-weight').value)||0,allergy:document.getElementById('prof-allergy').value,chronic:document.getElementById('prof-chronic').value,emerName:document.getElementById('prof-emer-name').value,emerPhone:document.getElementById('prof-emer-phone').value};
+  localStorage.setItem('healthProfile',JSON.stringify(p));
+  calcBMI();
+}
+function calcBMI(){
+  var h=parseFloat(document.getElementById('prof-height').value);
+  var w=parseFloat(document.getElementById('prof-weight').value);
+  var el=document.getElementById('prof-bmi');
+  if(h>0&&w>0){
+    var bmi=(w/(h/100)*(h/100)>0)?(w/((h/100)*(h/100))):0;
+    bmi=bmi.toFixed(1);
+    var status=bmi<18.5?'偏瘦':bmi<24?'正常':bmi<28?'偏胖':'肥胖';
+    var color=bmi<18.5?'#f59e0b':bmi<24?'#22c55e':bmi<28?'#f59e0b':'#ef4444';
+    el.innerHTML=bmi+'<span style="font-size:10px;color:'+color+';margin-left:4px">'+status+'</span>';
+  }else{el.textContent='--'}
+}
+(function(){
+  var p=getProfile2();
+  if(p.blood)document.getElementById('prof-blood').value=p.blood;
+  if(p.height)document.getElementById('prof-height').value=p.height;
+  if(p.weight)document.getElementById('prof-weight').value=p.weight;
+  if(p.allergy)document.getElementById('prof-allergy').value=p.allergy;
+  if(p.chronic)document.getElementById('prof-chronic').value=p.chronic;
+  if(p.emerName)document.getElementById('prof-emer-name').value=p.emerName;
+  if(p.emerPhone)document.getElementById('prof-emer-phone').value=p.emerPhone;
+  calcBMI();
+})();
+
+// Symptoms (enhanced)
 function getSymptoms(){return JSON.parse(localStorage.getItem('symptoms')||'[]')}
-function renderSymptoms(){var items=getSymptoms();if(!items.length){document.getElementById('symptom-list').innerHTML='<div class="ph">暂无记录</div>';return}document.getElementById('symptom-list').innerHTML=items.map(function(s,i){var p=items.filter(function(x){return x.symptom===s.symptom}).length;return '<div class="sym-item"><div style="font-size:13px;display:flex;justify-content:space-between"><span>'+s.symptom+'</span><button onclick="delSymptom('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px">×</button></div><div class="sym-meta">'+s.date+' · '+(s.env||'-')+'</div>'+(p>1?'<div class="sym-pattern">已记录'+p+'次类似症状</div>':'')+'</div>'}).reverse().join('')}
-function addSymptom(){var s=prompt('什么症状？');if(!s)return;var e=prompt('当时环境？（可选）')||'';var items=getSymptoms();items.push({symptom:s.trim(),env:e.trim(),date:new Date().toISOString().slice(0,10)});localStorage.setItem('symptoms',JSON.stringify(items));renderSymptoms()}
+function renderSymptoms(){
+  var items=getSymptoms();
+  if(!items.length){document.getElementById('symptom-list').innerHTML='<div class="ph">暂无记录</div>';return}
+  var levels={1:'轻微',2:'中等',3:'严重'};
+  var levelColors={1:'#22c55e',2:'#f59e0b',3:'#ef4444'};
+  document.getElementById('symptom-list').innerHTML=items.map(function(s,i){
+    var p=items.filter(function(x){return x.symptom===s.symptom}).length;
+    var lvColor=levelColors[s.level]||'#52525b';
+    return '<div class="sym-item"><div style="font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>'+s.symptom+' <span style="font-size:10px;color:'+lvColor+'">'+(levels[s.level]||'')+'</span></span><button onclick="delSymptom('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px">×</button></div><div class="sym-meta">'+s.date+(s.cause?' · '+s.cause:'')+'</div>'+(p>1?'<div class="sym-pattern">已记录'+p+'次 · '+(s.cause?'可能跟'+s.cause+'有关':'建议关注规律')+'</div>':'')+'</div>';
+  }).reverse().join('');
+}
+function addSymptom(){
+  var desc=document.getElementById('sym-desc');
+  var level=document.getElementById('sym-level').value;
+  var cause=document.getElementById('sym-cause');
+  if(!desc.value.trim())return;
+  var items=getSymptoms();
+  items.push({symptom:desc.value.trim(),level:parseInt(level),cause:(cause.value||'').trim(),date:new Date().toISOString().slice(0,10)});
+  localStorage.setItem('symptoms',JSON.stringify(items));
+  desc.value='';cause.value='';renderSymptoms();
+}
 function delSymptom(i){var items=getSymptoms();items.splice(i,1);localStorage.setItem('symptoms',JSON.stringify(items));renderSymptoms()}
 renderSymptoms();
+
+// Medication
+function getMeds(){return JSON.parse(localStorage.getItem('meds')||'[]')}
+function renderMeds(){
+  var items=getMeds();
+  if(!items.length){document.getElementById('med-list').innerHTML='<div class="ph">暂无用药记录</div>';return}
+  document.getElementById('med-list').innerHTML=items.map(function(m,i){
+    var lastStr=m.lastUse?'最近：'+m.lastUse:'';
+    var countStr=m.uses?'本月'+m.uses+'次':'';
+    var warn=m.uses>=7?'<div style="font-size:10px;color:#ef4444;margin-top:2px">⚠️ 连续使用较多，建议就医排查</div>':'';
+    return '<div class="sym-item"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">💊 '+m.name+' <span style="font-size:11px;color:#52525b">'+m.useFor+'</span></span><div><button onclick="useMed('+i+')" style="background:none;border:1px solid #27272a;color:#60a5fa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">服用</button><button onclick="delMed('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px;padding:0 4px">×</button></div></div><div class="sym-meta">'+[lastStr,countStr].filter(Boolean).join(' · ')+'</div>'+warn+'</div>';
+  }).join('');
+}
+function addMed(){
+  var name=document.getElementById('med-name');
+  var useFor=document.getElementById('med-use');
+  if(!name.value.trim())return;
+  var items=getMeds();
+  items.push({name:name.value.trim(),useFor:useFor.value.trim(),lastUse:'',uses:0,log:[]});
+  localStorage.setItem('meds',JSON.stringify(items));
+  name.value='';useFor.value='';renderMeds();
+}
+function useMed(i){
+  var items=getMeds();
+  var today=new Date().toISOString().slice(0,10);
+  items[i].lastUse=today;
+  items[i].uses=(items[i].uses||0)+1;
+  if(!items[i].log)items[i].log=[];
+  items[i].log.push(today);
+  localStorage.setItem('meds',JSON.stringify(items));
+  renderMeds();
+}
+function delMed(i){var items=getMeds();items.splice(i,1);localStorage.setItem('meds',JSON.stringify(items));renderMeds()}
+renderMeds();
 
 // API & Chat
 function getApiConfig(){return JSON.parse(localStorage.getItem('userapi')||'{}')}
