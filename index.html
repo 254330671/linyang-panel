@@ -100,13 +100,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div id="life-money" style="display:none"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="card-title" style="margin:0">💰 记账</span><div style="display:flex;gap:4px"><span class="sub-tab on" onclick="switchMoneyType('expense',this)">支出</span><span class="sub-tab" onclick="switchMoneyType('income',this)">收入</span></div></div><div style="text-align:center"><div style="font-size:11px;color:#71717a" id="money-month-label">本月支出</div><div style="font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div id="money-compare" style="font-size:11px;color:#52525b;margin-top:2px"></div><div id="money-budget-bar" style="display:none;margin-top:6px"><div style="background:#1e1e24;border-radius:4px;height:6px;overflow:hidden"><div id="money-budget-fill" style="height:100%;background:#22c55e;border-radius:4px;transition:width .3s"></div></div><div style="font-size:10px;color:#52525b;margin-top:2px" id="money-budget-text"></div></div></div><div id="money-pie" style="margin:12px auto;width:120px;height:120px;border-radius:50%;position:relative" title="分类饼图"><div style="position:absolute;inset:20px;background:#141418;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#a1a1aa" id="money-pie-center">暂无数据</div></div><div id="money-cats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;justify-content:center"></div><div style="display:flex;gap:6px;margin:10px 0"><select class="inp" id="money-cat" style="width:65px;padding:4px;font-size:12px"></select><input class="inp" id="money-desc" placeholder="备注" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><div style="margin-bottom:8px;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#52525b">月预算</span><input class="inp" id="money-budget-inp" placeholder="设预算" type="number" style="width:80px;font-size:12px" onchange="setBudget()"><span style="font-size:10px;color:#52525b" id="money-budget-cur"></span></div><ul style="list-style:none;max-height:180px;overflow-y:auto" id="expense-list"></ul></div></div>
 </div>
 <div class="page" id="page-grow">
-<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('grow',this,'career')">职业</span><span class="sub-tab" onclick="switchSub('grow',this,'exam')">考试</span><span class="sub-tab" onclick="switchSub('grow',this,'skills')">必修课</span><span class="sub-tab" onclick="switchSub('grow',this,'letter')">信</span><span class="sub-tab" onclick="switchSub('grow',this,'milestone')">里程碑</span><span class="sub-tab" onclick="switchSub('grow',this,'album')">相册</span><span class="sub-tab" onclick="switchSub('grow',this,'stage')">阶段</span></div>
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('grow',this,'career')">职业</span><span class="sub-tab" onclick="switchSub('grow',this,'exam')">考试</span><span class="sub-tab" onclick="switchSub('grow',this,'skills')">必修课</span><span class="sub-tab" onclick="switchSub('grow',this,'letter')">信</span><span class="sub-tab" onclick="switchSub('grow',this,'milestone')">里程碑</span><span class="sub-tab" onclick="switchSub('grow',this,'album')">相册</span><span class="sub-tab" onclick="switchSub('grow',this,'review')">复盘</span><span class="sub-tab" onclick="switchSub('grow',this,'stage')">阶段</span></div>
 <div id="grow-career"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="career-tags"><span class="tag set" onclick="pickCareer(this)">UI设计</span><span class="tag" onclick="pickCareer(this)">软件开发</span><span class="tag" onclick="pickCareer(this)">产品经理</span><span class="tag" onclick="pickCareer(this)">会计</span><span class="tag" onclick="pickCareer(this)">教师</span><span class="tag" onclick="pickCareer(this)">护理</span><span class="tag" onclick="pickCareer(this)">市场营销</span><span class="tag" onclick="pickCareer(this)">人力资源</span></div><div id="career-roadmap" style="margin-bottom:10px"></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="career-info">路径：Adobe认证 → 交互设计 → 设计管理<br>平均薪资：8-25K<br>核心技能：Figma、用户研究、设计系统</div><div id="career-next" style="margin-top:8px;padding:8px 10px;background:#0a0a0f;border-radius:8px;font-size:12px;color:#a1a1aa;display:none"></div></div></div>
 <div id="grow-exam" style="display:none"><div class="card"><div class="card-title">📋 考试时间库</div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="exam-filters"><span class="sub-tab on" onclick="filterExam('all',this)">全部</span><span class="sub-tab" onclick="filterExam('财会',this)">财会</span><span class="sub-tab" onclick="filterExam('教育',this)">教育</span><span class="sub-tab" onclick="filterExam('IT',this)">IT</span><span class="sub-tab" onclick="filterExam('语言',this)">语言</span></div><div id="exam-list"></div></div></div>
 <div id="grow-skills" style="display:none"><div class="card"><ul class="cl" id="skills-list"></ul></div></div>
 <div id="grow-letter" style="display:none"><div class="card"><div class="card-title">✉️ 写给未来的信</div><div style="font-size:12px;color:#52525b;margin-bottom:8px">写一段话给未来的自己，设定打开时间</div><textarea class="inp" id="letter-text" rows="5" placeholder="写点什么..." style="resize:vertical;font-size:13px;line-height:1.6"></textarea><div style="display:flex;gap:6px;margin-top:8px;align-items:center"><span style="font-size:11px;color:#52525b">打开时间</span><input class="inp" id="letter-date" type="date" style="width:140px;font-size:12px"><button class="btn btn-sm" onclick="saveLetter()">封存</button></div></div><div class="card"><div class="card-title">📬 我的信</div><div id="letter-list"></div></div></div>
 <div id="grow-milestone" style="display:none"><div class="card"><div class="card-title">🏆 身体里程碑</div><div style="font-size:11px;color:#52525b;margin-bottom:8px">根据你的年龄和性别，显示当前阶段的变化与建议</div><div style="display:flex;gap:6px;margin-bottom:10px"><select class="inp" id="milestone-age" style="width:70px;font-size:12px" onchange="renderMilestones()"><option value="12">12岁</option><option value="13">13岁</option><option value="14">14岁</option><option value="15">15岁</option><option value="16">16岁</option><option value="17">17岁</option><option value="18">18岁</option><option value="20">20岁</option><option value="22">22岁</option><option value="25">25岁</option><option value="30">30岁</option><option value="35">35岁</option></select><select class="inp" id="milestone-gender" style="width:60px;font-size:12px" onchange="renderMilestones()"><option value="male">♂ 男</option><option value="female">♀ 女</option></select></div><div id="milestone-list"></div></div></div>
 <div id="grow-album" style="display:none"><div class="card"><div class="card-title">📏 成长相册</div><div style="display:flex;gap:6px;margin-bottom:10px"><input class="inp" id="album-height" placeholder="身高cm" type="number" style="width:80px"><input class="inp" id="album-weight" placeholder="体重kg" type="number" style="width:80px"><input class="inp" id="album-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addAlbumRecord()">+</button></div><div id="album-chart" style="height:80px;position:relative;background:#0a0a0f;border-radius:8px;margin-bottom:8px;overflow:hidden"></div><div id="album-legend" style="display:flex;gap:12px;justify-content:center;font-size:10px;color:#52525b;margin-bottom:8px"><span><span style="display:inline-block;width:20px;height:3px;background:#60a5fa;vertical-align:middle;border-radius:2px"></span> 身高</span><span><span style="display:inline-block;width:20px;height:3px;background:#f59e0b;vertical-align:middle;border-radius:2px"></span> 体重</span></div><div id="album-records" style="max-height:120px;overflow-y:auto"></div></div></div>
+<div id="grow-review" style="display:none"><div class="card"><div class="card-title">🔄 周复盘</div><div style="display:flex;gap:4px;margin-bottom:10px"><span class="sub-tab on" onclick="switchReview('week',this)">本周</span><span class="sub-tab" onclick="switchReview('month',this)">本月</span></div><div id="review-content" style="font-size:12px;color:#a1a1aa;line-height:1.8"></div></div></div>
 </div>
 <div class="page" id="page-health">
 <div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡眠</span><span class="sub-tab" onclick="switchSub('health',this,'body')">档案</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span><span class="sub-tab" onclick="switchSub('health',this,'med')">用药</span><span class="sub-tab" onclick="switchSub('health',this,'period')">经期</span><span class="sub-tab" onclick="switchSub('health',this,'sport')">运动</span><span class="sub-tab" onclick="switchSub('health',this,'visit')">就医</span><span class="sub-tab" onclick="switchSub('health',this,'checkup')">体检</span></div>
@@ -1102,6 +1103,69 @@ function renderAlbum(){
   }).join('');
 }
 renderAlbum();
+
+// Weekly/Monthly review
+var reviewMode='week';
+function switchReview(mode,el){
+  reviewMode=mode;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  renderReview();
+}
+function renderReview(){
+  var el=document.getElementById('review-content');
+  var days=reviewMode==='week'?7:30;
+  var since=new Date();since.setDate(since.getDate()-days);
+  var sinceKey=since.toISOString().slice(0,10);
+  var label=reviewMode==='week'?'本周':'本月';
+  var html='';
+  // Todos
+  var tds=JSON.parse(localStorage.getItem('td')||'[]');
+  var recent=tds.filter(function(t){return t.d});
+  var done=recent.length;
+  var undone=tds.filter(function(t){return !t.d}).length;
+  html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">📋 '+label+'待办：完成 <b style="color:#22c55e">'+done+'</b> 个，未完成 <b style="color:#f59e0b">'+undone+'</b> 个'+(done+undone>0?'（完成率'+Math.round(done/(done+undone)*100)+'%）':'')+'</div>';
+  // Habits
+  var habits=JSON.parse(localStorage.getItem('habits')||'[]');
+  var streakInfo=habits.filter(function(h){return h.streak>0}).map(function(h){return h.text+' 连续'+h.streak+'天'}).join('、');
+  if(streakInfo)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">💪 习惯：'+streakInfo+'</div>';
+  // Expenses
+  var exps=JSON.parse(localStorage.getItem('expenses')||'[]');
+  var monthKey=new Date().toISOString().slice(0,7);
+  var monthExp=exps.filter(function(e){return e.date.startsWith(monthKey)&&e.type==='expense'}).reduce(function(s,e){return s+e.amount},0);
+  if(monthExp>0)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">💰 '+label+'支出：<b style="color:#f59e0b">¥'+monthExp+'</b></div>';
+  // Mood
+  var moods=JSON.parse(localStorage.getItem('moodHistory')||'{}');
+  var recentMoods=[];var moodSum=0;
+  for(var d=new Date(since);d<=new Date();d.setDate(d.getDate()+1)){
+    var key=d.toISOString().slice(0,10);
+    if(moods[key]&&moods[key].score){recentMoods.push(moods[key].score);moodSum+=moods[key].score}
+  }
+  if(recentMoods.length){
+    var avg=(moodSum/recentMoods.length).toFixed(1);
+    var emojis=['','😔','😤','😐','😊','🤩'];
+    html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">😊 心情：平均 '+avg+' 分（'+emojis[Math.round(avg)]+'），记录了'+recentMoods.length+'天</div>';
+  }
+  // Sleep
+  var sleepLog=JSON.parse(localStorage.getItem('sleepLog')||'{}');
+  var sleepTotal=0;var sleepCount=0;
+  for(var d2=new Date(since);d2<=new Date();d2.setDate(d2.getDate()+1)){
+    var k=d2.toISOString().slice(0,10);
+    if(sleepLog[k]&&sleepLog[k].hours){sleepTotal+=sleepLog[k].hours;sleepCount++}
+  }
+  if(sleepCount)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">😴 睡眠：平均'+(sleepTotal/sleepCount).toFixed(1)+'h/晚</div>';
+  // Symptoms
+  var syms=JSON.parse(localStorage.getItem('symptoms')||'[]');
+  var recentSyms=syms.filter(function(s){return s.date>=sinceKey});
+  if(recentSyms.length)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">🤒 症状：记录了'+recentSyms.length+'次 '+recentSyms.map(function(s){return s.symptom}).join('、')+'</div>';
+  // Sports
+  var sports=JSON.parse(localStorage.getItem('sports')||'[]');
+  var weekSports=sports.filter(function(s){return s.date>=sinceKey});
+  var sportMin=weekSports.reduce(function(s,x){return s+x.min},0);
+  if(weekSports.length)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">🏃 运动：'+weekSports.length+'次，共'+sportMin+'分钟'+(sportMin>=150?' ✅达标':'')+'</div>';
+  el.innerHTML=html||'<div class="ph">暂无数据</div>';
+}
+renderReview();
 
 // Stage (enhanced with milestone actions)
 var stageData={
