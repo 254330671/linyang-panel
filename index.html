@@ -250,8 +250,34 @@ function loadWeatherFor(idx){
   }catch(e){}
 }
 
-renderCityTabs();
-loadWeatherFor(0);
+// Auto-detect location
+function detectLocation(){
+  if(!navigator.geolocation){loadWeatherFor(0);return}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat=pos.coords.latitude,lon=pos.coords.longitude;
+    // Reverse geocode city name via Open-Meteo
+    fetch('https://geocoding-api.open-meteo.com/v1/search?latitude='+lat+'&longitude='+lon+'&count=1&language=zh')
+    .then(function(r){return r.json()})
+    .then(function(geo){
+      var cityName='当前位置';
+      if(geo.results&&geo.results[0]){
+        cityName=geo.results[0].name||geo.results[0].admin1||'当前位置';
+      }
+      var cities=getCities();
+      cities[0]={nick:'📍',name:cityName,lat:Math.round(lat*100)/100,lon:Math.round(lon*100)/100};
+      saveCities(cities);
+      renderCityTabs();loadWeatherFor(0);
+    }).catch(function(){
+      var cities=getCities();
+      cities[0]={nick:'📍',name:'当前位置',lat:Math.round(lat*100)/100,lon:Math.round(lon*100)/100};
+      saveCities(cities);
+      renderCityTabs();loadWeatherFor(0);
+    });
+  },function(){
+    loadWeatherFor(0);
+  },{timeout:5000,maximumAge:300000});
+}
+detectLocation();
 
 // Todo
 var todos=JSON.parse(localStorage.getItem('td')||'null');
