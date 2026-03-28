@@ -76,7 +76,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div class="app">
 <div class="sidebar">
 <div class="card"><div class="weather-mini"><span style="font-size:28px" id="sb-weather-icon">☀️</span><div><div class="weather-temp" id="sb-temp">--°C</div><div style="font-size:11px;color:#71717a" id="sb-weather-desc">加载中...</div></div></div><div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:#71717a" id="sb-forecast"></div></div>
-<div class="card"><div class="card-title">💼 待办</div><div id="sidebar-todos"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="todo-input" placeholder="添加待办..." onkeydown="if(event.key==='Enter')addTodo()" style="flex:1"><button class="btn btn-sm" onclick="addTodo()">+</button><button class="btn btn-sm" id="ai-todo-btn" onclick="parseTodoAI()" title="AI解析" style="background:#7c3a00;min-width:32px" disabled>✨</button></div></div>
+<div class="card"><div class="card-title">💼 待办</div><div id="sidebar-todos"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="todo-input" placeholder="添加待办... ✨自动解析" onkeydown="if(event.key==='Enter')addTodo()" style="flex:1"><button class="btn btn-sm" onclick="addTodo()">+</button></div></div>
 <div class="card"><div class="card-title">✨ 今日推荐</div><div style="font-size:13px;color:#a1a1aa;font-style:italic;line-height:1.6">"千里之行，始于足下。"<div style="font-size:11px;color:#52525b;margin-top:4px">— 老子</div></div><div style="font-size:12px;color:#71717a;margin-top:8px">💡 每天进步一点点</div></div>
 <div class="card"><div class="card-title">💬 AI 助手</div><div id="chat-messages" style="height:140px;overflow-y:auto;background:#0a0a0f;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #1e1e24;font-size:13px"><div style="color:#52525b;text-align:center;padding:20px">点击 ⚙️ 配置API</div></div><div style="display:flex;gap:6px"><input class="inp" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1"><button class="btn btn-sm" id="chat-send" onclick="sendChat()" disabled style="opacity:0.5">发送</button></div></div>
 </div>
@@ -138,8 +138,42 @@ loadWeather();
 var todos=JSON.parse(localStorage.getItem('td')||'null');
 if(!todos)todos=[{t:'去市里开会',d:false,dl:'地铁1转2 · 9:00前出发'},{t:'回复客户邮件',d:false,dl:'王总方案反馈，下班前'},{t:'整理周报',d:false,dl:'本周进度+下周计划，周五17:00前'}];
 function rTodos(){var html='';for(var i=0;i<todos.length;i++){var t=todos[i];html+='<div class="todo"><input type="checkbox" class="todo-check" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div><div class="'+(t.d?'todo-done':'')+'">'+t.t+'</div>'+(t.dl?'<div class="todo-detail">'+t.dl+'</div>':'')+'</div></div>'}document.getElementById('sidebar-todos').innerHTML=html}
-function addTodo(){var v=document.getElementById('todo-input');if(!v||!v.value.trim())return;todos.push({t:v.value.trim(),d:false,dl:''});v.value='';sTodos()}
-function parseTodoAI(){var v=document.getElementById('todo-input');if(!v||!v.value.trim())return;var cfg=getApiConfig();if(!cfg.key){alert('请先在⚙️配置API');return}var raw=v.value.trim();var btn=document.getElementById('ai-todo-btn');btn.textContent='⏳';btn.disabled=true;var now=new Date();var dateStr=now.toISOString().slice(0,10);var weekday=['日','一','二','三','四','五','六'][now.getDay()];fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:'你是待办解析器。用户输入自然语言，你返回JSON。格式：{"t":"待办标题（精简动词开头）","dl":"截止时间或备注（可为空）","cat":"分类"}。分类可选：工作/生活/学习/健康/财务/社交。今天是'+dateStr+' 星期'+weekday+'。只返回JSON，不要其他文字。'},{role:'user',content:raw}]}).then(function(r){return r.json()}).then(function(d){var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';try{var parsed=JSON.parse(reply.trim());todos.push({t:parsed.t||raw,d:false,dl:parsed.dl||''});v.value='';sTodos()}catch(e){todos.push({t:raw,d:false,dl:''});v.value='';sTodos()}}).catch(function(){todos.push({t:raw,d:false,dl:''});v.value='';sTodos()}).finally(function(){btn.textContent='✨';btn.disabled=false})}}
+// Action link generators
+var actionBuilders={
+navigation:function(loc){return '<a href="https://uri.amap.com/navigation?to=&mode=car&keyword='+encodeURIComponent(loc)+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">📍 导航</a>'},
+shopping:function(kw){return '<a href="https://s.taobao.com/search?q='+encodeURIComponent(kw)+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🛒 淘宝</a> <a href="https://search.jd.com/Search?keyword='+encodeURIComponent(kw)+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🐶 京东</a>'},
+call:function(phone){return '<a href="tel:'+phone+'" style="color:#60a5fa;text-decoration:none;font-size:11px">📞 拨打</a>'},
+mail:function(email){return '<a href="mailto:'+(email||'')+'" style="color:#60a5fa;text-decoration:none;font-size:11px">✉️ 邮件</a>'},
+movie:function(kw){return '<a href="https://m.maoyan.com/search?kw='+encodeURIComponent(kw||'电影')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🎬 猫眼</a>'},
+food:function(kw){return '<a href="https://www.dianping.com/search/keyword/1/0_'+encodeURIComponent(kw||'美食')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🍽️ 大众点评</a>'},
+health:function(kw){return '<a href="https://www.guahao.com/search?q='+encodeURIComponent(kw||'')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🏥 挂号</a>'},
+study:function(kw){return '<a href="https://search.douban.com/book/subject_search?search_text='+encodeURIComponent(kw||'')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">📚 搜索</a>'}
+};
+var catColors={工作:'#2563eb',生活:'#22c55e',学习:'#a855f7',健康:'#ef4444',财务:'#f59e0b',社交:'#ec4899',休闲:'#06b6d4'};
+
+function buildActions(parsed){
+var links=[];
+if(!parsed.actions||!parsed.actions.length)return '';
+parsed.actions.forEach(function(a){
+if(a==='navigation'&&parsed.location)links.push(actionBuilders.navigation(parsed.location));
+else if(a==='shopping'&&parsed.keyword)links.push(actionBuilders.shopping(parsed.keyword));
+else if(a==='call'&&parsed.contact)links.push(actionBuilders.call(parsed.contact));
+else if(a==='mail'&&parsed.contact)links.push(actionBuilders.mail(parsed.contact));
+else if(a==='movie')links.push(actionBuilders.movie(parsed.keyword));
+else if(a==='food')links.push(actionBuilders.food(parsed.keyword));
+else if(a==='health'&&parsed.keyword)links.push(actionBuilders.health(parsed.keyword));
+else if(a==='study'&&parsed.keyword)links.push(actionBuilders.study(parsed.keyword));
+});
+return links.join(' · ');
+}
+
+function addTodo(){var v=document.getElementById('todo-input');if(!v||!v.value.trim())return;var raw=v.value.trim();v.value='';var cfg=getApiConfig();if(cfg.key&&cfg.endpoint){
+// AI解析模式
+var inp=document.getElementById('todo-input');inp.style.borderColor='#f59e0b';var now=new Date();var dateStr=now.toISOString().slice(0,10);var weekday=['日','一','二','三','四','五','六'][now.getDay()];fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:'你是待办解析器。用户输入一句话，返回JSON。\n格式：{"t":"精简标题","dl":"截止时间或备注","cat":"工作|生活|学习|健康|财务|社交|休闲","actions":["navigation","shopping","call","mail","movie","food","health","study"],"location":"地点","keyword":"搜索关键词","contact":"联系方式","remind_min":提前分钟数}\n规则：只返回JSON；没有的字段可省略；cat从给定选项选；actions数组可为空；今天是'+dateStr+' 星期'+weekday+'。'},{role:'user',content:raw}])}).then(function(r){return r.json()}).then(function(d){var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';try{var p=JSON.parse(reply.trim().replace(/```json\n?/g,'').replace(/```\n?/g,''));todos.push({t:p.t||raw,d:false,dl:p.dl||'',cat:p.cat||'',actions:buildActions(p),remind:p.remind_min||0,raw:raw})}catch(e){todos.push({t:raw,d:false,dl:''})}}).catch(function(){todos.push({t:raw,d:false,dl:''})}).finally(function(){inp.style.borderColor='#27272a';sTodos()})}
+else{todos.push({t:raw,d:false,dl:''});sTodos()}}
+
+function rTodos(){var html='';for(var i=0;i<todos.length;i++){var t=todos[i];var catBadge=t.cat?'<span style="display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;color:#fff;background:'+(catColors[t.cat]||'#52525b')+';margin-left:6px">'+t.cat+'</span>':'';html+='<div class="todo"><input type="checkbox" class="todo-check" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div style="flex:1;min-width:0"><div class="'+(t.d?'todo-done':'')+'">'+t.t+catBadge+'</div>'+(t.dl?'<div class="todo-detail">'+t.dl+'</div>':'')+(t.actions?'<div style="margin-top:3px">'+t.actions+'</div>':'')+'</div><button onclick="delTodo('+i+')" style="background:none;border:none;color:#3f3f46;cursor:pointer;font-size:14px;padding:0 2px">×</button></div>'}document.getElementById('sidebar-todos').innerHTML=html}
+function delTodo(i){todos.splice(i,1);sTodos()}
 function togT(i){todos[i].d=!todos[i].d;sTodos()}
 function sTodos(){localStorage.setItem('td',JSON.stringify(todos));rTodos()}
 rTodos();
@@ -212,7 +246,7 @@ function getApiConfig(){return JSON.parse(localStorage.getItem('userapi')||'{}')
 function openApiSettings(){var p=getApiConfig();document.getElementById('api-endpoint').value=p.endpoint||'https://api.openai.com/v1/chat/completions';document.getElementById('api-key').value=p.key||'';document.getElementById('api-model').value=p.model||'gpt-4o-mini';document.getElementById('api-modal').classList.add('open')}
 function closeApiSettings(){localStorage.setItem('userapi',JSON.stringify({endpoint:document.getElementById('api-endpoint').value.trim(),key:document.getElementById('api-key').value.trim(),model:document.getElementById('api-model').value.trim()}));document.getElementById('api-modal').classList.remove('open');initChat()}
 var chatHistory=[];
-function initChat(){var cfg=getApiConfig();var btn=document.getElementById('chat-send');var aiBtn=document.getElementById('ai-todo-btn');if(cfg.key&&cfg.endpoint){btn.disabled=false;btn.textContent='发送';btn.style.opacity='1';if(aiBtn){aiBtn.disabled=false;aiBtn.style.opacity='1'}}else{btn.disabled=true;btn.textContent='配置API';btn.style.opacity='0.5';if(aiBtn){aiBtn.disabled=true;aiBtn.style.opacity='0.3'}}}
+function initChat(){var cfg=getApiConfig();var btn=document.getElementById('chat-send');if(cfg.key&&cfg.endpoint){btn.disabled=false;btn.textContent='发送';btn.style.opacity='1'}else{btn.disabled=true;btn.textContent='配置API';btn.style.opacity='0.5'}}
 function sendChat(){var cfg=getApiConfig();if(!cfg.key)return;var input=document.getElementById('chat-input');var msg=input.value.trim();if(!msg)return;input.value='';chatHistory.push({role:'user',content:msg});var ctx='[用户数据]\n';var tds=JSON.parse(localStorage.getItem('td')||'[]');if(tds.length){ctx+='待办：\n';tds.forEach(function(t){ctx+=(t.d?'✅':'⬜')+' '+t.t+(t.dl?' ('+t.dl+')':'')+'\n'})}var mds=JSON.parse(localStorage.getItem('mood')||'{}');if(mds.mood)ctx+='心情：'+mds.mood+' 能量：'+(mds.energy||'-')+'/5\n';renderChat();document.getElementById('chat-send').disabled=true;document.getElementById('chat-send').textContent='思考中...';fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:ctx+'请根据用户数据回答，简洁实用。'}].concat(chatHistory)})}).then(function(r){return r.json()}).then(function(d){var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'无回复';chatHistory.push({role:'assistant',content:reply});renderChat()}).catch(function(e){chatHistory.push({role:'assistant',content:'请求失败'});renderChat()}).finally(function(){document.getElementById('chat-send').disabled=false;document.getElementById('chat-send').textContent='发送'})}
 function renderChat(){var el=document.getElementById('chat-messages');el.innerHTML=chatHistory.map(function(m){var isU=m.role==='user';return '<div style="margin-bottom:8px;text-align:'+(isU?'right':'left')+'"><div style="display:inline-block;max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.5;background:'+(isU?'#2563eb':'#1e1e24')+';color:'+(isU?'#fff':'#e4e4e7')+'">'+m.content.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div></div>'}).join('');el.scrollTop=el.scrollHeight}
 initChat();
