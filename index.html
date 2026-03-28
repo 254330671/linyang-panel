@@ -174,7 +174,9 @@ h1 span{font-size:11px;color:#52525b;display:block;margin-top:2px}
           <span class="sub-tab on" onclick="switchGrow(this,'career')">职业</span>
           <span class="sub-tab" onclick="switchGrow(this,'milestone')">里程碑</span>
           <span class="sub-tab" onclick="switchGrow(this,'skills')">必修课</span>
+          <span class="sub-tab" onclick="switchGrow(this,'album')">📏 相册</span>
           <span class="sub-tab" onclick="switchGrow(this,'letter')">✉️ 信</span>
+          <span class="sub-tab" onclick="switchGrow(this,'review')">🔄 复盘</span>
           <span class="sub-tab" onclick="switchGrow(this,'stage')">阶段</span>
         </div>
         <div id="grow-career">
@@ -202,6 +204,30 @@ h1 span{font-size:11px;color:#52525b;display:block;margin-top:2px}
           <div id="ms-finance" style="display:none"><div id="ms-finance-list"></div></div>
           <div id="ms-safety" style="display:none"><div id="ms-safety-list"></div></div>
         </div>
+        <div id="grow-album" style="display:none">
+          <div style="text-align:center;margin-bottom:10px">
+            <div style="font-size:14px;font-weight:600">📏 成长相册</div>
+            <div style="font-size:11px;color:#52525b">记录身高体重，跟踪成长趋势</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div class="card" style="background:#0a0a0f;padding:10px;text-align:center;cursor:pointer" onclick="inputAlbumData()">
+              <div style="font-size:11px;color:#52525b">身高</div>
+              <div style="font-size:20px;font-weight:700;color:#60a5fa" id="album-height">--</div>
+              <div style="font-size:10px;color:#3f3f46">cm</div>
+            </div>
+            <div class="card" style="background:#0a0a0f;padding:10px;text-align:center;cursor:pointer" onclick="inputAlbumData()">
+              <div style="font-size:11px;color:#52525b">体重</div>
+              <div style="font-size:20px;font-weight:700;color:#f59e0b" id="album-weight">--</div>
+              <div style="font-size:10px;color:#3f3f46">kg</div>
+            </div>
+          </div>
+          <div id="album-chart" style="background:#0a0a0f;border-radius:8px;padding:10px;margin-bottom:8px;min-height:80px">
+            <div style="font-size:11px;color:#52525b;margin-bottom:6px">📊 趋势</div>
+            <div id="album-trend" style="font-size:12px;color:#a1a1aa"></div>
+          </div>
+          <div id="album-history" style="font-size:12px"></div>
+          <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="inputAlbumData()">+ 记录数据</button>
+        </div>
         <div id="grow-letter" style="display:none">
           <div style="text-align:center;margin-bottom:10px">
             <div style="font-size:12px;color:#52525b">写给未来的自己</div>
@@ -222,7 +248,22 @@ h1 span{font-size:11px;color:#52525b;display:block;margin-top:2px}
           <div id="letter-list" style="margin-top:12px"></div>
         </div>
         <div id="grow-skills" style="display:none">
-          <ul class="cl" id="skills-list"></ul>
+          <div style="font-size:12px;color:#52525b;margin-bottom:8px">生活必修课 + 共创区热门技能</div>
+          <div class="sub-tabs" style="margin-bottom:8px">
+            <span class="sub-tab on" onclick="switchSkillView(this,'local')">📝 我的</span>
+            <span class="sub-tab" onclick="switchSkillView(this,'hot')">🔥 热门</span>
+          </div>
+          <div id="skill-local"><ul class="cl" id="skills-list"></ul></div>
+          <div id="skill-hot" style="display:none">
+            <div id="skill-hot-list"></div>
+          </div>
+        </div>
+        <div id="grow-review" style="display:none">
+          <div style="text-align:center;margin-bottom:10px">
+            <div style="font-size:14px;font-weight:600">🔄 本周复盘</div>
+          </div>
+          <div id="review-content"></div>
+          <button class="btn" style="width:100%;margin-top:10px" onclick="generateReview()">生成复盘</button>
         </div>
         <div id="grow-stage" style="display:none">
           <div class="prof" id="stage-selector">
@@ -289,6 +330,7 @@ h1 span{font-size:11px;color:#52525b;display:block;margin-top:2px}
           <span class="sub-tab" onclick="switchHealth(this,'symptom')">🤒 症状</span>
           <span class="sub-tab" onclick="switchHealth(this,'sleep')">😴 睡前</span>
           <span class="sub-tab" onclick="switchHealth(this,'body')">💪 身体</span>
+          <span class="sub-tab" onclick="switchHealth(this,'ai')">🤖 AI</span>
         </div>
         <!-- 急救卡 -->
         <div id="health-emergency">
@@ -385,6 +427,13 @@ h1 span{font-size:11px;color:#52525b;display:block;margin-top:2px}
           </div>
           <div id="body-history" style="margin-top:8px;font-size:12px;color:#52525b"></div>
           <div style="font-size:11px;color:#3f3f46;margin-top:8px;text-align:center">📋 建议：25岁加血脂血糖检查 · 引用国家卫健委指南</div>
+        </div>
+        <!-- AI Analysis -->
+        <div id="health-ai" style="display:none">
+          <div style="text-align:center;font-size:12px;color:#52525b;margin-bottom:8px">基于你的健康数据分析</div>
+          <button class="btn" style="width:100%;margin-bottom:10px" onclick="runHealthAI()">🤖 分析我的健康状况</button>
+          <button class="btn btn-ghost btn-sm" style="width:100%;margin-bottom:10px" onclick="exportHealthData()">📤 导出健康数据</button>
+          <div id="health-ai-result" style="font-size:13px;line-height:1.6"></div>
         </div>
       </div>
     </div>
@@ -734,7 +783,7 @@ function openLetter(i){
 function switchGrow(el,id){
   el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
   el.classList.add('on');
-  ['career','milestone','letter','skills','stage'].forEach(function(s){
+  ['career','milestone','album','letter','skills','review','stage'].forEach(function(s){
     document.getElementById('grow-'+s).style.display=s===id?'':'none';
   });
   if(id==='milestone')renderMilestones();
@@ -1320,6 +1369,200 @@ function switchHealthTab(id){
 renderHealthSortBanner();
 
 
+
+
+
+
+// ===== Weekly Review =====
+function generateReview(){
+  var html='';
+  // Todos
+  var todos=JSON.parse(localStorage.getItem('td')||'[]');
+  var done=todos.filter(function(t){return t.d}).length;
+  var total=todos.length;
+  var rate=total?Math.round(done/total*100):0;
+  html+='<div class="sym-item"><div style="font-size:13px;font-weight:500">📋 待办</div><div class="sym-meta">完成 '+done+'/'+total+' （'+rate+'%）</div></div>';
+  
+  // Habits
+  var habits=JSON.parse(localStorage.getItem('habits')||'[]');
+  var habitsDone=habits.filter(function(h){return h.done}).length;
+  html+='<div class="sym-item"><div style="font-size:13px;font-weight:500">🔄 习惯</div><div class="sym-meta">今日完成 '+habitsDone+'/'+habits.length+'</div></div>';
+  
+  // Expenses
+  var expenses=JSON.parse(localStorage.getItem('expenses')||'[]');
+  var now=new Date();
+  var weekAgo=new Date(now.getTime()-7*86400000);
+  var weekExp=expenses.filter(function(e){return new Date(e.date)>=weekAgo}).reduce(function(s,e){return s+e.amount},0);
+  html+='<div class="sym-item"><div style="font-size:13px;font-weight:500">💰 本周支出</div><div class="sym-meta">¥'+weekExp+'</div></div>';
+  
+  // Health
+  var syms=JSON.parse(localStorage.getItem('symptoms')||'[]');
+  var weekSyms=syms.filter(function(s){return new Date(s.date)>=weekAgo});
+  html+='<div class="sym-item"><div style="font-size:13px;font-weight:500">❤️ 健康</div><div class="sym-meta">本周症状记录 '+weekSyms.length+' 次'+(weekSyms.length>2?' ⚠️ 偏多，注意休息':'')+'</div></div>';
+  
+  // Body
+  var body=JSON.parse(localStorage.getItem('body_data')||'[]');
+  if(body.length>=2){
+    var b=body[body.length-1];
+    var bPrev=body[body.length-2];
+    var wTrend=b.weight&&bPrev.weight?(b.weight-bPrev.weight).toFixed(1):'';
+    html+='<div class="sym-item"><div style="font-size:13px;font-weight:500">💪 身体</div><div class="sym-meta">'+(b.weight?b.weight+'kg':'')+(wTrend?' ('+(wTrend>0?'+':'')+wTrend+')':'')+'</div></div>';
+  }
+  
+  // Mood
+  var mood=JSON.parse(localStorage.getItem('mood')||'{}');
+  if(mood.mood)html+='<div class="sym-item"><div style="font-size:13px;font-weight:500">😊 心情</div><div class="sym-meta">当前 '+mood.mood+' 能量值 '+mood.energy+'/5</div></div>';
+  
+  // Period
+  var period=JSON.parse(localStorage.getItem('period_data')||'{"records":[]}');
+  if(period.current)html+='<div class="sym-item"><div style="font-size:13px;font-weight:500">🩸 经期</div><div class="sym-meta">进行中（'+period.current.start+'开始）</div></div>';
+  
+  document.getElementById('review-content').innerHTML=html||'<div style="text-align:center;color:#3f3f46;padding:20px">先记录一些数据再复盘</div>';
+}
+
+// ===== Skills + Community =====
+function switchSkillView(el,id){
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  document.getElementById('skill-local').style.display=id==='local'?'':'none';
+  document.getElementById('skill-hot').style.display=id==='hot'?'':'none';
+  if(id==='hot')renderSkillHot();
+}
+function renderSkillHot(){
+  var prof=JSON.parse(localStorage.getItem('profile')||'{}');
+  var age=parseInt(prof.age)||24;
+  var hotSkills=[
+    {title:'🚗 考驾照',people:'328人讨论',avg:'平均3.5个月拿证',tip:'科目二多练倒库',show:age>=18},
+    {title:'🍳 学做饭',people:'512人讨论',avg:'从蛋炒饭开始',tip:'周末做一次，熟能生巧',show:true},
+    {title:'💰 理财入门',people:'289人讨论',avg:'先学会记账',tip:'推荐《小狗钱钱》',show:age>=16},
+    {title:'🏋️ 健身入门',people:'445人讨论',avg:'先从走路开始',tip:'每周3次，每次30分钟',show:true},
+    {title:'📖 英语学习',people:'623人讨论',avg:'每天15分钟',tip:'看美剧学口语',show:true},
+    {title:'💻 编程入门',people:'387人讨论',avg:'Python最友好',tip:'跟着教程做项目',show:age>=14},
+    {title:'🧘 冥想入门',people:'156人讨论',avg:'每天5分钟就够',tip:'推荐App：小睡眠',show:true},
+    {title:'🎸 学乐器',people:'234人讨论',avg:'尤克里里最简单',tip:'一个月能弹简单曲子',show:true},
+  ].filter(function(s){return s.show});
+  var html=hotSkills.map(function(s){
+    return '<div class="sym-item" style="border-left:3px solid #f59e0b"><div style="font-size:13px;font-weight:500">'+s.title+'</div><div style="font-size:11px;color:#52525b;margin-top:2px">'+s.people+' · '+s.avg+'</div><div class="sym-meta">'+s.tip+'</div></div>';
+  }).join('');
+  document.getElementById('skill-hot-list').innerHTML=html;
+}
+
+// ===== Growth Album =====
+function inputAlbumData(){
+  var h=prompt('身高（cm）','');
+  var w=prompt('体重（kg）','');
+  if(!h&&!w)return;
+  var records=JSON.parse(localStorage.getItem('body_data')||'[]');
+  records.push({date:new Date().toISOString().slice(0,10),height:parseFloat(h)||null,weight:parseFloat(w)||null});
+  localStorage.setItem('body_data',JSON.stringify(records));
+  renderAlbum();
+  renderBodyData();
+}
+function renderAlbum(){
+  var records=JSON.parse(localStorage.getItem('body_data')||'[]');
+  if(records.length){
+    var last=records[records.length-1];
+    if(last.height)document.getElementById('album-height').textContent=last.height;
+    if(last.weight)document.getElementById('album-weight').textContent=last.weight;
+    // Trend
+    if(records.length>=2){
+      var first=records[0];
+      var l=records[records.length-1];
+      var trend='';
+      if(first.height&&l.height){
+        var hDiff=(l.height-first.height).toFixed(1);
+        trend+='身高：'+(hDiff>0?'+':'')+hDiff+'cm ';
+      }
+      if(first.weight&&l.weight){
+        var wDiff=(l.weight-first.weight).toFixed(1);
+        trend+='体重：'+(wDiff>0?'+':'')+wDiff+'kg';
+      }
+      document.getElementById('album-trend').textContent=trend||'继续记录查看趋势';
+      // Simple bar chart
+      var chartHtml='<div style="display:flex;align-items:flex-end;gap:3px;height:60px;margin-top:8px">';
+      records.slice(-10).forEach(function(r){
+        if(r.weight){
+          var h=Math.min(55,Math.max(5,(r.weight-30)*2));
+          chartHtml+='<div style="flex:1;background:#2563eb;border-radius:2px 2px 0 0;height:'+h+'px" title="'+r.date+': '+r.weight+'kg"></div>';
+        }
+      });
+      chartHtml+='</div>';
+      document.getElementById('album-trend').innerHTML+=chartHtml;
+    }
+    // History
+    var hist=records.slice(-8).reverse().map(function(r){
+      return '<div style="padding:3px 0;border-bottom:1px solid #1a1a1f;display:flex;justify-content:space-between"><span style="color:#52525b">'+r.date+'</span><span>'+(r.height?r.height+'cm':'')+(r.weight?' '+r.weight+'kg':'')+'</span></div>';
+    }).join('');
+    document.getElementById('album-history').innerHTML=hist;
+  }else{
+    document.getElementById('album-height').textContent='--';
+    document.getElementById('album-weight').textContent='--';
+    document.getElementById('album-trend').textContent='点击记录第一次数据';
+    document.getElementById('album-history').innerHTML='';
+  }
+}
+
+// ===== AI Health Analysis =====
+async function runHealthAI(){
+  var cfg=getApiConfig();
+  if(!cfg.key||!cfg.endpoint){
+    document.getElementById('health-ai-result').innerHTML='<div style="color:#f59e0b;text-align:center;padding:20px">请先配置API（右上角⚙️）</div>';
+    return;
+  }
+  var btn=event.target;
+  btn.disabled=true;
+  btn.textContent='分析中...';
+  
+  // Collect health data
+  var ctx='[用户健康数据]\n';
+  // Symptoms
+  var syms=JSON.parse(localStorage.getItem('symptoms')||'[]');
+  if(syms.length){
+    ctx+='最近症状记录：\n';
+    syms.slice(-10).forEach(function(s){ctx+='  '+s.date+': '+s.symptom+(s.env?' ('+s.env+')':'')+'\n'});
+  }
+  // Medications
+  var meds=JSON.parse(localStorage.getItem('medications')||'[]');
+  if(meds.length){
+    ctx+='用药记录：\n';
+    meds.forEach(function(m){ctx+='  '+m.name+' ('+m.purpose+') 最近:'+m.lastDate+' 本月'+m.count+'次\n'});
+  }
+  // Body data
+  var body=JSON.parse(localStorage.getItem('body_data')||'[]');
+  if(body.length){
+    ctx+='身体数据：\n';
+    body.slice(-5).forEach(function(b){ctx+='  '+b.date+': '+(b.height?b.height+'cm':'')+' '+(b.weight?b.weight+'kg':'')+'\n'});
+  }
+  // Period
+  var period=JSON.parse(localStorage.getItem('period_data')||'{"records":[]}');
+  if(period.records&&period.records.length){
+    ctx+='经期记录：最近'+period.records.length+'次\n';
+    period.records.slice(-3).forEach(function(r){ctx+='  '+r.start+(r.end?' ~ '+r.end:' (进行中)')+'\n'});
+  }
+  // Sleep checklist
+  ctx+='睡前习惯：刷牙/充电/看待办/门窗检查\n';
+  // Profile
+  var prof=JSON.parse(localStorage.getItem('profile')||'{}');
+  if(prof.age)ctx+='年龄：'+prof.age+' 性别：'+(prof.gender||'未填')+' 城市：'+(prof.city||'未填')+'\n';
+  
+  ctx+='\n请根据以上数据给出健康分析和建议。用简洁的中文，分点列出。如果数据不足，请提醒用户补充。';
+  
+  try{
+    var resp=await fetch(cfg.endpoint,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},
+      body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:'你是一个健康分析助手。根据用户的健康数据给出分析和建议。注意：1)不要输出原始数据 2)给出可操作的建议 3)如有异常指标建议就医 4)保持温和关心的语气'},{role:'user',content:ctx}]})
+    });
+    var data=await resp.json();
+    var reply=data.choices&&data.choices[0]&&data.choices[0].message?data.choices[0].message.content:'分析失败';
+    document.getElementById('health-ai-result').innerHTML='<div style="background:#0a0a0f;border-radius:8px;padding:12px;border:1px solid #1e1e24">'+reply.replace(/\n/g,'<br>').replace(/</g,'&lt;')+'</div>';
+  }catch(e){
+    document.getElementById('health-ai-result').innerHTML='<div style="color:#ef4444">请求失败：'+e.message+'</div>';
+  }
+  btn.disabled=false;
+  btn.textContent='🤖 分析我的健康状况';
+}
+
 // ===== Health × Growth Cross-Module =====
 function getCrossInsights(){
   var insights=[];
@@ -1385,6 +1628,67 @@ function renderCrossInsights(){
 }
 
 renderCrossInsights();
+
+
+// ===== Data Export =====
+function exportHealthData(){
+  var data={
+    exportDate:new Date().toISOString(),
+    profile:JSON.parse(localStorage.getItem('profile')||'{}'),
+    emergency:JSON.parse(localStorage.getItem('emergency_card')||'null'),
+    healthProfile:JSON.parse(localStorage.getItem('health_profile')||'null'),
+    period:JSON.parse(localStorage.getItem('period_data')||'{"records":[]}'),
+    symptoms:JSON.parse(localStorage.getItem('symptoms')||'[]'),
+    medications:JSON.parse(localStorage.getItem('medications')||'[]'),
+    bodyData:JSON.parse(localStorage.getItem('body_data')||'[]'),
+    todos:JSON.parse(localStorage.getItem('td')||'[]'),
+    habits:JSON.parse(localStorage.getItem('habits')||'[]'),
+    expenses:JSON.parse(localStorage.getItem('expenses')||'[]'),
+    mood:JSON.parse(localStorage.getItem('mood')||'{}'),
+    milestones:JSON.parse(localStorage.getItem('milestones')||'[]'),
+    letters:JSON.parse(localStorage.getItem('future_letters')||'[]')
+  };
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='面板数据_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ 数据已导出');
+}
+
+function importHealthData(){
+  var input=document.createElement('input');
+  input.type='file';
+  input.accept='.json';
+  input.onchange=function(e){
+    var file=e.target.files[0];
+    if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      try{
+        var data=JSON.parse(ev.target.result);
+        if(data.profile)localStorage.setItem('profile',JSON.stringify(data.profile));
+        if(data.emergency)localStorage.setItem('emergency_card',JSON.stringify(data.emergency));
+        if(data.healthProfile)localStorage.setItem('health_profile',JSON.stringify(data.healthProfile));
+        if(data.period)localStorage.setItem('period_data',JSON.stringify(data.period));
+        if(data.symptoms)localStorage.setItem('symptoms',JSON.stringify(data.symptoms));
+        if(data.medications)localStorage.setItem('medications',JSON.stringify(data.medications));
+        if(data.bodyData)localStorage.setItem('body_data',JSON.stringify(data.bodyData));
+        if(data.todos)localStorage.setItem('td',JSON.stringify(data.todos));
+        if(data.habits)localStorage.setItem('habits',JSON.stringify(data.habits));
+        if(data.expenses)localStorage.setItem('expenses',JSON.stringify(data.expenses));
+        if(data.mood)localStorage.setItem('mood',JSON.stringify(data.mood));
+        if(data.letters)localStorage.setItem('future_letters',JSON.stringify(data.letters));
+        alert('✅ 数据已导入，刷新页面生效');
+        location.reload();
+      }catch(err){alert('❌ 文件格式错误')}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
 
 </script>
 <style>.mobile-nav{position:fixed;bottom:0;left:0;right:0;background:#141418;border-top:1px solid #1e1e24;display:none;justify-content:space-around;padding:6px 0;z-index:50;backdrop-filter:blur(10px)}@media(max-width:480px){.mobile-nav{display:flex}}.nav-item{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#71717a;cursor:pointer;padding:4px 8px;border:none;background:none}.nav-item.on{color:#60a5fa}.nav-item span{font-size:18px;margin-bottom:2px}</style><div class="mobile-nav"><button class="nav-item on" onclick="scrollTo(0,0)"><span>📰</span>首页</button><button class="nav-item" onclick="document.getElementById('section-life').scrollIntoView({behavior:'smooth'})"><span>🌿</span>生活</button><button class="nav-item" onclick="document.getElementById('section-grow').scrollIntoView({behavior:'smooth'})"><span>📖</span>成长</button><button class="nav-item" onclick="document.getElementById('section-health').scrollIntoView({behavior:'smooth'})"><span>❤️</span>健康</button><button class="nav-item" onclick="document.getElementById('chat-messages').scrollIntoView({behavior:'smooth'})"><span>💬</span>AI</button></div>`n<style>
