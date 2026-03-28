@@ -97,7 +97,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div id="life-weather"><div class="card" style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div><div style="margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-advice">时令：春笋、草莓、荠菜</div></div></div>
 <div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div></div>
 <div id="life-habit" style="display:none"><div class="card"><div class="card-title">🔥 连续打卡 <span id="habit-streak" style="color:#f59e0b;font-size:13px;margin-left:auto">0天</span></div><div id="habit-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px"></div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="habit-cats"><span class="sub-tab on" onclick="filterHabitCat('all',this)">全部</span><span class="sub-tab" onclick="filterHabitCat('健康',this)">🏥</span><span class="sub-tab" onclick="filterHabitCat('生活',this)">🏠</span><span class="sub-tab" onclick="filterHabitCat('学习',this)">📚</span></div><ul class="cl" id="habit-list"></ul><div id="habit-suggestions" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><select class="inp" id="habit-cat-sel" style="width:60px;padding:4px"><option value="健康">🏥</option><option value="生活">🏠</option><option value="学习">📚</option></select><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
-<div id="life-money" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">本月支出</div><div style="text-align:center;font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div style="display:flex;gap:6px;margin:10px 0"><input class="inp" id="money-desc" placeholder="项目" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><ul style="list-style:none;max-height:160px;overflow-y:auto" id="expense-list"></ul></div></div>
+<div id="life-money" style="display:none"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="card-title" style="margin:0">💰 记账</span><div style="display:flex;gap:4px"><span class="sub-tab on" onclick="switchMoneyType('expense',this)">支出</span><span class="sub-tab" onclick="switchMoneyType('income',this)">收入</span></div></div><div style="text-align:center"><div style="font-size:11px;color:#71717a" id="money-month-label">本月支出</div><div style="font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div id="money-compare" style="font-size:11px;color:#52525b;margin-top:2px"></div><div id="money-budget-bar" style="display:none;margin-top:6px"><div style="background:#1e1e24;border-radius:4px;height:6px;overflow:hidden"><div id="money-budget-fill" style="height:100%;background:#22c55e;border-radius:4px;transition:width .3s"></div></div><div style="font-size:10px;color:#52525b;margin-top:2px" id="money-budget-text"></div></div></div><div id="money-pie" style="margin:12px auto;width:120px;height:120px;border-radius:50%;position:relative" title="分类饼图"><div style="position:absolute;inset:20px;background:#141418;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#a1a1aa" id="money-pie-center">暂无数据</div></div><div id="money-cats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;justify-content:center"></div><div style="display:flex;gap:6px;margin:10px 0"><select class="inp" id="money-cat" style="width:65px;padding:4px;font-size:12px"></select><input class="inp" id="money-desc" placeholder="备注" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><div style="margin-bottom:8px;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#52525b">月预算</span><input class="inp" id="money-budget-inp" placeholder="设预算" type="number" style="width:80px;font-size:12px" onchange="setBudget()"><span style="font-size:10px;color:#52525b" id="money-budget-cur"></span></div><ul style="list-style:none;max-height:180px;overflow-y:auto" id="expense-list"></ul></div></div>
 </div>
 <div class="page" id="page-grow">
 <div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('grow',this,'career')">职业</span><span class="sub-tab" onclick="switchSub('grow',this,'skills')">必修课</span><span class="sub-tab" onclick="switchSub('grow',this,'stage')">阶段</span></div>
@@ -512,11 +512,130 @@ function adoptSuggestion(text,cat){
 
 renderHabits();
 
-// Expenses
+// Expenses — 完整版：分类/饼图/预算/月度对比/收支切换
+var moneyType='expense';
+var expenseCats={餐饮:'#ef4444',交通:'#3b82f6',购物:'#a855f7',娱乐:'#06b6d4',医疗:'#f97316',教育:'#eab308',居住:'#22c55e',其他:'#6b7280'};
+var incomeCats={工资:'#22c55e',副业:'#3b82f6',理财:'#a855f7',红包:'#ef4444',其他:'#6b7280'};
+
 function getExpenses(){return JSON.parse(localStorage.getItem('expenses')||'[]')}
-function renderExpenses(){var items=getExpenses();var month=new Date().toISOString().slice(0,7);var total=items.filter(function(e){return e.date.startsWith(month)}).reduce(function(s,e){return s+e.amount},0);document.getElementById('money-total').textContent='¥'+total;document.getElementById('expense-list').innerHTML=items.slice(-10).reverse().map(function(e,i){return '<li class="todo"><span style="flex:1">'+e.desc+' <span style="color:#f59e0b">¥'+e.amount+'</span></span><span style="font-size:10px;color:#52525b">'+e.date.slice(5)+'</span><button onclick="delExpense('+(items.length-1-i)+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px">×</button></li>'}).join('')}
-function addExpense(){var desc=document.getElementById('money-desc');var amt=document.getElementById('money-amt');if(!desc.value.trim()||!amt.value)return;var items=getExpenses();items.push({desc:desc.value.trim(),amount:parseFloat(amt.value),date:new Date().toISOString().slice(0,10)});localStorage.setItem('expenses',JSON.stringify(items));desc.value='';amt.value='';renderExpenses()}
-function delExpense(i){var items=getExpenses();items.splice(i,1);localStorage.setItem('expenses',JSON.stringify(items));renderExpenses()}
+function getBudget(){return JSON.parse(localStorage.getItem('budget')||'{}')}
+
+function updateCatSelect(){
+  var sel=document.getElementById('money-cat');
+  var cats=moneyType==='expense'?expenseCats:incomeCats;
+  sel.innerHTML=Object.keys(cats).map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('');
+}
+
+function switchMoneyType(type,el){
+  moneyType=type;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  updateCatSelect();
+  renderExpenses();
+}
+
+function renderExpenses(){
+  var items=getExpenses();
+  var month=new Date().toISOString().slice(0,7);
+  var monthItems=items.filter(function(e){return e.date.startsWith(month)&&e.type===moneyType});
+  var total=monthItems.reduce(function(s,e){return s+e.amount},0);
+  
+  document.getElementById('money-total').textContent='¥'+total;
+  document.getElementById('money-month-label').textContent=moneyType==='expense'?'本月支出':'本月收入';
+  document.getElementById('money-total').style.color=moneyType==='expense'?'#f59e0b':'#22c55e';
+  
+  // Last month comparison
+  var lastMonth=new Date();lastMonth.setMonth(lastMonth.getMonth()-1);
+  var lmKey=lastMonth.toISOString().slice(0,7);
+  var lmTotal=items.filter(function(e){return e.date.startsWith(lmKey)&&e.type===moneyType}).reduce(function(s,e){return s+e.amount},0);
+  var diff=total-lmTotal;
+  var compareEl=document.getElementById('money-compare');
+  if(lmTotal>0){
+    var pct=Math.round(diff/lmTotal*100);
+    var arrow=diff>0?'↑':diff<0?'↓':'→';
+    var color=diff>0?(moneyType==='expense'?'#ef4444':'#22c55e'):(moneyType==='expense'?'#22c55e':'#ef4444');
+    compareEl.innerHTML='<span style="color:'+color+'">'+arrow+' '+Math.abs(pct)+'%</span> 较上月';
+  }else{compareEl.innerHTML=''}
+  
+  // Budget bar (expense only)
+  var budgetBar=document.getElementById('money-budget-bar');
+  var budget=getBudget();
+  if(moneyType==='expense'&&budget.monthly>0){
+    budgetBar.style.display='block';
+    var pct=Math.min(100,Math.round(total/budget.monthly*100));
+    var fill=document.getElementById('money-budget-fill');
+    fill.style.width=pct+'%';
+    fill.style.background=pct>=80?(pct>=100?'#ef4444':'#f59e0b'):'#22c55e';
+    document.getElementById('money-budget-text').textContent='已用'+pct+'%（¥'+total+'/'+budget.monthly+'）';
+    if(pct>=80&&pct<100)document.getElementById('money-budget-text').style.color='#f59e0b';
+    else if(pct>=100)document.getElementById('money-budget-text').style.color='#ef4444';
+    else document.getElementById('money-budget-text').style.color='#52525b';
+  }else{budgetBar.style.display='none'}
+  document.getElementById('money-budget-cur').textContent=budget.monthly?'预算 ¥'+budget.monthly+'/月':'';
+  document.getElementById('money-budget-inp').value=budget.monthly||'';
+  
+  // Pie chart
+  var cats=moneyType==='expense'?expenseCats:incomeCats;
+  var catTotals={};
+  monthItems.forEach(function(e){catTotals[e.cat]=(catTotals[e.cat]||0)+e.amount});
+  var pieColors=[];
+  var pieLabels=[];
+  var cumPct=0;
+  var pieEl=document.getElementById('money-pie');
+  var centerEl=document.getElementById('money-pie-center');
+  var catLegEl=document.getElementById('money-cats');
+  
+  if(total>0){
+    var gradientParts=[];
+    var keys=Object.keys(catTotals).sort(function(a,b){return catTotals[b]-catTotals[a]});
+    keys.forEach(function(cat){
+      var pct=catTotals[cat]/total*100;
+      var color=cats[cat]||'#6b7280';
+      gradientParts.push(color+' '+cumPct+'% '+(cumPct+pct)+'%');
+      pieLabels.push('<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#a1a1aa"><span style="width:8px;height:8px;border-radius:2px;background:'+color+';display:inline-block"></span>'+cat+' '+Math.round(pct)+'%</span>');
+      cumPct+=pct;
+    });
+    pieEl.style.background='conic-gradient('+gradientParts.join(',')+')';
+    centerEl.textContent='¥'+total;
+    catLegEl.innerHTML=pieLabels.join('');
+  }else{
+    pieEl.style.background='#1e1e24';
+    centerEl.textContent='暂无数据';
+    catLegEl.innerHTML='';
+  }
+  
+  // List
+  var list=document.getElementById('expense-list');
+  var monthReversed=monthItems.slice().reverse();
+  list.innerHTML=monthReversed.map(function(e,i){
+    var catColor=cats[e.cat]||'#6b7280';
+    var realIdx=items.length-1-items.slice().reverse().findIndex(function(x){return x===e});
+    return '<li class="todo"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+catColor+';flex-shrink:0;margin-top:6px"></span><span style="flex:1;margin-left:4px">'+e.desc+' <span style="color:'+(moneyType==='expense'?'#f59e0b':'#22c55e')+'">¥'+e.amount+'</span> <span style="font-size:10px;color:#3f3f46">'+e.cat+'</span></span><span style="font-size:10px;color:#52525b">'+e.date.slice(5)+'</span><button onclick="delExpense('+realIdx+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px;padding:0 2px">×</button></li>';
+  }).join('');
+}
+
+function addExpense(){
+  var desc=document.getElementById('money-desc');
+  var amt=document.getElementById('money-amt');
+  var cat=document.getElementById('money-cat').value;
+  if(!amt.value)return;
+  var items=getExpenses();
+  items.push({desc:desc.value.trim()||cat,amount:parseFloat(amt.value),date:new Date().toISOString().slice(0,10),type:moneyType,cat:cat});
+  localStorage.setItem('expenses',JSON.stringify(items));
+  desc.value='';amt.value='';renderExpenses();
+}
+
+function delExpense(i){
+  var items=getExpenses();items.splice(i,1);localStorage.setItem('expenses',JSON.stringify(items));renderExpenses();
+}
+
+function setBudget(){
+  var v=document.getElementById('money-budget-inp').value;
+  localStorage.setItem('budget',JSON.stringify({monthly:parseFloat(v)||0}));
+  renderExpenses();
+}
+
+updateCatSelect();
 renderExpenses();
 
 // Career
