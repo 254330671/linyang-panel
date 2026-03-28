@@ -94,7 +94,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 </div>
 <div class="page" id="page-life">
 <div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('life',this,'weather')">天气</span><span class="sub-tab" onclick="switchSub('life',this,'mood')">心情</span><span class="sub-tab" onclick="switchSub('life',this,'habit')">习惯</span><span class="sub-tab" onclick="switchSub('life',this,'money')">记账</span></div>
-<div id="life-weather"><div class="card"><div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none" id="weather-city-tabs"></div><div style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div id="wt-advice" style="margin-top:10px;padding:8px 10px;background:#0a0a0f;border-radius:8px;font-size:12px;color:#a1a1aa;text-align:left;line-height:1.6"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div></div><div style="margin-top:8px;display:flex;gap:6px;align-items:center"><input class="inp" id="city-input" placeholder="添加城市昵称·城市名" style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addCity()"><button class="btn btn-sm" onclick="addCity()">+</button></div></div></div>
+<div id="life-weather"><div class="card"><div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none" id="weather-city-tabs"></div><div style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div id="wt-advice" style="margin-top:10px;padding:8px 10px;background:#0a0a0f;border-radius:8px;font-size:12px;color:#a1a1aa;text-align:left;line-height:1.6"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div></div><div id="care-alerts" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input class="inp" id="city-input" placeholder="添加城市昵称·城市名" style="flex:1;font-size:12px;min-width:120px" onkeydown="if(event.key==='Enter')addCity()"><select class="inp" id="city-rel" style="width:56px;font-size:11px;padding:6px 2px"><option value="other">其他</option><option value="family">家人</option><option value="partner">对象</option><option value="friend">朋友</option></select><button class="btn btn-sm" onclick="addCity()">+</button></div></div></div>
 <div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="mood-note" placeholder="一句话记录为什么..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')saveMoodNote()"><button class="btn btn-sm" onclick="saveMoodNote()" style="font-size:11px">记</button></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div><div class="card"><div class="card-title">📊 本周心情</div><div id="mood-trend" style="display:flex;align-items:flex-end;gap:4px;height:60px;justify-content:center"></div><div id="mood-trend-labels" style="display:flex;gap:4px;justify-content:center;font-size:9px;color:#52525b;margin-top:4px"></div><div id="mood-insight" style="font-size:11px;color:#a1a1aa;margin-top:8px;padding:6px 8px;background:#0a0a0f;border-radius:6px;display:none"></div></div></div>
 <div id="life-habit" style="display:none"><div class="card"><div class="card-title">🔥 连续打卡 <span id="habit-streak" style="color:#f59e0b;font-size:13px;margin-left:auto">0天</span></div><div id="habit-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px"></div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="habit-cats"><span class="sub-tab on" onclick="filterHabitCat('all',this)">全部</span><span class="sub-tab" onclick="filterHabitCat('健康',this)">🏥</span><span class="sub-tab" onclick="filterHabitCat('生活',this)">🏠</span><span class="sub-tab" onclick="filterHabitCat('学习',this)">📚</span></div><ul class="cl" id="habit-list"></ul><div id="habit-suggestions" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><select class="inp" id="habit-cat-sel" style="width:60px;padding:4px"><option value="健康">🏥</option><option value="生活">🏠</option><option value="学习">📚</option></select><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
 <div id="life-money" style="display:none"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="card-title" style="margin:0">💰 记账</span><div style="display:flex;gap:4px"><span class="sub-tab on" onclick="switchMoneyType('expense',this)">支出</span><span class="sub-tab" onclick="switchMoneyType('income',this)">收入</span></div></div><div style="text-align:center"><div style="font-size:11px;color:#71717a" id="money-month-label">本月支出</div><div style="font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div id="money-compare" style="font-size:11px;color:#52525b;margin-top:2px"></div><div id="money-budget-bar" style="display:none;margin-top:6px"><div style="background:#1e1e24;border-radius:4px;height:6px;overflow:hidden"><div id="money-budget-fill" style="height:100%;background:#22c55e;border-radius:4px;transition:width .3s"></div></div><div style="font-size:10px;color:#52525b;margin-top:2px" id="money-budget-text"></div></div></div><div id="money-pie" style="margin:12px auto;width:120px;height:120px;border-radius:50%;position:relative" title="分类饼图"><div style="position:absolute;inset:20px;background:#141418;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#a1a1aa" id="money-pie-center">暂无数据</div></div><div id="money-cats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;justify-content:center"></div><div style="display:flex;gap:6px;margin:10px 0"><select class="inp" id="money-cat" style="width:65px;padding:4px;font-size:12px"></select><input class="inp" id="money-desc" placeholder="备注" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><div style="margin-bottom:8px;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#52525b">月预算</span><input class="inp" id="money-budget-inp" placeholder="设预算" type="number" style="width:80px;font-size:12px" onchange="setBudget()"><span style="font-size:10px;color:#52525b" id="money-budget-cur"></span></div><ul style="list-style:none;max-height:180px;overflow-y:auto" id="expense-list"></ul></div></div>
@@ -143,7 +143,9 @@ var weatherCache={};
 
 function getCities(){
   var cities=JSON.parse(localStorage.getItem('weatherCities')||'null');
-  if(!cities)cities=[{nick:'我',name:'上海',lat:31.23,lon:121.47}];
+  if(!cities)cities=[{nick:'我',name:'上海',lat:31.23,lon:121.47,rel:'self'}];
+  // Migrate old data without rel field
+  cities.forEach(function(c,i){if(!c.rel)c.rel=i===0?'self':'other'});
   return cities;
 }
 function saveCities(c){localStorage.setItem('weatherCities',JSON.stringify(c))}
@@ -153,13 +155,14 @@ function addCity(){
   if(!v||!v.value.trim())return;
   var parts=v.value.trim().split(/[·.]/);
   var nick=parts[0].trim();var name=(parts[1]||parts[0]).trim();
+  var rel=document.getElementById('city-rel').value;
   // Default coords for common cities
   var coords={北京:{lat:39.9,lon:116.4},上海:{lat:31.23,lon:121.47},广州:{lat:23.13,lon:113.26},深圳:{lat:22.54,lon:114.06},杭州:{lat:30.27,lon:120.15},成都:{lat:30.57,lon:104.07},武汉:{lat:30.59,lon:114.3},南京:{lat:32.06,lon:118.8},重庆:{lat:29.56,lon:106.55},西安:{lat:34.26,lon:108.94},长沙:{lat:28.23,lon:112.94},厦门:{lat:24.48,lon:118.09}};
   var c=coords[name];
   if(!c){alert('暂不支持'+name+'，试试：北京/上海/广州/深圳/杭州/成都/武汉/南京/重庆/西安/长沙/厦门');return}
   var cities=getCities();
   if(cities.length>=5){alert('最多5个城市');return}
-  cities.push({nick:nick,name:name,lat:c.lat,lon:c.lon});
+  cities.push({nick:nick,name:name,lat:c.lat,lon:c.lon,rel:rel});
   saveCities(cities);v.value='';
   renderCityTabs();loadWeatherFor(cities.length-1);
 }
@@ -245,6 +248,7 @@ function loadWeatherFor(idx){
         document.getElementById('sb-temp').textContent=Math.round(c.temperature_2m)+'°C';
         document.getElementById('sb-weather-desc').textContent=emoji+' '+city.nick+'·'+city.name;
         renderCityTabs();
+        generateCareAlerts();
       }catch(e){console.error(e)}
     }).catch(function(){document.getElementById('wt-temp').textContent='离线模式'});
   }catch(e){}
@@ -278,6 +282,120 @@ function detectLocation(){
   },{timeout:5000,maximumAge:300000});
 }
 detectLocation();
+
+// === 家人天气关怀 ===
+var relLabels={self:'我',family:'👨 家人',partner:'💑 对象',friend:'👋 朋友',other:''};
+var relColors={family:'#f59e0b',partner:'#ec4899',friend:'#22c55e',other:'#60a5fa'};
+
+function generateCareAlerts(){
+  var cities=getCities();
+  var alerts=[];
+  var now=new Date();
+  var month=now.getMonth()+1;
+  var day=now.getDate();
+
+  // Fetch weather for all family/friend cities and check anomalies
+  var familyCities=cities.filter(function(c){return c.rel!=='self'&&c.rel});
+  if(!familyCities.length){
+    // Just check holidays for user
+    checkHolidays(alerts,month,day,null);
+    renderCareAlerts(alerts);
+    return;
+  }
+
+  var pending=familyCities.length;
+  familyCities.forEach(function(city){
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lon+'&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Shanghai&forecast_days=1')
+    .then(function(r){return r.json()})
+    .then(function(d){
+      try{
+        var c=d.current;
+        var daily=d.daily;
+        var label=relLabels[city.rel]||city.nick;
+        var temp=Math.round(c.temperature_2m);
+        var maxT=Math.round(daily.temperature_2m_max[0]);
+        var minT=Math.round(daily.temperature_2m_min[0]);
+        var rainProb=daily.precipitation_probability_max[0]||0;
+        var code=daily.weather_code[0];
+        var tempDiff=maxT-minT;
+
+        // Rain alert
+        if(rainProb>=50){
+          alerts.push({icon:'🌧️',text:city.nick+'那边要下雨了（'+rainProb+'%概率），提醒带伞？',city:city,action:'rain'});
+        }
+        // Cold alert
+        if(tempDiff>=8||minT<5){
+          alerts.push({icon:'🥶',text:city.nick+'那边'+(minT<5?'最低'+minT+'°C':'温差'+tempDiff+'°')+'，提醒加衣服？',city:city,action:'cold'});
+        }
+        // Heat alert
+        if(maxT>=35){
+          alerts.push({icon:'🌡️',text:city.nick+'那边'+maxT+'°C高温，提醒少出门多喝水',city:city,action:'heat'});
+        }
+        // Extreme weather
+        if(code>=95||code===73||code===65||code===45){
+          var weatherName={45:'大雾',65:'大雨',73:'中雪',95:'雷暴'}[code]||'极端天气';
+          alerts.push({icon:'⚠️',text:city.nick+'那边有'+weatherName+'，关心一下？',city:city,action:'extreme'});
+        }
+        // Flu season + big temp swing
+        if((month>=11||month<=3)&&tempDiff>=6){
+          alerts.push({icon:'🤧',text:'最近流感多发，'+city.nick+'那边温差大，提醒注意保暖',city:city,action:'flu'});
+        }
+      }catch(e){}
+      pending--;
+      if(pending<=0){checkHolidays(alerts,month,day,null);renderCareAlerts(alerts)}
+    }).catch(function(){pending--;if(pending<=0){checkHolidays(alerts,month,day,null);renderCareAlerts(alerts)}});
+  });
+}
+
+function checkHolidays(alerts,month,day,city){
+  var holidays=[
+    {m:1,d:1,name:'元旦',icon:'🎆',daysBefore:3},
+    {m:2,d:14,name:'情人节',icon:'💕',daysBefore:3},
+    {m:3,d:8,name:'妇女节',icon:'💐',daysBefore:3},
+    {m:5,d:1,name:'劳动节',icon:'🎉',daysBefore:3},
+    {m:5,d:14,name:'母亲节',icon:'🌸',daysBefore:5},
+    {m:6,d:1,name:'儿童节',icon:'🎈',daysBefore:3},
+    {m:6,d:18,name:'父亲节',icon:'👨',daysBefore:5},
+    {m:10,d:1,name:'国庆节',icon:'🇨🇳',daysBefore:3},
+    {m:10,d:2,name:'中秋节',icon:'🥮',daysBefore:3},
+    {m:12,d:25,name:'圣诞节',icon:'🎄',daysBefore:3}
+  ];
+  // Approximate lunar holidays (simplified)
+  var lunarApprox=[
+    {m:1,d:29,name:'春节',icon:'🧧',daysBefore:7}, // 2026 approximate
+    {m:6,d:19,name:'端午节',icon:'🐉',daysBefore:3} // 2026 approximate
+  ];
+  var all=holidays.concat(lunarApprox);
+  var now=new Date();
+  all.forEach(function(h){
+    var hDate=new Date(now.getFullYear(),h.m-1,h.d);
+    var diff=Math.ceil((hDate-now)/(1000*60*60*24));
+    if(diff>0&&diff<=h.daysBefore){
+      var cities=getCities();
+      var familyCt=cities.filter(function(c){return c.rel!=='self'}).length;
+      var tip=diff<=1?h.name+'就在'+(diff===1?'明天':'今天')+'！':h.name+'还有'+diff+'天';
+      if(familyCt>0&&(h.name==='春节'||h.name==='中秋节'||h.name==='国庆节'||h.name==='清明节')){
+        alerts.push({icon:h.icon,text:tip+'，要不要回家看看？',action:'holiday'});
+      }else if(h.name==='母亲节'||h.name==='父亲节'){
+        alerts.push({icon:h.icon,text:tip+'，给家人准备点什么？',action:'holiday'});
+      }else if(diff<=1){
+        alerts.push({icon:h.icon,text:tip,action:'holiday'});
+      }
+    }
+  });
+}
+
+function renderCareAlerts(alerts){
+  var el=document.getElementById('care-alerts');
+  if(!el)return;
+  if(!alerts.length){el.innerHTML='';return}
+  var html='';
+  alerts.slice(0,3).forEach(function(a){
+    var phone=a.city?'<a href="tel:" style="color:#60a5fa;margin-left:6px;font-size:11px">📞 提醒</a>':'';
+    html+='<div style="padding:8px 12px;background:#0a0a0f;border-radius:8px;border:1px solid #1e1e24;margin-bottom:6px;font-size:12px;color:#a1a1aa;display:flex;align-items:center;gap:8px"><span style="font-size:16px">'+a.icon+'</span><span style="flex:1">'+a.text+'</span>'+phone+'</div>';
+  });
+  el.innerHTML=html;
+}
 
 // Todo
 var todos=JSON.parse(localStorage.getItem('td')||'null');
