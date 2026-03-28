@@ -107,13 +107,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div id="grow-letter" style="display:none"><div class="card"><div class="card-title">✉️ 写给未来的信</div><div style="font-size:12px;color:#52525b;margin-bottom:8px">写一段话给未来的自己，设定打开时间</div><textarea class="inp" id="letter-text" rows="5" placeholder="写点什么..." style="resize:vertical;font-size:13px;line-height:1.6"></textarea><div style="display:flex;gap:6px;margin-top:8px;align-items:center"><span style="font-size:11px;color:#52525b">打开时间</span><input class="inp" id="letter-date" type="date" style="width:140px;font-size:12px"><button class="btn btn-sm" onclick="saveLetter()">封存</button></div></div><div class="card"><div class="card-title">📬 我的信</div><div id="letter-list"></div></div></div>
 </div>
 <div class="page" id="page-health">
-<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡眠</span><span class="sub-tab" onclick="switchSub('health',this,'body')">档案</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span><span class="sub-tab" onclick="switchSub('health',this,'med')">用药</span><span class="sub-tab" onclick="switchSub('health',this,'period')">经期</span><span class="sub-tab" onclick="switchSub('health',this,'sport')">运动</span></div>
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡眠</span><span class="sub-tab" onclick="switchSub('health',this,'body')">档案</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span><span class="sub-tab" onclick="switchSub('health',this,'med')">用药</span><span class="sub-tab" onclick="switchSub('health',this,'period')">经期</span><span class="sub-tab" onclick="switchSub('health',this,'sport')">运动</span><span class="sub-tab" onclick="switchSub('health',this,'visit')">就医</span><span class="sub-tab" onclick="switchSub('health',this,'checkup')">体检</span></div>
 <div id="health-sleep"><div class="card"><div class="card-title">😴 睡眠追踪</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><div style="flex:1;text-align:center"><div style="font-size:11px;color:#52525b">昨晚入睡</div><input class="inp" id="sleep-in" type="time" value="23:00" style="text-align:center;font-size:18px;font-weight:700;color:#60a5fa" onchange="logSleep()"></div><div style="flex:1;text-align:center"><div style="font-size:11px;color:#52525b">今早起床</div><input class="inp" id="sleep-out" type="time" value="07:00" style="text-align:center;font-size:18px;font-weight:700;color:#f59e0b" onchange="logSleep()"></div></div><div style="text-align:center;font-size:24px;font-weight:700;color:#60a5fa" id="sleep-hours">8.0h</div><div style="text-align:center;font-size:11px;color:#52525b;margin-bottom:8px">睡眠时长</div><div style="text-align:center;font-size:11px;color:#52525b;margin-bottom:4px">质量</div><div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px" id="sleep-quality-row"><span class="tag" onclick="setSleepQuality(1,this)">😴差</span><span class="tag" onclick="setSleepQuality(2,this)">😐一般</span><span class="tag" onclick="setSleepQuality(3,this)">🙂还行</span><span class="tag" onclick="setSleepQuality(4,this)">😊好</span><span class="tag" onclick="setSleepQuality(5,this)">🤩很好</span></div><div class="card-title">📊 本周</div><div id="sleep-chart" style="display:flex;align-items:flex-end;gap:4px;height:60px;justify-content:center"></div><div id="sleep-avg" style="text-align:center;font-size:11px;color:#52525b;margin-top:4px"></div></div></div>
 <div id="health-body" style="display:none"><div class="card"><div class="card-title">📋 基础档案</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px"><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">血型</div><select class="inp" id="prof-blood" style="font-size:13px" onchange="saveProfile()"><option value="">未填</option><option>A型</option><option>B型</option><option>AB型</option><option>O型</option></select></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">身高(cm)</div><input class="inp" id="prof-height" type="number" placeholder="170" onchange="saveProfile()"></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">体重(kg)</div><input class="inp" id="prof-weight" type="number" placeholder="65" onchange="saveProfile();calcBMI()"></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">BMI</div><div id="prof-bmi" style="font-size:20px;font-weight:700;color:#60a5fa;padding:6px 0">--</div></div></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">⚠️ 过敏</div><input class="inp" id="prof-allergy" placeholder="如：青霉素、花生" onchange="saveProfile()"></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">慢性病</div><input class="inp" id="prof-chronic" placeholder="如：高血压、糖尿病" onchange="saveProfile()"></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">紧急联系人</div><div style="display:flex;gap:6px"><input class="inp" id="prof-emer-name" placeholder="称呼" style="flex:1" onchange="saveProfile()"><input class="inp" id="prof-emer-phone" placeholder="电话" style="flex:1" onchange="saveProfile()"></div></div></div></div>
 <div id="health-symptom" style="display:none"><div class="card"><div class="card-title">🤒 症状记录</div><div id="symptom-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="sym-desc" placeholder="什么症状？" style="flex:1;min-width:100px"><select class="inp" id="sym-level" style="width:65px;font-size:12px"><option value="1">轻微</option><option value="2">中等</option><option value="3">严重</option></select><input class="inp" id="sym-cause" placeholder="可能原因" style="flex:1;min-width:80px"><button class="btn btn-sm" onclick="addSymptom()">+</button></div></div></div>
 <div id="health-med" style="display:none"><div class="card"><div class="card-title">💊 用药记录</div><div id="med-list"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="med-name" placeholder="药名" style="flex:1"><input class="inp" id="med-use" placeholder="用途" style="flex:1"><button class="btn btn-sm" onclick="addMed()">+</button></div></div></div>
 <div id="health-period" style="display:none"><div class="card"><div class="card-title">🩸 经期追踪</div><div id="period-status" style="text-align:center;padding:10px"></div><div style="display:flex;gap:6px;justify-content:center;margin:10px 0"><button class="btn btn-sm" onclick="logPeriod('start')">开始</button><button class="btn btn-sm btn-ghost" onclick="logPeriod('end')">结束</button></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin:10px 0"><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">平均周期</div><div style="font-size:18px;font-weight:700;color:#ec4899" id="period-avg">--</div><div style="font-size:10px;color:#52525b">天</div></div><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">平均经期</div><div style="font-size:18px;font-weight:700;color:#ec4899" id="period-len">--</div><div style="font-size:10px;color:#52525b">天</div></div><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">下次预计</div><div style="font-size:14px;font-weight:700;color:#f59e0b" id="period-next">--</div></div></div><div id="period-timeline" style="margin-top:10px"></div></div></div>
 <div id="health-sport" style="display:none"><div class="card"><div class="card-title">🏃 运动记录</div><div id="sport-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><select class="inp" id="sport-type" style="width:70px;font-size:12px"><option>跑步</option><option>走路</option><option>游泳</option><option>骑行</option><option>健身</option><option>瑜伽</option><option>球类</option><option>其他</option></select><input class="inp" id="sport-min" placeholder="分钟" type="number" style="width:60px"><button class="btn btn-sm" onclick="addSport()">+</button></div><div id="sport-stats" style="margin-top:10px;text-align:center;font-size:12px;color:#52525b"></div></div></div>
+<div id="health-visit" style="display:none"><div class="card"><div class="card-title">🏥 就医记录</div><div id="visit-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="visit-hospital" placeholder="医院" style="flex:1;min-width:80px"><input class="inp" id="visit-dept" placeholder="科室" style="width:60px"><input class="inp" id="visit-diag" placeholder="诊断" style="flex:1;min-width:80px"><input class="inp" id="visit-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addVisit()">+</button></div></div></div>
+<div id="health-checkup" style="display:none"><div class="card"><div class="card-title">📋 体检管理</div><div id="checkup-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="checkup-item" placeholder="项目名" style="flex:1;min-width:80px"><input class="inp" id="checkup-val" placeholder="数值" style="width:70px"><select class="inp" id="checkup-status" style="width:60px;font-size:12px"><option value="正常">正常</option><option value="偏高">偏高</option><option value="偏低">偏低</option><option value="异常">异常</option></select><input class="inp" id="checkup-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addCheckup()">+</button></div><div id="checkup-next" style="margin-top:10px;font-size:11px;color:#52525b;text-align:center"></div></div></div>
 </div>
 </div>
 <div class="mobile-nav">
@@ -129,7 +131,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 // Layout
 function showSection(id,el){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});document.getElementById('page-'+id).classList.add('on');if(el){document.querySelectorAll('.section-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on')}}
 function showMobile(id,el){if(id==='more'){document.getElementById('api-modal').classList.add('open');return}showSection(id);document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.querySelector('.main').scrollTop=0}
-function switchSub(prefix,el,id){el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on');var panels=['weather','mood','habit','money','career','skills','stage','sleep','body','symptom'];panels.forEach(function(p){var e=document.getElementById(prefix+'-'+p);if(e)e.style.display=p===id?'block':'none'})}
+function switchSub(prefix,el,id){el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on');var panels=['weather','mood','habit','money','career','skills','stage','sleep','body','symptom','med','period','sport','visit','checkup','exam','letter'];panels.forEach(function(p){var e=document.getElementById(prefix+'-'+p);if(e)e.style.display=p===id?'block':'none'})}
 function togTag(el){el.classList.toggle('set')}
 
 // Weather — 完整版：多城市/昵称/智能穿衣
@@ -1229,6 +1231,62 @@ function renderSports(){
   }).join('')||'<div class="ph">暂无记录</div>';
 }
 renderSports();
+
+// Medical visits
+function getVisits(){return JSON.parse(localStorage.getItem('visits')||'[]')}
+function addVisit(){
+  var hospital=document.getElementById('visit-hospital');
+  var dept=document.getElementById('visit-dept');
+  var diag=document.getElementById('visit-diag');
+  var date=document.getElementById('visit-date');
+  if(!hospital.value.trim())return;
+  var items=getVisits();
+  items.push({hospital:hospital.value.trim(),dept:dept.value.trim(),diag:diag.value.trim(),date:date.value||new Date().toISOString().slice(0,10)});
+  localStorage.setItem('visits',JSON.stringify(items));
+  hospital.value='';dept.value='';diag.value='';date.value='';
+  renderVisits();
+}
+function renderVisits(){
+  var items=getVisits();
+  if(!items.length){document.getElementById('visit-list').innerHTML='<div class="ph">暂无就医记录</div>';return}
+  document.getElementById('visit-list').innerHTML=items.map(function(v,i){
+    return '<div style="padding:8px 10px;border-bottom:1px solid #1a1a1f"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#e4e4e7">'+v.hospital+' '+v.dept+'</span><button onclick="delVisit('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px">×</button></div><div style="font-size:12px;color:#a1a1aa;margin-top:2px">'+(v.diag||'未记录诊断')+'</div><div style="font-size:10px;color:#52525b;margin-top:1px">'+v.date+'</div></div>';
+  }).reverse().join('');
+}
+function delVisit(i){var items=getVisits();items.splice(i,1);localStorage.setItem('visits',JSON.stringify(items));renderVisits()}
+renderVisits();
+
+// Checkup
+function getCheckups(){return JSON.parse(localStorage.getItem('checkups')||'[]')}
+function addCheckup(){
+  var item=document.getElementById('checkup-item');
+  var val=document.getElementById('checkup-val');
+  var status=document.getElementById('checkup-status').value;
+  var date=document.getElementById('checkup-date');
+  if(!item.value.trim())return;
+  var items=getCheckups();
+  items.push({item:item.value.trim(),val:(val.value||'').trim(),status:status,date:date.value||new Date().toISOString().slice(0,10)});
+  localStorage.setItem('checkups',JSON.stringify(items));
+  item.value='';val.value='';date.value='';
+  renderCheckups();
+}
+function renderCheckups(){
+  var items=getCheckups();
+  if(!items.length){document.getElementById('checkup-list').innerHTML='<div class="ph">暂无体检记录</div>';document.getElementById('checkup-next').innerHTML='';return}
+  var statusColors={正常:'#22c55e',偏高:'#f59e0b',偏低:'#f59e0b',异常:'#ef4444'};
+  document.getElementById('checkup-list').innerHTML=items.map(function(c,i){
+    var color=statusColors[c.status]||'#52525b';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;border-bottom:1px solid #1a1a1f"><span style="flex:1;color:#e4e4e7">'+c.item+'</span><span style="color:#a1a1aa">'+(c.val||'-')+'</span><span style="color:'+color+';font-size:11px;padding:1px 6px;border-radius:8px;background:'+color+'22">'+c.status+'</span><span style="font-size:10px;color:#52525b">'+c.date.slice(5)+'</span><button onclick="delCheckup('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px;padding:0 2px">×</button></div>';
+  }).reverse().join('');
+  var lastDate=items[items.length-1].date;
+  var monthsSince=Math.floor((new Date()-new Date(lastDate))/(1000*60*60*24*30));
+  var nextEl=document.getElementById('checkup-next');
+  if(monthsSince>=11)nextEl.innerHTML='⚠️ 距上次体检已'+monthsSince+'个月，建议安排年度体检';
+  else if(monthsSince>=9)nextEl.innerHTML='💡 距上次体检'+monthsSince+'个月，年底可以安排了';
+  else nextEl.innerHTML='上次体检：'+lastDate+'（'+monthsSince+'个月前）';
+}
+function delCheckup(i){var items=getCheckups();items.splice(i,1);localStorage.setItem('checkups',JSON.stringify(items));renderCheckups()}
+renderCheckups();
 
 // API & Chat
 function getApiConfig(){return JSON.parse(localStorage.getItem('userapi')||'{}')}
