@@ -150,7 +150,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <div id="health-symptom" style="display:none"><div class="card"><div class="card-title">🤒 症状记录</div><div id="symptom-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="sym-desc" placeholder="什么症状？" style="flex:1;min-width:100px"><select class="inp" id="sym-level" style="width:65px;font-size:12px"><option value="1">轻微</option><option value="2">中等</option><option value="3">严重</option></select><input class="inp" id="sym-cause" placeholder="可能原因" style="flex:1;min-width:80px"><button class="btn btn-sm" onclick="addSymptom()">+</button></div></div></div>
 <div id="health-med" style="display:none"><div class="card"><div class="card-title">💊 用药记录</div><div id="med-list"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="med-name" placeholder="药名" style="flex:1"><input class="inp" id="med-use" placeholder="用途" style="flex:1"><button class="btn btn-sm" onclick="addMed()">+</button></div></div></div>
 <div id="health-period" style="display:none"><div class="card"><div class="card-title">🩸 经期追踪</div><div id="period-status" style="text-align:center;padding:10px"></div><div style="display:flex;gap:6px;justify-content:center;margin:10px 0"><button class="btn btn-sm" onclick="logPeriod('start')">开始</button><button class="btn btn-sm btn-ghost" onclick="logPeriod('end')">结束</button></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin:10px 0"><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">平均周期</div><div style="font-size:18px;font-weight:700;color:#ec4899" id="period-avg">--</div><div style="font-size:10px;color:#52525b">天</div></div><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">平均经期</div><div style="font-size:18px;font-weight:700;color:#ec4899" id="period-len">--</div><div style="font-size:10px;color:#52525b">天</div></div><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">下次预计</div><div style="font-size:14px;font-weight:700;color:#f59e0b" id="period-next">--</div></div></div><div id="period-timeline" style="margin-top:10px"></div></div></div>
-<div id="health-sport" style="display:none"><div class="card"><div class="card-title">🏃 运动记录</div><div id="sport-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><select class="inp" id="sport-type" style="width:70px;font-size:12px"><option>跑步</option><option>走路</option><option>游泳</option><option>骑行</option><option>健身</option><option>瑜伽</option><option>球类</option><option>其他</option></select><input class="inp" id="sport-min" placeholder="分钟" type="number" style="width:60px"><button class="btn btn-sm" onclick="addSport()">+</button></div><div id="sport-stats" style="margin-top:10px;text-align:center;font-size:12px;color:#52525b"></div></div></div>
+<div id="health-sport" style="display:none"><div class="card"><div class="card-title">🏃 运动记录</div><div id="sport-today" style="display:none;margin-bottom:10px;padding:10px;background:#0a0a0f;border-radius:8px;border:1px solid #1e1e24"></div><div style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap"><select class="inp" id="sport-type" style="width:70px;font-size:12px"><option>跑步</option><option>走路</option><option>游泳</option><option>骑行</option><option>健身</option><option>瑜伽</option><option>球类</option><option>跳绳</option><option>其他</option></select><input class="inp" id="sport-min" placeholder="分钟" type="number" style="width:60px"><select class="inp" id="sport-intensity" style="width:65px;font-size:12px"><option value="low">轻度</option><option value="mid" selected>中度</option><option value="high">高强度</option></select><button class="btn btn-sm" onclick="addSport()">+</button></div><div id="sport-recommend" style="display:none;margin-bottom:10px;padding:10px;background:#052e16;border-radius:8px;border:1px solid #166534;font-size:12px;color:#86efac;line-height:1.7"></div><div id="sport-list"></div><div id="sport-stats" style="margin-top:10px;text-align:center;font-size:12px;color:#52525b"></div></div></div>
 <div id="health-visit" style="display:none"><div class="card"><div class="card-title">🏥 就医记录</div><div id="visit-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="visit-hospital" placeholder="医院" style="flex:1;min-width:80px"><input class="inp" id="visit-dept" placeholder="科室" style="width:60px"><input class="inp" id="visit-diag" placeholder="诊断" style="flex:1;min-width:80px"><input class="inp" id="visit-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addVisit()">+</button></div></div></div>
 <div id="health-checkup" style="display:none"><div class="card"><div class="card-title">📋 体检管理</div><div id="checkup-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="checkup-item" placeholder="项目名" style="flex:1;min-width:80px"><input class="inp" id="checkup-val" placeholder="数值" style="width:70px"><select class="inp" id="checkup-status" style="width:60px;font-size:12px"><option value="正常">正常</option><option value="偏高">偏高</option><option value="偏低">偏低</option><option value="异常">异常</option></select><input class="inp" id="checkup-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addCheckup()">+</button></div><div id="checkup-next" style="margin-top:10px;font-size:11px;color:#52525b;text-align:center"></div></div></div>
 </div>
@@ -1523,24 +1523,88 @@ function renderPeriod(){
 }
 renderPeriod();
 
-// Sports
+// Sports — 增强版：强度+卡路里估算+身体补充推荐
+var sportMETs={跑步:{low:7,mid:10,high:13},走路:{low:2.5,mid:3.5,high:5},游泳:{low:4,mid:6,high:8},骑行:{low:4,mid:6.5,high:10},健身:{low:3.5,mid:5,high:7},瑜伽:{low:2,mid:3,high:4},球类:{low:4,mid:6,high:8},跳绳:{low:8,mid:10,high:12},其他:{low:3,mid:5,high:7}};
+var sportEmojis={跑步:'🏃',走路:'🚶',游泳:'🏊',骑行:'🚴',健身:'💪',瑜伽:'🧘',球类:'⚽',跳绳:'🤸',其他:'🏋️'};
+var intensityLabels={low:'轻度',mid:'中度',high:'高强度'};
+var bodyWeight=65; // 默认体重kg，可从档案读取
+
 function getSports(){return JSON.parse(localStorage.getItem('sports')||'[]')}
 function addSport(){
   var type=document.getElementById('sport-type').value;
   var min=document.getElementById('sport-min');
+  var intensity=document.getElementById('sport-intensity').value;
   if(!min.value)return;
   var items=getSports();
-  items.push({type:type,min:parseInt(min.value),date:new Date().toISOString().slice(0,10)});
+  var mets=sportMETs[type]||sportMETs['其他'];
+  var met=mets[intensity];
+  var cal=Math.round(met*bodyWeight*(parseInt(min.value)/60));
+  items.push({type:type,min:parseInt(min.value),intensity:intensity,cal:cal,date:new Date().toISOString().slice(0,10)});
   localStorage.setItem('sports',JSON.stringify(items));
   min.value='';renderSports();
+  showSportRecommend(type,intensity,parseInt(min.value),cal);
+}
+function showSportRecommend(type,intensity,min,cal){
+  var waterAdd=Math.round(cal/80)*100; // 每消耗80kcal约需补水100ml
+  var tips=[];
+  // 水分
+  tips.push('💧 补水：运动后补 '+waterAdd+'~'+(waterAdd+200)+'ml 水，少量多次');
+  if(min>=30||intensity==='high')tips.push('💧 后续2小时内再补 300~500ml');
+  // 营养
+  if(intensity==='high'||min>=45){
+    tips.push('🍌 碳水：香蕉1根 或 全麦面包，补充糖原');
+    tips.push('🥛 蛋白质：鸡蛋/鸡胸肉/牛奶，帮助肌肉恢复');
+  }else if(intensity==='mid'&&min>=20){
+    tips.push('🍌 适量补充：一根香蕉或一把坚果即可');
+  }else{
+    tips.push('🍎 正常饮食即可，无需额外补充');
+  }
+  // 电解质
+  if(type==='跑步'||type==='游泳'||type==='跳绳'||(intensity==='high'&&min>=30)){
+    tips.push('🧂 电解质：出汗多时喝淡盐水或运动饮料');
+  }
+  // 休息
+  if(intensity==='high'){
+    tips.push('😴 建议今晚早睡30分钟，帮助肌肉恢复');
+  }
+  // 拉伸
+  if(type!=='瑜伽'){
+    tips.push('🙆 记得做5~10分钟拉伸，减少酸痛');
+  }
+  var el=document.getElementById('sport-recommend');
+  el.innerHTML='<div style="font-size:11px;color:#22c55e;margin-bottom:4px">🌿 运动后身体补充建议</div>'+tips.join('<br>');
+  el.style.display='block';
+  // 30秒后自动折叠
+  setTimeout(function(){el.style.opacity='0.7'},30000);
 }
 function renderSports(){
+  // 读取体重
+  var prof=JSON.parse(localStorage.getItem('profile')||'{}');
+  if(prof.weight)bodyWeight=parseFloat(prof.weight)||65;
+  
   var items=getSports();
+  var today=new Date().toISOString().slice(0,10);
+  var todayItems=items.filter(function(s){return s.date===today});
+  var todayTotal=todayItems.reduce(function(s,x){return s+x.min},0);
+  var todayCal=todayItems.reduce(function(s,x){return s+(x.cal||0)},0);
+  
+  // 今日汇总
+  var todayEl=document.getElementById('sport-today');
+  if(todayItems.length){
+    todayEl.innerHTML='<div style="font-size:11px;color:#52525b;margin-bottom:4px">今日运动</div><div style="font-size:20px;font-weight:700;color:#60a5fa">'+todayTotal+' 分钟</div><div style="font-size:11px;color:#f59e0b;margin-top:2px">🔥 约消耗 '+todayCal+' kcal</div><div style="font-size:10px;color:#52525b;margin-top:4px">'+todayItems.map(function(s){return sportEmojis[s.type]+' '+s.type+' '+s.min+'分钟'}).join(' · ')+'</div>';
+    todayEl.style.display='block';
+  }else{todayEl.style.display='none'}
+  
+  // 本周统计
   var weekItems=items.filter(function(s){var d=new Date(s.date);var weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);return d>=weekAgo});
   var weekTotal=weekItems.reduce(function(s,x){return s+x.min},0);
-  document.getElementById('sport-stats').innerHTML='📊 本周：'+weekItems.length+'次 · '+weekTotal+'分钟'+(weekTotal>=150?' ✅ 达标':' ⚠️ 建议150分钟/周');
-  document.getElementById('sport-list').innerHTML=items.slice(-8).reverse().map(function(s){
-    return '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;font-size:12px;border-bottom:1px solid #1a1a1f"><span>🏃</span><span style="flex:1">'+s.type+' '+s.min+'分钟</span><span style="font-size:10px;color:#52525b">'+s.date.slice(5)+'</span></div>';
+  var weekCal=weekItems.reduce(function(s,x){return s+(x.cal||0)},0);
+  document.getElementById('sport-stats').innerHTML='📊 本周：'+weekItems.length+'次 · '+weekTotal+'分钟 · '+weekCal+'kcal'+(weekTotal>=150?' ✅ 达标':' ⚠️ 建议150分钟/周');
+  
+  document.getElementById('sport-list').innerHTML=items.slice(-10).reverse().map(function(s){
+    var emoji=sportEmojis[s.type]||'🏃';
+    var intLabel=intensityLabels[s.intensity]||'';
+    return '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;font-size:12px;border-bottom:1px solid #1a1a1f"><span>'+emoji+'</span><span style="flex:1">'+s.type+' '+s.min+'分钟 <span style="font-size:10px;color:#52525b">'+intLabel+'</span></span><span style="font-size:10px;color:#f59e0b">'+(s.cal||0)+'kcal</span><span style="font-size:10px;color:#52525b;margin-left:4px">'+s.date.slice(5)+'</span></div>';
   }).join('')||'<div class="ph">暂无记录</div>';
 }
 renderSports();
