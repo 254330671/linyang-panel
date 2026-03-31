@@ -1,0 +1,169 @@
+<script>
+// === Utility ===
+function switchTab(prefix,el,id){
+el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+el.classList.add('on');
+el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){});// just mark active
+var panels=['weather','mood','habit','money','career','skills','stage','sleep','body','symptom'];
+panels.forEach(function(p){var e=document.getElementById(prefix+'-'+p);if(e)e.style.display=p===id?'':'none'});
+}
+function togTag(el){el.classList.toggle('set')}
+
+// === News ===
+var news=[
+{c:"🇨🇳 中国",hot:true,items:[{t:"国务院发布2026年经济工作重点部署",s:"新华社",w:"今天"},{t:"两会聚焦新质生产力与高质量发展",s:"人民日报",w:"今天"},{t:"央行宣布新一轮金融支持实体经济政策",s:"央视新闻",w:"昨天"}]},
+{c:"🇺🇸 美国",hot:true,items:[{t:"美联储维持利率不变，释放鸽派信号",s:"AP News",w:"今天"},{t:"国会通过新一轮科技竞争法案",s:"Reuters",w:"今天"},{t:"非农数据超预期，美股收涨",s:"CNBC",w:"昨天"}]},
+{c:"🇷🇺 俄罗斯",items:[{t:"俄方就乌克兰局势发表最新声明",s:"塔斯社",w:"今天"},{t:"中俄能源合作项目新进展",s:"俄新社",w:"昨天"},{t:"俄央行调整货币政策框架",s:"俄通社",w:"昨天"}]},
+{c:"🇬🇧 英国",items:[{t:"英国央行暗示下半年可能降息",s:"BBC",w:"今天"},{t:"脱欧后贸易协议谈判取得突破",s:"Guardian",w:"昨天"},{t:"NHS改革方案引发国会辩论",s:"Sky News",w:"昨天"}]},
+{c:"🇩🇪 德国",items:[{t:"德国制造业PMI回升至扩张区间",s:"DW",w:"今天"},{t:"新政府组阁谈判进入关键阶段",s:"Spiegel",w:"昨天"},{t:"欧盟绿色能源转型路线图更新",s:"Reuters",w:"昨天"}]},
+{c:"🇯🇵 日本",items:[{t:"日本央行讨论退出超宽松政策时机",s:"NHK",w:"今天"},{t:"东京股市日经指数创新高",s:"共同社",w:"今天"},{t:"日本半导体产业振兴计划新进展",s:"日经",w:"昨天"}]},
+{c:"🇰🇷 韩国",items:[{t:"韩国半导体出口连续增长",s:"韩联社",w:"今天"},{t:"首尔推进智慧城市建设项目",s:"KBS",w:"昨天"},{t:"韩中日自贸区谈判重启",s:"联合新闻",w:"昨天"}]},
+{c:"🇮🇳 印度",items:[{t:"印度GDP增速领跑全球主要经济体",s:"NDTV",w:"今天"},{t:"莫迪政府推出数字印度2.0计划",s:"Times of India",w:"昨天"},{t:"印度航天计划取得重大突破",s:"ISRO",w:"昨天"}]}
+];
+var actN=-1;
+function renderN(){document.getElementById('news-ticker').innerHTML=news.map(function(c,i){return '<span class="chip'+(c.hot?' hot':'')+'" id="nc'+i+'" onclick="selN('+i+')">'+c.c+'</span>'}).join('')}
+function selN(i){if(actN===i){actN=-1;document.getElementById('news-detail').classList.remove('open');document.getElementById('news-detail').innerHTML='';return}actN=i;document.getElementById('news-detail').innerHTML=news[i].items.map(function(n){return '<div class="ni"><a href="javascript:void(0)">'+n.t+'</a><div class="meta">'+n.s+' · '+n.w+'</div></div>'}).join('');document.getElementById('news-detail').classList.add('open')}
+renderN();
+
+// === Todo ===
+var todos=JSON.parse(localStorage.getItem('td')||'null');
+if(!todos)todos=[
+{t:'去市里开会',d:false,detail:'📍 地铁1号线转2号线 · ⏰ 最晚9:00出发 · ⏱ 预计45分钟'},
+{t:'回复客户邮件',d:false,detail:'📧 王总的合作方案反馈，今天下班前回复'},
+{t:'整理周报',d:false,detail:'📊 本周项目进度+下周计划，周五17:00前提交'}
+];
+function rTodos(){
+document.getElementById('todo-list').innerHTML=todos.map(function(t,i){
+return '<li class="ti'+(t.d?' done':'')+'"><input type="checkbox" class="tc" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div style="flex:1"><div class="tt" onclick="toggleDetail('+i+')">'+t.t+(t.detail?' <span style="color:#52525b;font-size:11px">▾</span>':'')+'</div>'+(t.detail?'<div class="tdetail" id="detail-'+i+'">'+t.detail+'</div>':'')+'</div><button class="td" onclick="delT('+i+')">×</button></li>'}).join('');
+}
+function toggleDetail(i){var el=document.getElementById('detail-'+i);if(el)el.style.display=el.style.display==='none'?'block':'none'}
+function addTodo(){var v=document.getElementById('todo-inp');if(!v.value.trim())return;var detail=prompt('补充详情（可选）')||'';todos.push({t:v.value.trim(),d:false,detail:detail.trim()});v.value='';sTodos()}
+function togT(i){todos[i].d=!todos[i].d;sTodos()}
+function delT(i){todos.splice(i,1);sTodos()}
+function sTodos(){localStorage.setItem('td',JSON.stringify(todos));rTodos()}
+rTodos();
+
+// === Weather ===
+var WMO={0:'☀️ 晴',1:'🌤 大部晴',2:'⛅ 多云',3:'☁️ 阴',45:'🌫 雾',51:'🌦 小毛毛雨',53:'🌦 毛毛雨',61:'🌧 小雨',63:'🌧 中雨',65:'🌧 大雨',71:'🌨 小雪',73:'🌨 中雪',80:'🌦 阵雨',82:'⛈ 大阵雨',95:'⛈ 雷暴'};
+var WMO_ADVICE={0:'☀️ 紫外线较强，建议涂防晒',1:'🌤 适合外出',2:'⛅ 可带薄外套',3:'☁️ 阴天体感偏凉',61:'🌧 小雨带伞',63:'🌧 中雨带伞',65:'🌧 大雨不出门',80:'🌦 可能阵雨带伞'};
+function loadWeather(){
+try{fetch('https://api.open-meteo.com/v1/forecast?latitude=31.23&longitude=121.47&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Shanghai&forecast_days=3')
+.then(function(r){return r.json()}).then(function(d){try{
+var c=d.current;var emoji=WMO[c.weather_code]||'🌤';
+document.getElementById('wt-now').textContent=emoji+' '+Math.round(c.temperature_2m)+'°C';
+document.getElementById('wt-detail').textContent='风速'+c.wind_speed_10m+'km/h · 湿度'+c.relative_humidity_2m+'%';
+document.getElementById('wt-advice').innerHTML=(WMO_ADVICE[c.weather_code]||'')+'<br>🍓 草莓 · 🌱 春笋 · 🥬 荠菜';
+var days=d.daily;var labels=['今天','明天','后天'];var h='';
+for(var i=0;i<3;i++){h+='<div style="text-align:center;font-size:11px;flex:1"><div>'+labels[i]+'</div><div style="font-size:16px;margin:2px 0">'+(WMO[days.weather_code[i]]||'?').split(' ')[0]+'</div><div style="color:#a1a1aa">'+Math.round(days.temperature_2m_min[i])+'°~'+Math.round(days.temperature_2m_max[i])+'°</div></div>'}
+document.getElementById('wt-forecast').innerHTML=h;
+}catch(e){}}).catch(function(){document.getElementById('wt-now').textContent='🌤 离线模式'})}catch(e){}}
+loadWeather();
+
+// === Mood ===
+var moodRec={'😔':['📖 读《被讨厌的勇气》','🏃 散步20分钟','🎵 轻音乐'],'😤':['📖 读《当下的力量》','🏃 跳绳5分钟','✍️ 写三件感恩的事'],'😐':['📖 随便翻翻','🏃 拉伸10分钟','🎵 lo-fi音乐'],'😊':['📖 读《人类简史》','🏃 跑步30分钟','🎵 欢快歌单'],'🤩':['📖 挑战深度阅读','🏃 高强度运动','🎵 最爱的歌单']};
+var moodState=JSON.parse(localStorage.getItem('mood')||'{}');
+function selMood(el,m){el.parentNode.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('sel')});el.classList.add('sel');moodState.mood=m;saveMood();var r=moodRec[m];if(r){document.getElementById('mood-rec').innerHTML=r.map(function(x){return '<div class="rec-item">'+x+'</div>'}).join('');document.getElementById('mood-rec').style.display=''}}
+function saveMood(){localStorage.setItem('mood',JSON.stringify(moodState))}
+if(moodState.mood){document.querySelectorAll('.mood-btn').forEach(function(b){if(b.textContent===moodState.mood){b.classList.add('sel');selMood(b,moodState.mood)}})}
+var energyLv=moodState.energy||3;
+document.getElementById('energy-dots').innerHTML=[1,2,3,4,5].map(function(i){return '<span class="e-dot'+(i<=energyLv?' on':'')+'" onclick="selEnergy(this,'+i+')"></span>'}).join('');
+function selEnergy(el,n){el.parentNode.querySelectorAll('.e-dot').forEach(function(d,i){d.classList.toggle('on',i<n)});moodState.energy=n;saveMood()}
+
+// === Habits ===
+function loadHabits(){var items=JSON.parse(localStorage.getItem('habits')||'null');if(!items)items=[{text:'喝水 8杯',done:false},{text:'运动 30分钟',done:false},{text:'23:00前入睡',done:false}];renderHabits(items)}
+function renderHabits(items){document.getElementById('habit-list').innerHTML=items.map(function(h,i){return '<li class="cli'+(h.done?' done':'')+'"><input type="checkbox" '+(h.done?'checked':'')+' onchange="toggleHabit('+i+')">'+h.text+'<button class="td" onclick="delHabit('+i+')" style="margin-left:auto">×</button></li>'}).join('');localStorage.setItem('habits',JSON.stringify(items))}
+function toggleHabit(i){var items=JSON.parse(localStorage.getItem('habits'));items[i].done=!items[i].done;renderHabits(items)}
+function addHabit(){var v=document.getElementById('habit-inp');if(!v.value.trim())return;var items=JSON.parse(localStorage.getItem('habits'));items.push({text:v.value.trim(),done:false});v.value='';renderHabits(items)}
+function delHabit(i){var items=JSON.parse(localStorage.getItem('habits'));items.splice(i,1);renderHabits(items)}
+loadHabits();
+
+// === Expenses ===
+function getExpenses(){return JSON.parse(localStorage.getItem('expenses')||'[]')}
+function renderExpenses(){var items=getExpenses();var month=new Date().toISOString().slice(0,7);var total=items.filter(function(e){return e.date.startsWith(month)}).reduce(function(s,e){return s+e.amount},0);document.getElementById('money-total').textContent='¥'+total;document.getElementById('expense-list').innerHTML=items.slice(-10).reverse().map(function(e,i){return '<li class="ti"><span class="tt">'+e.desc+' <span style="color:#f59e0b">¥'+e.amount+'</span></span><span style="font-size:10px;color:#52525b">'+e.date.slice(5)+'</span><button class="td" onclick="delExpense('+(items.length-1-i)+')">×</button></li>'}).join('')}
+function addExpense(){var desc=document.getElementById('money-desc');var amt=document.getElementById('money-amt');if(!desc.value.trim()||!amt.value)return;var items=getExpenses();items.push({desc:desc.value.trim(),amount:parseFloat(amt.value),date:new Date().toISOString().slice(0,10)});localStorage.setItem('expenses',JSON.stringify(items));desc.value='';amt.value='';renderExpenses()}
+function delExpense(i){var items=getExpenses();items.splice(i,1);localStorage.setItem('expenses',JSON.stringify(items));renderExpenses()}
+renderExpenses();
+
+// === Career ===
+var careerPaths={'UI设计':'📋 路径：Adobe认证 → 交互设计 → 设计管理<br>💰 8-25K<br>🎯 Figma、用户研究、设计系统','软件开发':'📋 编程基础 → 全栈 → 架构师<br>💰 12-40K<br>🎯 算法、系统设计、云服务','产品经理':'📋 需求分析 → 产品规划 → 产品总监<br>💰 15-35K<br>🎯 用户洞察、数据分析','会计':'📋 初级会计 → CPA → 财务总监<br>💰 6-20K<br>🎯 税务、审计、财务分析','教师':'📋 教师资格证 → 学科带头人 → 教研主任<br>💰 6-15K','护理':'📋 护士证 → 护师 → 主管护师<br>💰 5-12K','市场营销':'📋 市场专员 → 品牌经理 → CMO<br>💰 8-30K','人力资源':'📋 HR专员 → HRBP → HRD<br>💰 6-20K'};
+function pickCareer(el){el.parentNode.querySelectorAll('.prof-tag').forEach(function(t){t.classList.remove('set')});el.classList.add('set');document.getElementById('career-info').innerHTML=careerPaths[el.textContent]||'选择职业查看详情';localStorage.setItem('career',el.textContent)}
+var sc=localStorage.getItem('career');if(sc&&careerPaths[sc]){document.querySelectorAll('#career-tags .prof-tag').forEach(function(t){t.classList.toggle('set',t.textContent===sc)});document.getElementById('career-info').innerHTML=careerPaths[sc]}
+
+// === Skills ===
+function loadSkills(){var items=JSON.parse(localStorage.getItem('skills')||'null');if(!items)items=[{text:'巴氏刷牙法',done:false},{text:'被套1-2周换洗',done:false},{text:'煮饭煮面',done:false},{text:'烫伤冷水冲15分钟',done:false},{text:'社保怎么查',done:false}];renderSkills(items)}
+function renderSkills(items){document.getElementById('skills-list').innerHTML=items.map(function(s,i){return '<li class="cli'+(s.done?' done':'')+'"><input type="checkbox" '+(s.done?'checked':'')+' onchange="toggleSkill('+i+')">'+s.text+'<button class="td" onclick="delSkill('+i+')" style="margin-left:auto">×</button></li>'}).join('');localStorage.setItem('skills',JSON.stringify(items))}
+function toggleSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items[i].done=!items[i].done;renderSkills(items)}
+function delSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items.splice(i,1);renderSkills(items)}
+loadSkills();
+
+// === Stage ===
+var stageData={teen:{title:'青春期（12-17岁）',items:['身体发育与性教育','学习方法与时间管理','情绪管理初步','同伴关系处理','网络安全意识','基本生活自理'],src:'📖 国家卫健委青少年健康指南'},young:{title:'青年期（18-25岁）',items:['独立生活基础','心理健康自我觉察','职业规划入门','建立健康的社交边界','学会理财基础','基本法律常识'],src:'📖 WHO青年健康指南'},adult:{title:'成年期（26-35岁）',items:['职业深耕或转型','长期伴侣关系经营','理财进阶','定期体检习惯','父母健康关注','工作-生活平衡'],src:'📖 国家卫健委成年期健康管理'}};
+function pickStage(el,key){el.parentNode.querySelectorAll('.prof-tag').forEach(function(t){t.classList.remove('set')});el.classList.add('set');var d=stageData[key];document.getElementById('stage-info').innerHTML='🧑 '+d.title+'<br>'+d.items.map(function(i){return '· '+i}).join('<br>')+'<br><span style="color:#52525b">'+d.src+'</span>';localStorage.setItem('stage',key)}
+
+// === Topics (共创) ===
+var defaultTopics=[
+{id:0,type:'official',title:'你希望健康区加什么功能？',votes:1289,voted:false,comments:[{author:'官方团队',time:'本周',text:'请选择你最需要的健康功能，投票结果将直接影响开发排期。',likes:45}]},
+{id:1,type:'community',title:'经期到底能不能运动？',votes:1024,voted:false,comments:[{author:'张医生',time:'3天前',text:'适度运动有益，建议快走、瑜伽等低强度运动。',likes:256},{author:'小王',time:'2天前',text:'个人经验慢跑没问题，要听身体信号。',likes:189}]},
+{id:2,type:'community',title:'30岁前最重要的能力',votes:891,voted:false,comments:[{author:'匿名用户',time:'5天前',text:'学会拒绝。讨好所有人只会失去自己。',likes:478}]},
+{id:3,type:'official',title:'下版本数据存储方案选择',votes:567,voted:false,comments:[{author:'官方团队',time:'本周',text:'A: 云端优先(需登录) B: 本地优先(可选同步) 请选择。',likes:23}]},
+{id:4,type:'community',title:'被套多久换洗一次',votes:234,voted:false,comments:[{author:'生活达人',time:'1周前',text:'建议1-2周换洗，出汗多的话更频繁。',likes:89}]}
+];
+function getTopics(){var t=JSON.parse(localStorage.getItem('topics'));if(!t){t=defaultTopics;localStorage.setItem('topics',JSON.stringify(t))}return t}
+function renderTopics(){
+var topics=getTopics();
+topics.sort(function(a,b){return b.votes-a.votes});
+document.getElementById('topic-list').innerHTML=topics.map(function(t,i){
+var badge=t.type==='official'?'🔵':'🟢';
+return '<div class="topic"><div class="topic-head" onclick="toggleTopic('+t.id+')"><span class="topic-title">'+badge+' '+t.title+'</span><span style="font-size:12px;color:#f59e0b">'+t.votes+'票</span></div><div class="topic-body" id="topic-body-'+t.id+'">'+t.comments.map(function(c){return '<div class="cm"><div class="cm-head"><span class="cm-author">'+c.author+'</span><span class="cm-time">'+c.time+'</span></div><div class="cm-text">'+c.text+'</div><div class="cm-actions"><button class="cm-act" onclick="this.classList.toggle(\'on-like\')">👍 '+c.likes+'</button><button class="cm-act" onclick="this.classList.toggle(\'on-feel\')">💛 同感</button></div></div>'}).join('')+'<div class="topic-reply"><input class="inp" placeholder="说说你的看法..." onkeydown="if(event.key===\'Enter\')submitReply('+t.id+',this)"><button class="btn btn-sm" onclick="submitReply('+t.id+',this.previousElementSibling)">发</button></div><div style="text-align:right;margin-top:6px"><button class="btn btn-sm'+(t.voted?' btn-ghost':'')+'" onclick="voteTopic('+t.id+')" '+(t.voted?'disabled':'')+'>'+(t.voted?'已投票':'👍 投票')+'</button></div></div></div>'}).join('');
+}
+function toggleTopic(i){var el=document.getElementById('topic-body-'+i);if(el)el.classList.toggle('open')}
+function voteTopic(i){var topics=getTopics();for(var j=0;j<topics.length;j++){if(topics[j].id===i&&!topics[j].voted){topics[j].votes++;topics[j].voted=true;break}}localStorage.setItem('topics',JSON.stringify(topics));renderTopics()}
+function submitReply(topicIdx,inputEl){var text=inputEl.value.trim();if(!text)return;var topics=getTopics();for(var j=0;j<topics.length;j++){if(topics[j].id===topicIdx){topics[j].comments.push({author:'我',time:'刚刚',text:text,likes:0});break}}localStorage.setItem('topics',JSON.stringify(topics));inputEl.value='';renderTopics();document.getElementById('topic-body-'+topicIdx).classList.add('open')}
+function createTopic(){var title=prompt('话题标题：');if(!title||!title.trim())return;var topics=getTopics();topics.push({id:Date.now(),type:'community',title:title.trim(),votes:1,voted:true,comments:[]});localStorage.setItem('topics',JSON.stringify(topics));renderTopics()}
+function submitDaily(){var v=document.getElementById('daily-ans');if(!v.value.trim())return;document.getElementById('daily-answers').innerHTML+='<div class="cm"><div class="cm-head"><span class="cm-author">我</span><span class="cm-time">刚刚</span></div><div class="cm-text">'+v.value.trim().replace(/</g,'&lt;')+'</div></div>';v.value=''}
+renderTopics();
+
+// === Symptoms ===
+function getSymptoms(){return JSON.parse(localStorage.getItem('symptoms')||'[]')}
+function renderSymptoms(){var items=getSymptoms();if(!items.length){document.getElementById('symptom-list').innerHTML='<div class="ph">暂无记录</div>';return}document.getElementById('symptom-list').innerHTML=items.map(function(s,i){var p=items.filter(function(x){return x.symptom===s.symptom}).length;return '<div class="sym-item"><div style="font-size:13px;display:flex;justify-content:space-between"><span>'+s.symptom+'</span><button class="td" onclick="delSymptom('+i+')">×</button></div><div class="sym-meta">'+s.date+' · '+(s.env||'-')+'</div>'+(p>1?'<div class="sym-pattern">📊 已记录'+p+'次类似症状</div>':'')+'</div>'}).reverse().join('')}
+function addSymptom(){var s=prompt('什么症状？');if(!s)return;var e=prompt('当时环境？（可选）')||'';var items=getSymptoms();items.push({symptom:s.trim(),env:e.trim(),date:new Date().toISOString().slice(0,10)});localStorage.setItem('symptoms',JSON.stringify(items));renderSymptoms()}
+function delSymptom(i){var items=getSymptoms();items.splice(i,1);localStorage.setItem('symptoms',JSON.stringify(items));renderSymptoms()}
+renderSymptoms();
+
+// === API Settings ===
+function getApiConfig(){return JSON.parse(localStorage.getItem('userapi')||'{}')}
+function openApiSettings(){var p=getApiConfig();document.getElementById('api-endpoint').value=p.endpoint||'https://api.openai.com/v1/chat/completions';document.getElementById('api-key').value=p.key||'';document.getElementById('api-model').value=p.model||'gpt-4o-mini';document.getElementById('api-modal').classList.add('open')}
+function closeApiSettings(){localStorage.setItem('userapi',JSON.stringify({endpoint:document.getElementById('api-endpoint').value.trim(),key:document.getElementById('api-key').value.trim(),model:document.getElementById('api-model').value.trim()}));document.getElementById('api-modal').classList.remove('open');initChat()}
+
+// === Chat ===
+var chatHistory=[];
+function initChat(){var cfg=getApiConfig();var btn=document.getElementById('chat-send');if(cfg.key&&cfg.endpoint){btn.disabled=false;btn.textContent='发送';btn.style.opacity='1'}else{btn.disabled=true;btn.textContent='配置API';btn.style.opacity='0.5'}}
+function sendChat(){var cfg=getApiConfig();if(!cfg.key)return;var input=document.getElementById('chat-input');var msg=input.value.trim();if(!msg)return;input.value='';chatHistory.push({role:'user',content:msg});
+var ctx='[用户数据]\n';var tds=JSON.parse(localStorage.getItem('td')||'[]');if(tds.length){ctx+='待办：\n';tds.forEach(function(t){ctx+=(t.d?'✅':'⬜')+' '+t.t+(t.detail?' ('+t.detail+')':'')+'\n'})}var mds=JSON.parse(localStorage.getItem('mood')||'{}');if(mds.mood)ctx+='心情：'+mds.mood+' 能量：'+(mds.energy||'-')+'/5\n';var prof=JSON.parse(localStorage.getItem('profile')||'{}');if(prof.age)ctx+='档案：'+prof.age+'岁 '+(prof.city||'')+' '+(prof.jobs?prof.jobs.join('/'):'')+'\n';
+renderChat();document.getElementById('chat-send').disabled=true;document.getElementById('chat-send').textContent='思考中...';
+fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:ctx+'请根据以上用户数据回答，简洁实用，200字以内。'}].concat(chatHistory)})})
+.then(function(r){return r.json()}).then(function(d){var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'（无回复）';chatHistory.push({role:'assistant',content:reply});renderChat()})
+.catch(function(e){chatHistory.push({role:'assistant',content:'⚠️ 请求失败：'+e.message});renderChat()})
+.finally(function(){document.getElementById('chat-send').disabled=false;document.getElementById('chat-send').textContent='发送'})}
+function renderChat(){var el=document.getElementById('chat-messages');el.innerHTML=chatHistory.map(function(m){var isU=m.role==='user';return '<div style="margin-bottom:8px;text-align:'+(isU?'right':'left')+'"><div style="display:inline-block;max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.5;background:'+(isU?'#2563eb':'#1e1e24')+';color:'+(isU?'#fff':'#e4e4e7')+'">'+m.content.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div></div>'}).join('');el.scrollTop=el.scrollHeight}
+initChat();
+
+// === Profile ===
+function openProfile(){var p=JSON.parse(localStorage.getItem('profile')||'{}');document.getElementById('prof-age').value=p.age||'24';document.getElementById('prof-city').value=p.city||'上海';document.querySelectorAll('#prof-gender .prof-tag').forEach(function(t){t.classList.toggle('set',t.dataset.v===p.gender)});document.getElementById('profile-modal').classList.add('open')}
+function closeProfile(){var jobs=[];document.querySelectorAll('#prof-job .prof-tag.set').forEach(function(t){jobs.push(t.dataset.v)});localStorage.setItem('profile',JSON.stringify({age:document.getElementById('prof-age').value,city:document.getElementById('prof-city').value,gender:document.querySelector('#prof-gender .prof-tag.set')?document.querySelector('#prof-gender .prof-tag.set').dataset.v:'',jobs:jobs}));document.getElementById('profile-modal').classList.remove('open')}
+
+// === Mobile Nav ===
+function showPage(id,el){
+if(window.innerWidth>600)return;
+var homeEl=document.querySelector('.g5');
+var sections=homeEl?homeEl.querySelectorAll('.sc'):[];
+var cardSections=document.querySelectorAll('.c > .card');
+// On mobile, show/hide by scrolling to section
+var targets={'home':0,'life':1,'grow':2,'create':3,'health':4};
+if(sections[targets[id]]){sections[targets[id]].scrollIntoView({behavior:'smooth'})}
+document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on')});
+el.classList.add('on');
+}
+</script>
+</body>
+</html>

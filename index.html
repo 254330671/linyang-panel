@@ -1,0 +1,1617 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<title>聚合信息面板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#0a0a0f;color:#e4e4e7;line-height:1.5}
+.header{background:#141418;border-bottom:1px solid #1e1e24;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.header h1{font-size:18px;color:#fff}
+.header-btns{display:flex;gap:12px}
+.header-btns span{font-size:20px;cursor:pointer}
+@media(min-width:768px){.app{display:flex;height:100vh}.sidebar{width:320px;background:#141418;border-right:1px solid #1e1e24;overflow-y:auto;padding:16px;flex-shrink:0}.main{flex:1;overflow-y:auto;padding:16px}.mobile-nav{display:none}}
+@media(max-width:767px){.app{display:flex;flex-direction:column;height:100vh}.sidebar{display:none}.main{flex:1;overflow-y:auto;padding:12px 12px 70px}.mobile-nav{display:flex}.desktop-tabs{display:none}}
+.card{background:#141418;border-radius:12px;border:1px solid #1e1e24;padding:14px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.btn{padding:8px 14px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-size:13px;cursor:pointer}
+.btn:active{background:#1d4ed8}.btn-sm{padding:5px 10px;font-size:12px}
+.btn-ghost{background:transparent;border:1px solid #27272a;color:#a1a1aa}
+.inp{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #27272a;background:#0a0a0f;color:#e4e4e7;font-size:13px;outline:none}
+.inp:focus{border-color:#2563eb}
+.tag{display:inline-block;padding:4px 10px;border-radius:14px;font-size:12px;border:1px solid #27272a;color:#a1a1aa;margin:2px}
+.tag.blue{border-color:#2563eb;color:#93c5fd;background:#1e3a5f}
+.tag.green{border-color:#22c55e;color:#86efac;background:#052e16}
+.tag.set{border-color:#2563eb;color:#93c5fd;background:#1e3a5f}
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,24,.95);backdrop-filter:blur(12px);border-top:1px solid #1e1e24;justify-content:space-around;padding:6px 0 10px;z-index:50}
+.nav-btn{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#52525b;border:none;background:none;gap:2px;padding:6px 10px;min-width:44px;cursor:pointer}
+.nav-btn.on{color:#60a5fa}.nav-btn span{font-size:20px}
+.page{display:none}.page.on{display:block}
+.topic-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#0a0a0f;border-radius:8px;border:1px solid #1e1e24;margin-bottom:6px;cursor:pointer}
+.topic-row:hover{border-color:#27272a}
+.topic-votes{font-size:12px;color:#f59e0b;font-weight:600;flex-shrink:0}
+.topic-rank{font-size:11px;color:#52525b;width:20px;text-align:center;flex-shrink:0}
+.topic-detail{padding:10px;background:#0a0a0f;border-radius:0 0 8px 8px;margin-bottom:6px;margin-top:-6px;border:1px solid #1e1e24;border-top:none;display:none}
+.topic-detail.open{display:block}
+.cm{margin-bottom:8px}.cm-head{display:flex;gap:6px;align-items:center;margin-bottom:3px}
+.cm-author{font-size:12px;color:#60a5fa;font-weight:500}.cm-time{font-size:10px;color:#3f3f46}
+.cm-text{font-size:13px;color:#a1a1aa}
+.weather-mini{display:flex;align-items:center;gap:8px;font-size:13px}
+.weather-temp{font-size:22px;font-weight:700;color:#60a5fa}
+.todo{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1a1a1f;font-size:13px}
+.todo:last-child{border:none}
+.todo-check{width:16px;height:16px;accent-color:#2563eb;flex-shrink:0}
+.todo-detail{font-size:11px;color:#52525b;margin-top:2px}
+.todo-done{text-decoration:line-through;color:#3f3f46}
+.sub-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.sub-tabs::-webkit-scrollbar{display:none}
+.sub-tab{padding:5px 12px;border-radius:16px;font-size:12px;cursor:pointer;border:1px solid #27272a;background:transparent;color:#a1a1aa;white-space:nowrap}
+.sub-tab.on{background:#1e3a5f;border-color:#2563eb;color:#93c5fd}
+.section-tabs{display:flex;gap:6px;margin-bottom:16px}
+.section-tab{padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #27272a;background:transparent;color:#a1a1aa}
+.section-tab.on{background:#2563eb;border-color:#2563eb;color:#fff}
+.mood-row{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.mood-btn{width:44px;height:44px;border-radius:50%;border:2px solid #27272a;background:#0a0a0f;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mood-btn.sel{border-color:#2563eb;transform:scale(1.1)}
+.energy-row{display:flex;gap:6px;justify-content:center;margin:6px 0}
+.e-dot{width:10px;height:10px;border-radius:50%;background:#27272a;cursor:pointer}.e-dot.on{background:#2563eb}
+.mood-rec{background:#0a0a0f;border-radius:8px;padding:10px 12px;border:1px solid #1e1e24;margin-top:8px}
+.cl{list-style:none}.cli{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #1a1a1f}.cli:last-child{border:none}.cli input{accent-color:#2563eb;width:16px;height:16px}.cli.done{color:#3f3f46;text-decoration:line-through}
+.sleep-time{text-align:center;font-size:32px;font-weight:700;color:#60a5fa;margin:8px 0}
+.sleep-sub{text-align:center;font-size:12px;color:#52525b}
+.sym-item{background:#0a0a0f;border-radius:8px;padding:10px 12px;border:1px solid #1e1e24;margin-bottom:6px}
+.sym-meta{font-size:11px;color:#3f3f46;margin-top:4px}
+.sym-pattern{font-size:12px;color:#f59e0b;margin-top:6px;padding:6px 8px;background:#1a1205;border-radius:6px}
+.ph{text-align:center;padding:20px 10px;color:#3f3f46;font-size:13px}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:#18181b;border-radius:16px;padding:20px;width:100%;max-width:400px;max-height:80vh;overflow-y:auto;border:1px solid #27272a}
+.modal h3{margin-bottom:14px;font-size:16px}
+.modal .close{float:right;background:none;border:none;color:#71717a;font-size:20px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<div class="card"><div class="weather-mini"><span style="font-size:28px" id="sb-weather-icon">☀️</span><div><div class="weather-temp" id="sb-temp">--°C</div><div style="font-size:11px;color:#71717a" id="sb-weather-desc">加载中...</div></div></div><div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:#71717a" id="sb-forecast"></div></div>
+<div class="card"><div class="card-title">💼 待办</div><div id="sidebar-todos"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="todo-input" placeholder="添加待办... ✨自动解析" onkeydown="if(event.key==='Enter')addTodo()" style="flex:1"><button class="btn btn-sm" id="voice-btn" onclick="startVoiceInput()" title="语音输入">🎙️</button><button class="btn btn-sm" onclick="addTodo()">+</button></div></div>
+<div class="card"><div class="card-title">✨ 今日推荐</div><div style="font-size:13px;color:#a1a1aa;font-style:italic;line-height:1.6">"千里之行，始于足下。"<div style="font-size:11px;color:#52525b;margin-top:4px">— 老子</div></div><div style="font-size:12px;color:#71717a;margin-top:8px">💡 每天进步一点点</div></div>
+<div class="card"><div class="card-title">💬 AI 助手</div><div id="chat-messages" style="height:140px;overflow-y:auto;background:#0a0a0f;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #1e1e24;font-size:13px"><div style="color:#52525b;text-align:center;padding:20px">点击 ⚙️ 配置API</div></div><div style="display:flex;gap:6px"><input class="inp" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1"><button class="btn btn-sm" id="chat-send" onclick="sendChat()" disabled style="opacity:0.5">发送</button></div></div>
+</div>
+<div class="main">
+<div class="header" style="margin:-12px -16px 16px -16px"><h1>聚合信息面板</h1><div class="header-btns"><span onclick="openApiSettings()">⚙️</span><span onclick="openProfile()">👤</span></div></div>
+<div class="section-tabs desktop-tabs">
+<span class="section-tab on" onclick="showSection('collab',this)">💡 共创</span>
+<span class="section-tab" onclick="showSection('life',this)">🌿 生活</span>
+<span class="section-tab" onclick="showSection('grow',this)">📖 成长</span>
+<span class="section-tab" onclick="showSection('health',this)">❤️ 健康</span>
+</div>
+<div class="page on" id="page-collab">
+<div class="card"><div class="card-title">💡 共创 · 本周</div><div style="font-size:12px;color:#52525b;margin-bottom:10px">按投票数排名 · 周五结束</div><div id="topic-list"></div><div style="margin-top:12px"><button class="btn btn-ghost" style="width:100%" onclick="createTopic()">+ 发起话题</button></div></div>
+<div class="card" style="text-align:center"><div style="font-size:12px;color:#52525b">今日一问</div><div style="font-size:16px;font-weight:600;margin:10px 0">你后悔没早点知道的一件事是什么？</div><div style="display:flex;gap:6px;justify-content:center"><input class="inp" style="max-width:240px" id="daily-ans" placeholder="你的回答..." onkeydown="if(event.key==='Enter')submitDaily()"><button class="btn btn-sm" onclick="submitDaily()">发</button></div><div id="daily-answers" style="text-align:left;margin-top:10px"></div></div>
+</div>
+<div class="page" id="page-life">
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('life',this,'weather')">天气</span><span class="sub-tab" onclick="switchSub('life',this,'mood')">心情</span><span class="sub-tab" onclick="switchSub('life',this,'habit')">习惯</span><span class="sub-tab" onclick="switchSub('life',this,'money')">记账</span></div>
+<div id="life-weather"><div class="card"><div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none" id="weather-city-tabs"></div><div style="text-align:center"><div style="font-size:36px" id="wt-icon">⏳</div><div style="font-size:32px;font-weight:700;color:#60a5fa" id="wt-temp">加载中...</div><div style="color:#71717a" id="wt-desc"></div><div id="wt-advice" style="margin-top:10px;padding:8px 10px;background:#0a0a0f;border-radius:8px;font-size:12px;color:#a1a1aa;text-align:left;line-height:1.6"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa" id="wt-forecast"></div></div><div id="care-alerts" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input class="inp" id="city-input" placeholder="添加城市昵称·城市名" style="flex:1;font-size:12px;min-width:120px" onkeydown="if(event.key==='Enter')addCity()"><select class="inp" id="city-rel" style="width:56px;font-size:11px;padding:6px 2px"><option value="other">其他</option><option value="family">家人</option><option value="partner">对象</option><option value="friend">朋友</option></select><button class="btn btn-sm" onclick="addCity()">+</button></div></div></div>
+<div id="life-mood" style="display:none"><div class="card"><div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div><div class="mood-row"><button class="mood-btn" onclick="selMood(this,'😔')">😔</button><button class="mood-btn" onclick="selMood(this,'😤')">😤</button><button class="mood-btn" onclick="selMood(this,'😐')">😐</button><button class="mood-btn" onclick="selMood(this,'😊')">😊</button><button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button></div><div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div><div class="energy-row" id="energy-dots"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="mood-note" placeholder="一句话记录为什么..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')saveMoodNote()"><button class="btn btn-sm" onclick="saveMoodNote()" style="font-size:11px">记</button></div><div class="mood-rec" id="mood-rec" style="display:none"></div></div><div class="card"><div class="card-title">📊 本周心情</div><div id="mood-trend" style="display:flex;align-items:flex-end;gap:4px;height:60px;justify-content:center"></div><div id="mood-trend-labels" style="display:flex;gap:4px;justify-content:center;font-size:9px;color:#52525b;margin-top:4px"></div><div id="mood-insight" style="font-size:11px;color:#a1a1aa;margin-top:8px;padding:6px 8px;background:#0a0a0f;border-radius:6px;display:none"></div></div></div>
+<div id="life-habit" style="display:none"><div class="card"><div class="card-title">🔥 连续打卡 <span id="habit-streak" style="color:#f59e0b;font-size:13px;margin-left:auto">0天</span></div><div id="habit-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px"></div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="habit-cats"><span class="sub-tab on" onclick="filterHabitCat('all',this)">全部</span><span class="sub-tab" onclick="filterHabitCat('健康',this)">🏥</span><span class="sub-tab" onclick="filterHabitCat('生活',this)">🏠</span><span class="sub-tab" onclick="filterHabitCat('学习',this)">📚</span></div><ul class="cl" id="habit-list"></ul><div id="habit-suggestions" style="margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><select class="inp" id="habit-cat-sel" style="width:60px;padding:4px"><option value="健康">🏥</option><option value="生活">🏠</option><option value="学习">📚</option></select><button class="btn btn-sm" onclick="addHabit()">+</button></div></div></div>
+<div id="life-money" style="display:none"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="card-title" style="margin:0">💰 记账</span><div style="display:flex;gap:4px"><span class="sub-tab on" onclick="switchMoneyType('expense',this)">支出</span><span class="sub-tab" onclick="switchMoneyType('income',this)">收入</span></div></div><div style="text-align:center"><div style="font-size:11px;color:#71717a" id="money-month-label">本月支出</div><div style="font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div><div id="money-compare" style="font-size:11px;color:#52525b;margin-top:2px"></div><div id="money-budget-bar" style="display:none;margin-top:6px"><div style="background:#1e1e24;border-radius:4px;height:6px;overflow:hidden"><div id="money-budget-fill" style="height:100%;background:#22c55e;border-radius:4px;transition:width .3s"></div></div><div style="font-size:10px;color:#52525b;margin-top:2px" id="money-budget-text"></div></div></div><div id="money-pie" style="margin:12px auto;width:120px;height:120px;border-radius:50%;position:relative" title="分类饼图"><div style="position:absolute;inset:20px;background:#141418;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#a1a1aa" id="money-pie-center">暂无数据</div></div><div id="money-cats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;justify-content:center"></div><div style="display:flex;gap:6px;margin:10px 0"><select class="inp" id="money-cat" style="width:65px;padding:4px;font-size:12px"></select><input class="inp" id="money-desc" placeholder="备注" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div><div style="margin-bottom:8px;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#52525b">月预算</span><input class="inp" id="money-budget-inp" placeholder="设预算" type="number" style="width:80px;font-size:12px" onchange="setBudget()"><span style="font-size:10px;color:#52525b" id="money-budget-cur"></span></div><ul style="list-style:none;max-height:180px;overflow-y:auto" id="expense-list"></ul></div></div>
+</div>
+<div class="page" id="page-grow">
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('grow',this,'career')">职业</span><span class="sub-tab" onclick="switchSub('grow',this,'exam')">考试</span><span class="sub-tab" onclick="switchSub('grow',this,'skills')">必修课</span><span class="sub-tab" onclick="switchSub('grow',this,'letter')">信</span><span class="sub-tab" onclick="switchSub('grow',this,'milestone')">里程碑</span><span class="sub-tab" onclick="switchSub('grow',this,'album')">相册</span><span class="sub-tab" onclick="switchSub('grow',this,'review')">复盘</span><span class="sub-tab" onclick="switchSub('grow',this,'stage')">阶段</span></div>
+<div id="grow-career"><div class="card"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="career-tags"><span class="tag set" onclick="pickCareer(this)">UI设计</span><span class="tag" onclick="pickCareer(this)">软件开发</span><span class="tag" onclick="pickCareer(this)">产品经理</span><span class="tag" onclick="pickCareer(this)">会计</span><span class="tag" onclick="pickCareer(this)">教师</span><span class="tag" onclick="pickCareer(this)">护理</span><span class="tag" onclick="pickCareer(this)">市场营销</span><span class="tag" onclick="pickCareer(this)">人力资源</span></div><div id="career-roadmap" style="margin-bottom:10px"></div><div style="font-size:12px;color:#a1a1aa;line-height:1.8" id="career-info">路径：Adobe认证 → 交互设计 → 设计管理<br>平均薪资：8-25K<br>核心技能：Figma、用户研究、设计系统</div><div id="career-next" style="margin-top:8px;padding:8px 10px;background:#0a0a0f;border-radius:8px;font-size:12px;color:#a1a1aa;display:none"></div></div></div>
+<div id="grow-exam" style="display:none"><div class="card"><div class="card-title">📋 考试时间库</div><div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap" id="exam-filters"><span class="sub-tab on" onclick="filterExam('all',this)">全部</span><span class="sub-tab" onclick="filterExam('财会',this)">财会</span><span class="sub-tab" onclick="filterExam('教育',this)">教育</span><span class="sub-tab" onclick="filterExam('IT',this)">IT</span><span class="sub-tab" onclick="filterExam('语言',this)">语言</span></div><div id="exam-list"></div></div></div>
+<div id="grow-skills" style="display:none"><div class="card"><ul class="cl" id="skills-list"></ul></div></div>
+<div id="grow-letter" style="display:none"><div class="card"><div class="card-title">✉️ 写给未来的信</div><div style="font-size:12px;color:#52525b;margin-bottom:8px">写一段话给未来的自己，设定打开时间</div><textarea class="inp" id="letter-text" rows="5" placeholder="写点什么..." style="resize:vertical;font-size:13px;line-height:1.6"></textarea><div style="display:flex;gap:6px;margin-top:8px;align-items:center"><span style="font-size:11px;color:#52525b">打开时间</span><input class="inp" id="letter-date" type="date" style="width:140px;font-size:12px"><button class="btn btn-sm" onclick="saveLetter()">封存</button></div></div><div class="card"><div class="card-title">📬 我的信</div><div id="letter-list"></div></div></div>
+<div id="grow-milestone" style="display:none"><div class="card"><div class="card-title">🏆 身体里程碑</div><div style="font-size:11px;color:#52525b;margin-bottom:8px">根据你的年龄和性别，显示当前阶段的变化与建议</div><div style="display:flex;gap:6px;margin-bottom:10px"><select class="inp" id="milestone-age" style="width:70px;font-size:12px" onchange="renderMilestones()"><option value="12">12岁</option><option value="13">13岁</option><option value="14">14岁</option><option value="15">15岁</option><option value="16">16岁</option><option value="17">17岁</option><option value="18">18岁</option><option value="20">20岁</option><option value="22">22岁</option><option value="25">25岁</option><option value="30">30岁</option><option value="35">35岁</option></select><select class="inp" id="milestone-gender" style="width:60px;font-size:12px" onchange="renderMilestones()"><option value="male">♂ 男</option><option value="female">♀ 女</option></select></div><div id="milestone-list"></div></div></div>
+<div id="grow-album" style="display:none"><div class="card"><div class="card-title">📏 成长相册</div><div style="display:flex;gap:6px;margin-bottom:10px"><input class="inp" id="album-height" placeholder="身高cm" type="number" style="width:80px"><input class="inp" id="album-weight" placeholder="体重kg" type="number" style="width:80px"><input class="inp" id="album-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addAlbumRecord()">+</button></div><div id="album-chart" style="height:80px;position:relative;background:#0a0a0f;border-radius:8px;margin-bottom:8px;overflow:hidden"></div><div id="album-legend" style="display:flex;gap:12px;justify-content:center;font-size:10px;color:#52525b;margin-bottom:8px"><span><span style="display:inline-block;width:20px;height:3px;background:#60a5fa;vertical-align:middle;border-radius:2px"></span> 身高</span><span><span style="display:inline-block;width:20px;height:3px;background:#f59e0b;vertical-align:middle;border-radius:2px"></span> 体重</span></div><div id="album-records" style="max-height:120px;overflow-y:auto"></div></div></div>
+<div id="grow-review" style="display:none"><div class="card"><div class="card-title">🔄 周复盘</div><div style="display:flex;gap:4px;margin-bottom:10px"><span class="sub-tab on" onclick="switchReview('week',this)">本周</span><span class="sub-tab" onclick="switchReview('month',this)">本月</span></div><div id="review-content" style="font-size:12px;color:#a1a1aa;line-height:1.8"></div></div></div>
+</div>
+<div class="page" id="page-health">
+<div class="sub-tabs"><span class="sub-tab on" onclick="switchSub('health',this,'sleep')">睡眠</span><span class="sub-tab" onclick="switchSub('health',this,'body')">档案</span><span class="sub-tab" onclick="switchSub('health',this,'symptom')">症状</span><span class="sub-tab" onclick="switchSub('health',this,'med')">用药</span><span class="sub-tab" onclick="switchSub('health',this,'period')">经期</span><span class="sub-tab" onclick="switchSub('health',this,'sport')">运动</span><span class="sub-tab" onclick="switchSub('health',this,'visit')">就医</span><span class="sub-tab" onclick="switchSub('health',this,'checkup')">体检</span></div>
+<div id="health-sleep"><div class="card"><div class="card-title">😴 睡眠追踪</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><div style="flex:1;text-align:center"><div style="font-size:11px;color:#52525b">昨晚入睡</div><input class="inp" id="sleep-in" type="time" value="23:00" style="text-align:center;font-size:18px;font-weight:700;color:#60a5fa" onchange="logSleep()"></div><div style="flex:1;text-align:center"><div style="font-size:11px;color:#52525b">今早起床</div><input class="inp" id="sleep-out" type="time" value="07:00" style="text-align:center;font-size:18px;font-weight:700;color:#f59e0b" onchange="logSleep()"></div></div><div style="text-align:center;font-size:24px;font-weight:700;color:#60a5fa" id="sleep-hours">8.0h</div><div style="text-align:center;font-size:11px;color:#52525b;margin-bottom:8px">睡眠时长</div><div style="text-align:center;font-size:11px;color:#52525b;margin-bottom:4px">质量</div><div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px" id="sleep-quality-row"><span class="tag" onclick="setSleepQuality(1,this)">😴差</span><span class="tag" onclick="setSleepQuality(2,this)">😐一般</span><span class="tag" onclick="setSleepQuality(3,this)">🙂还行</span><span class="tag" onclick="setSleepQuality(4,this)">😊好</span><span class="tag" onclick="setSleepQuality(5,this)">🤩很好</span></div><div class="card-title">📊 本周</div><div id="sleep-chart" style="display:flex;align-items:flex-end;gap:4px;height:60px;justify-content:center"></div><div id="sleep-avg" style="text-align:center;font-size:11px;color:#52525b;margin-top:4px"></div></div></div>
+<div id="health-body" style="display:none"><div class="card"><div class="card-title">📋 基础档案</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px"><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">血型</div><select class="inp" id="prof-blood" style="font-size:13px" onchange="saveProfile()"><option value="">未填</option><option>A型</option><option>B型</option><option>AB型</option><option>O型</option></select></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">身高(cm)</div><input class="inp" id="prof-height" type="number" placeholder="170" onchange="saveProfile()"></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">体重(kg)</div><input class="inp" id="prof-weight" type="number" placeholder="65" onchange="saveProfile();calcBMI()"></div><div><div style="font-size:11px;color:#52525b;margin-bottom:2px">BMI</div><div id="prof-bmi" style="font-size:20px;font-weight:700;color:#60a5fa;padding:6px 0">--</div></div></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">⚠️ 过敏</div><input class="inp" id="prof-allergy" placeholder="如：青霉素、花生" onchange="saveProfile()"></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">慢性病</div><input class="inp" id="prof-chronic" placeholder="如：高血压、糖尿病" onchange="saveProfile()"></div><div style="margin-bottom:8px"><div style="font-size:11px;color:#52525b;margin-bottom:2px">紧急联系人</div><div style="display:flex;gap:6px"><input class="inp" id="prof-emer-name" placeholder="称呼" style="flex:1" onchange="saveProfile()"><input class="inp" id="prof-emer-phone" placeholder="电话" style="flex:1" onchange="saveProfile()"></div></div></div></div>
+<div id="health-symptom" style="display:none"><div class="card"><div class="card-title">🤒 症状记录</div><div id="symptom-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="sym-desc" placeholder="什么症状？" style="flex:1;min-width:100px"><select class="inp" id="sym-level" style="width:65px;font-size:12px"><option value="1">轻微</option><option value="2">中等</option><option value="3">严重</option></select><input class="inp" id="sym-cause" placeholder="可能原因" style="flex:1;min-width:80px"><button class="btn btn-sm" onclick="addSymptom()">+</button></div></div></div>
+<div id="health-med" style="display:none"><div class="card"><div class="card-title">💊 用药记录</div><div id="med-list"></div><div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="med-name" placeholder="药名" style="flex:1"><input class="inp" id="med-use" placeholder="用途" style="flex:1"><button class="btn btn-sm" onclick="addMed()">+</button></div></div></div>
+<div id="health-period" style="display:none"><div class="card"><div class="card-title">🩸 经期追踪</div><div id="period-status" style="text-align:center;padding:10px"></div><div style="display:flex;gap:6px;justify-content:center;margin:10px 0"><button class="btn btn-sm" onclick="logPeriod('start')">开始</button><button class="btn btn-sm btn-ghost" onclick="logPeriod('end')">结束</button></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin:10px 0"><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">平均周期</div><div style="font-size:18px;font-weight:700;color:#ec4899" id="period-avg">--</div><div style="font-size:10px;color:#52525b">天</div></div><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">平均经期</div><div style="font-size:18px;font-weight:700;color:#ec4899" id="period-len">--</div><div style="font-size:10px;color:#52525b">天</div></div><div style="background:#0a0a0f;padding:8px;border-radius:8px"><div style="font-size:10px;color:#52525b">下次预计</div><div style="font-size:14px;font-weight:700;color:#f59e0b" id="period-next">--</div></div></div><div id="period-timeline" style="margin-top:10px"></div></div></div>
+<div id="health-sport" style="display:none"><div class="card"><div class="card-title">🏃 运动记录</div><div id="sport-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><select class="inp" id="sport-type" style="width:70px;font-size:12px"><option>跑步</option><option>走路</option><option>游泳</option><option>骑行</option><option>健身</option><option>瑜伽</option><option>球类</option><option>其他</option></select><input class="inp" id="sport-min" placeholder="分钟" type="number" style="width:60px"><button class="btn btn-sm" onclick="addSport()">+</button></div><div id="sport-stats" style="margin-top:10px;text-align:center;font-size:12px;color:#52525b"></div></div></div>
+<div id="health-visit" style="display:none"><div class="card"><div class="card-title">🏥 就医记录</div><div id="visit-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="visit-hospital" placeholder="医院" style="flex:1;min-width:80px"><input class="inp" id="visit-dept" placeholder="科室" style="width:60px"><input class="inp" id="visit-diag" placeholder="诊断" style="flex:1;min-width:80px"><input class="inp" id="visit-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addVisit()">+</button></div></div></div>
+<div id="health-checkup" style="display:none"><div class="card"><div class="card-title">📋 体检管理</div><div id="checkup-list"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><input class="inp" id="checkup-item" placeholder="项目名" style="flex:1;min-width:80px"><input class="inp" id="checkup-val" placeholder="数值" style="width:70px"><select class="inp" id="checkup-status" style="width:60px;font-size:12px"><option value="正常">正常</option><option value="偏高">偏高</option><option value="偏低">偏低</option><option value="异常">异常</option></select><input class="inp" id="checkup-date" type="date" style="width:120px;font-size:12px"><button class="btn btn-sm" onclick="addCheckup()">+</button></div><div id="checkup-next" style="margin-top:10px;font-size:11px;color:#52525b;text-align:center"></div></div></div>
+</div>
+</div>
+<div class="mobile-nav">
+<button class="nav-btn on" onclick="showMobile('collab',this)"><span>💡</span>共创</button>
+<button class="nav-btn" onclick="showMobile('life',this)"><span>🌿</span>生活</button>
+<button class="nav-btn" onclick="showMobile('grow',this)"><span>📖</span>成长</button>
+<button class="nav-btn" onclick="showMobile('health',this)"><span>❤️</span>健康</button>
+<button class="nav-btn" onclick="showMobile('more',this)"><span>≡</span>更多</button>
+</div>
+<div class="modal-bg" id="api-modal"><div class="modal"><button class="close" onclick="closeApiSettings()">✕</button><h3>⚙️ API 设置</h3><div style="font-size:12px;color:#71717a;margin-bottom:12px">支持 OpenAI 兼容格式（DeepSeek、Moonshot、智谱等）</div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">API 地址</div><input class="inp" id="api-endpoint" placeholder="https://api.openai.com/v1/chat/completions"></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">API Key</div><input class="inp" id="api-key" type="password" placeholder="sk-..."></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">模型名称</div><input class="inp" id="api-model" placeholder="gpt-4o-mini"></div><div style="background:#0a0a0f;border-radius:8px;padding:10px;font-size:11px;color:#52525b;margin-bottom:12px"><div style="color:#a1a1aa;margin-bottom:4px">常见配置：</div><div>🔹 DeepSeek: api.deepseek.com/v1/chat/completions</div><div>🔹 Moonshot: api.moonshot.cn/v1/chat/completions</div></div><div style="font-size:11px;color:#3f3f46;margin-bottom:12px">🔒 Key 仅存在浏览器本地</div><button class="btn" style="width:100%" onclick="closeApiSettings()">保存</button></div></div>
+<div class="modal-bg" id="profile-modal"><div class="modal"><button class="close" onclick="closeProfile()">✕</button><h3>👤 我的档案</h3><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">年龄</div><input class="inp" id="prof-age" value="24" style="width:80px"></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">性别</div><div id="prof-gender"><span class="tag set" data-v="男" onclick="togTag(this)">♂ 男</span><span class="tag" data-v="女" onclick="togTag(this)">♀ 女</span></div></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">城市</div><input class="inp" id="prof-city" value="上海"></div><div style="margin-bottom:12px"><div style="font-size:12px;color:#71717a;margin-bottom:4px">职业</div><div id="prof-job"><span class="tag set" data-v="UI设计" onclick="togTag(this)">UI设计</span><span class="tag" data-v="软件开发" onclick="togTag(this)">软件开发</span><span class="tag" data-v="会计" onclick="togTag(this)">会计</span><span class="tag" data-v="教师" onclick="togTag(this)">教师</span><span class="tag" data-v="护理" onclick="togTag(this)">护理</span></div></div><button class="btn" style="width:100%" onclick="closeProfile()">保存</button></div></div>
+<script>
+// Layout
+function showSection(id,el){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});document.getElementById('page-'+id).classList.add('on');if(el){document.querySelectorAll('.section-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on')}}
+function showMobile(id,el){if(id==='more'){document.getElementById('api-modal').classList.add('open');return}showSection(id);document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.querySelector('.main').scrollTop=0}
+function switchSub(prefix,el,id){el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on');var panels=['weather','mood','habit','money','career','skills','stage','sleep','body','symptom','med','period','sport','visit','checkup','exam','letter'];panels.forEach(function(p){var e=document.getElementById(prefix+'-'+p);if(e)e.style.display=p===id?'block':'none'})}
+function togTag(el){el.classList.toggle('set')}
+
+// Weather — 完整版：多城市/昵称/智能穿衣
+var WMO={0:'☀️ 晴',1:'🌤 大部晴',2:'⛅ 多云',3:'☁️ 阴',45:'🌫 雾',51:'🌦 小毛毛雨',53:'🌦 毛毛雨',61:'🌧 小雨',63:'🌧 中雨',65:'🌧 大雨',71:'🌨 小雪',73:'🌨 中雪',80:'🌦 阵雨',82:'⛈ 大阵雨',95:'⛈ 雷暴'};
+var weatherCache={};
+
+function getCities(){
+  var cities=JSON.parse(localStorage.getItem('weatherCities')||'null');
+  if(!cities)cities=[{nick:'我',name:'上海',lat:31.23,lon:121.47,rel:'self'}];
+  // Migrate old data without rel field
+  cities.forEach(function(c,i){if(!c.rel)c.rel=i===0?'self':'other'});
+  return cities;
+}
+function saveCities(c){localStorage.setItem('weatherCities',JSON.stringify(c))}
+
+function addCity(){
+  var v=document.getElementById('city-input');
+  if(!v||!v.value.trim())return;
+  var parts=v.value.trim().split(/[·.]/);
+  var nick=parts[0].trim();var name=(parts[1]||parts[0]).trim();
+  var rel=document.getElementById('city-rel').value;
+  // Default coords for common cities
+  var coords={北京:{lat:39.9,lon:116.4},上海:{lat:31.23,lon:121.47},广州:{lat:23.13,lon:113.26},深圳:{lat:22.54,lon:114.06},杭州:{lat:30.27,lon:120.15},成都:{lat:30.57,lon:104.07},武汉:{lat:30.59,lon:114.3},南京:{lat:32.06,lon:118.8},重庆:{lat:29.56,lon:106.55},西安:{lat:34.26,lon:108.94},长沙:{lat:28.23,lon:112.94},厦门:{lat:24.48,lon:118.09}};
+  var c=coords[name];
+  if(!c){alert('暂不支持'+name+'，试试：北京/上海/广州/深圳/杭州/成都/武汉/南京/重庆/西安/长沙/厦门');return}
+  var cities=getCities();
+  if(cities.length>=5){alert('最多5个城市');return}
+  cities.push({nick:nick,name:name,lat:c.lat,lon:c.lon,rel:rel});
+  saveCities(cities);v.value='';
+  renderCityTabs();loadWeatherFor(cities.length-1);
+}
+
+function removeCity(i){
+  var cities=getCities();if(cities.length<=1)return;
+  cities.splice(i,1);saveCities(cities);
+  renderCityTabs();loadWeatherFor(0);
+}
+
+var currentCityIdx=0;
+function renderCityTabs(){
+  var cities=getCities();
+  var html='';
+  cities.forEach(function(c,i){
+    var temp=weatherCache[i]?Math.round(weatherCache[i].temp)+'°':'--';
+    var cls=i===currentCityIdx?'sub-tab on':'sub-tab';
+    html+='<span class="'+cls+'" onclick="loadWeatherFor('+i+')" style="white-space:nowrap">'+c.nick+' '+temp;
+    if(cities.length>1)html+='<span onclick="event.stopPropagation();removeCity('+i+')" style="margin-left:4px;color:#52525b;cursor:pointer">×</span>';
+    html+='</span>';
+  });
+  document.getElementById('weather-city-tabs').innerHTML=html;
+}
+
+function clothingAdvice(c){
+  var t=c.temperature_2m;var w=c.wind_speed_10m;var h=c.relative_humidity_2m;var code=c.weather_code;
+  var tips=[];
+  // Temperature
+  if(t<5)tips.push('很冷，穿厚羽绒服+围巾手套');
+  else if(t<10)tips.push('偏冷，穿棉服或厚外套');
+  else if(t<15)tips.push('微凉，穿夹克或薄毛衣');
+  else if(t<20)tips.push('舒适，长袖+薄外套');
+  else if(t<25)tips.push('暖和，短袖或薄长袖');
+  else if(t<30)tips.push('热，短袖短裤');
+  else tips.push('很热，注意防晒补水');
+  // Wind
+  if(w>30)tips.push('大风，注意防风');
+  else if(w>20&&t<15)tips.push('风大体感更冷');
+  // Humidity
+  if(h>85&&t>25)tips.push('闷热');
+  else if(h<30)tips.push('干燥，多喝水');
+  // Rain
+  if(code>=61&&code<=67)tips.push('带伞🌂');
+  else if(code>=80&&code<=82)tips.push('可能阵雨，带伞');
+  else if(code>=71&&code<=77)tips.push('下雪，注意保暖');
+  else if(code===0&&t>25)tips.push('紫外线强，涂防晒');
+  return tips.join('，');
+}
+
+function seasonalFood(){
+  var m=new Date().getMonth()+1;
+  var foods={1:'冬笋、白菜、萝卜',2:'草莓、春卷、年糕',3:'草莓、荠菜、春笋',4:'香椿、蚕豆、枇杷',5:'樱桃、枇杷、小龙虾',6:'杨梅、荔枝、西瓜',7:'西瓜、桃子、葡萄',8:'葡萄、哈密瓜、秋葵',9:'柿子、板栗、螃蟹',10:'橘子、柿子、大闸蟹',11:'甘蔗、红薯、羊肉',12:'冬笋、羊肉、腊肉'};
+  return foods[m]||'';
+}
+
+function loadWeatherFor(idx){
+  currentCityIdx=idx;
+  var cities=getCities();
+  var city=cities[idx];
+  renderCityTabs();
+  try{
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lon+'&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Shanghai&forecast_days=3')
+    .then(function(r){return r.json()})
+    .then(function(d){
+      try{
+        var c=d.current;
+        var emoji=WMO[c.weather_code]||'🌤';
+        weatherCache[idx]={temp:c.temperature_2m,code:c.weather_code};
+        document.getElementById('wt-temp').textContent=Math.round(c.temperature_2m)+'°C';
+        document.getElementById('wt-icon').textContent=emoji.split(' ')[0]||emoji;
+        document.getElementById('wt-desc').textContent=emoji+' · '+city.name+' · 风速'+c.wind_speed_10m+'km/h · 湿度'+c.relative_humidity_2m+'%';
+        // Clothing advice
+        var advice=clothingAdvice(c);
+        document.getElementById('wt-advice').innerHTML='🧥 '+advice+'<br>🥗 时令：'+seasonalFood();
+        // Forecast
+        var days=d.daily;var labels=['今天','明天','后天'];
+        var h='';
+        for(var i=0;i<3;i++){
+          h+='<div><div>'+labels[i]+'</div><div style="font-size:16px;margin:4px 0">'+(WMO[days.weather_code[i]]||'?').split(' ')[0]+'</div><div>'+Math.round(days.temperature_2m_min[i])+'°~'+Math.round(days.temperature_2m_max[i])+'°</div>'+(days.precipitation_probability_max[i]>30?'<div style="font-size:10px;color:#60a5fa">💧'+days.precipitation_probability_max[i]+'%</div>':'')+'</div>';
+        }
+        document.getElementById('wt-forecast').innerHTML=h;
+        // Sidebar
+        document.getElementById('sb-temp').textContent=Math.round(c.temperature_2m)+'°C';
+        document.getElementById('sb-weather-desc').textContent=emoji+' '+city.nick+'·'+city.name;
+        renderCityTabs();
+        generateCareAlerts();
+      }catch(e){console.error(e)}
+    }).catch(function(){document.getElementById('wt-temp').textContent='离线模式'});
+  }catch(e){}
+}
+
+// Auto-detect location
+function detectLocation(){
+  if(!navigator.geolocation){loadWeatherFor(0);return}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat=pos.coords.latitude,lon=pos.coords.longitude;
+    // Reverse geocode city name via Open-Meteo
+    fetch('https://geocoding-api.open-meteo.com/v1/search?latitude='+lat+'&longitude='+lon+'&count=1&language=zh')
+    .then(function(r){return r.json()})
+    .then(function(geo){
+      var cityName='当前位置';
+      if(geo.results&&geo.results[0]){
+        cityName=geo.results[0].name||geo.results[0].admin1||'当前位置';
+      }
+      var cities=getCities();
+      cities[0]={nick:'📍',name:cityName,lat:Math.round(lat*100)/100,lon:Math.round(lon*100)/100};
+      saveCities(cities);
+      renderCityTabs();loadWeatherFor(0);
+    }).catch(function(){
+      var cities=getCities();
+      cities[0]={nick:'📍',name:'当前位置',lat:Math.round(lat*100)/100,lon:Math.round(lon*100)/100};
+      saveCities(cities);
+      renderCityTabs();loadWeatherFor(0);
+    });
+  },function(){
+    loadWeatherFor(0);
+  },{timeout:5000,maximumAge:300000});
+}
+detectLocation();
+
+// === 家人天气关怀 ===
+var relLabels={self:'我',family:'👨 家人',partner:'💑 对象',friend:'👋 朋友',other:''};
+var relColors={family:'#f59e0b',partner:'#ec4899',friend:'#22c55e',other:'#60a5fa'};
+
+function generateCareAlerts(){
+  var cities=getCities();
+  var alerts=[];
+  var now=new Date();
+  var month=now.getMonth()+1;
+  var day=now.getDate();
+
+  // Fetch weather for all family/friend cities and check anomalies
+  var familyCities=cities.filter(function(c){return c.rel!=='self'&&c.rel});
+  if(!familyCities.length){
+    // Just check holidays for user
+    checkHolidays(alerts,month,day,null);
+    renderCareAlerts(alerts);
+    return;
+  }
+
+  var pending=familyCities.length;
+  familyCities.forEach(function(city){
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lon+'&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Shanghai&forecast_days=1')
+    .then(function(r){return r.json()})
+    .then(function(d){
+      try{
+        var c=d.current;
+        var daily=d.daily;
+        var label=relLabels[city.rel]||city.nick;
+        var temp=Math.round(c.temperature_2m);
+        var maxT=Math.round(daily.temperature_2m_max[0]);
+        var minT=Math.round(daily.temperature_2m_min[0]);
+        var rainProb=daily.precipitation_probability_max[0]||0;
+        var code=daily.weather_code[0];
+        var tempDiff=maxT-minT;
+
+        // Rain alert
+        if(rainProb>=50){
+          alerts.push({icon:'🌧️',text:city.nick+'那边要下雨了（'+rainProb+'%概率），提醒带伞？',city:city,action:'rain'});
+        }
+        // Cold alert
+        if(tempDiff>=8||minT<5){
+          alerts.push({icon:'🥶',text:city.nick+'那边'+(minT<5?'最低'+minT+'°C':'温差'+tempDiff+'°')+'，提醒加衣服？',city:city,action:'cold'});
+        }
+        // Heat alert
+        if(maxT>=35){
+          alerts.push({icon:'🌡️',text:city.nick+'那边'+maxT+'°C高温，提醒少出门多喝水',city:city,action:'heat'});
+        }
+        // Extreme weather
+        if(code>=95||code===73||code===65||code===45){
+          var weatherName={45:'大雾',65:'大雨',73:'中雪',95:'雷暴'}[code]||'极端天气';
+          alerts.push({icon:'⚠️',text:city.nick+'那边有'+weatherName+'，关心一下？',city:city,action:'extreme'});
+        }
+        // Flu season + big temp swing
+        if((month>=11||month<=3)&&tempDiff>=6){
+          alerts.push({icon:'🤧',text:'最近流感多发，'+city.nick+'那边温差大，提醒注意保暖',city:city,action:'flu'});
+        }
+      }catch(e){}
+      pending--;
+      if(pending<=0){checkHolidays(alerts,month,day,null);renderCareAlerts(alerts)}
+    }).catch(function(){pending--;if(pending<=0){checkHolidays(alerts,month,day,null);renderCareAlerts(alerts)}});
+  });
+}
+
+function checkHolidays(alerts,month,day,city){
+  var holidays=[
+    {m:1,d:1,name:'元旦',icon:'🎆',daysBefore:3},
+    {m:2,d:14,name:'情人节',icon:'💕',daysBefore:3},
+    {m:3,d:8,name:'妇女节',icon:'💐',daysBefore:3},
+    {m:5,d:1,name:'劳动节',icon:'🎉',daysBefore:3},
+    {m:5,d:14,name:'母亲节',icon:'🌸',daysBefore:5},
+    {m:6,d:1,name:'儿童节',icon:'🎈',daysBefore:3},
+    {m:6,d:18,name:'父亲节',icon:'👨',daysBefore:5},
+    {m:10,d:1,name:'国庆节',icon:'🇨🇳',daysBefore:3},
+    {m:10,d:2,name:'中秋节',icon:'🥮',daysBefore:3},
+    {m:12,d:25,name:'圣诞节',icon:'🎄',daysBefore:3}
+  ];
+  // Approximate lunar holidays (simplified)
+  var lunarApprox=[
+    {m:1,d:29,name:'春节',icon:'🧧',daysBefore:7}, // 2026 approximate
+    {m:6,d:19,name:'端午节',icon:'🐉',daysBefore:3} // 2026 approximate
+  ];
+  var all=holidays.concat(lunarApprox);
+  var now=new Date();
+  all.forEach(function(h){
+    var hDate=new Date(now.getFullYear(),h.m-1,h.d);
+    var diff=Math.ceil((hDate-now)/(1000*60*60*24));
+    if(diff>0&&diff<=h.daysBefore){
+      var cities=getCities();
+      var familyCt=cities.filter(function(c){return c.rel!=='self'}).length;
+      var tip=diff<=1?h.name+'就在'+(diff===1?'明天':'今天')+'！':h.name+'还有'+diff+'天';
+      if(familyCt>0&&(h.name==='春节'||h.name==='中秋节'||h.name==='国庆节'||h.name==='清明节')){
+        alerts.push({icon:h.icon,text:tip+'，要不要回家看看？',action:'holiday'});
+      }else if(h.name==='母亲节'||h.name==='父亲节'){
+        alerts.push({icon:h.icon,text:tip+'，给家人准备点什么？',action:'holiday'});
+      }else if(diff<=1){
+        alerts.push({icon:h.icon,text:tip,action:'holiday'});
+      }
+    }
+  });
+}
+
+function renderCareAlerts(alerts){
+  var el=document.getElementById('care-alerts');
+  if(!el)return;
+  if(!alerts.length){el.innerHTML='';return}
+  var html='';
+  alerts.slice(0,3).forEach(function(a){
+    var phone=a.city?'<a href="tel:" style="color:#60a5fa;margin-left:6px;font-size:11px">📞 提醒</a>':'';
+    html+='<div style="padding:8px 12px;background:#0a0a0f;border-radius:8px;border:1px solid #1e1e24;margin-bottom:6px;font-size:12px;color:#a1a1aa;display:flex;align-items:center;gap:8px"><span style="font-size:16px">'+a.icon+'</span><span style="flex:1">'+a.text+'</span>'+phone+'</div>';
+  });
+  el.innerHTML=html;
+}
+
+// Todo
+var todos=JSON.parse(localStorage.getItem('td')||'null');
+if(!todos)todos=[{t:'去市里开会',d:false,dl:'地铁1转2 · 9:00前出发'},{t:'回复客户邮件',d:false,dl:'王总方案反馈，下班前'},{t:'整理周报',d:false,dl:'本周进度+下周计划，周五17:00前'}];
+// Action link generators
+var actionBuilders={
+navigation:function(loc){return '<a href="https://uri.amap.com/navigation?to=&mode=car&keyword='+encodeURIComponent(loc)+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">📍 导航</a>'},
+shopping:function(kw){return '<a href="https://s.taobao.com/search?q='+encodeURIComponent(kw)+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🛒 淘宝</a> <a href="https://search.jd.com/Search?keyword='+encodeURIComponent(kw)+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🐶 京东</a>'},
+call:function(phone){return '<a href="tel:'+phone+'" style="color:#60a5fa;text-decoration:none;font-size:11px">📞 拨打</a>'},
+mail:function(email){return '<a href="mailto:'+(email||'')+'" style="color:#60a5fa;text-decoration:none;font-size:11px">✉️ 邮件</a>'},
+movie:function(kw){return '<a href="https://m.maoyan.com/search?kw='+encodeURIComponent(kw||'电影')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🎬 猫眼</a>'},
+food:function(kw){return '<a href="https://www.dianping.com/search/keyword/1/0_'+encodeURIComponent(kw||'美食')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🍽️ 大众点评</a>'},
+health:function(kw){return '<a href="https://www.guahao.com/search?q='+encodeURIComponent(kw||'')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">🏥 挂号</a>'},
+study:function(kw){return '<a href="https://search.douban.com/book/subject_search?search_text='+encodeURIComponent(kw||'')+'" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:11px">📚 搜索</a>'}
+};
+var catColors={工作:'#2563eb',生活:'#22c55e',学习:'#a855f7',健康:'#ef4444',财务:'#f59e0b',社交:'#ec4899',休闲:'#06b6d4'};
+var remindDefaults={navigation:45,shopping:0,call:15,mail:30,movie:60,food:60,health:60,study:0};
+
+function buildActions(parsed){
+var links=[];
+if(!parsed.actions||!parsed.actions.length)return '';
+parsed.actions.forEach(function(a){
+if(a==='navigation'&&parsed.location)links.push(actionBuilders.navigation(parsed.location));
+else if(a==='shopping'&&parsed.keyword)links.push(actionBuilders.shopping(parsed.keyword));
+else if(a==='call'&&parsed.contact)links.push(actionBuilders.call(parsed.contact));
+else if(a==='mail'&&parsed.contact)links.push(actionBuilders.mail(parsed.contact));
+else if(a==='movie')links.push(actionBuilders.movie(parsed.keyword));
+else if(a==='food')links.push(actionBuilders.food(parsed.keyword));
+else if(a==='health'&&parsed.keyword)links.push(actionBuilders.health(parsed.keyword));
+else if(a==='study'&&parsed.keyword)links.push(actionBuilders.study(parsed.keyword));
+});
+return links.join(' · ');
+}
+
+// AI 待办解析 → 预览 → 确认添加
+var todoPreview=[];
+function addTodo(){
+var v=document.getElementById('todo-input');
+if(!v||!v.value.trim())return;
+var raw=v.value.trim();
+v.value='';
+var cfg=getApiConfig();
+if(cfg.key&&cfg.endpoint){
+  parseWithAI(raw);
+}else{
+  todos.push({t:raw,d:false,dl:''});
+  sortTodos();sTodos();
+}
+}
+
+function parseWithAI(raw){
+var cfg=getApiConfig();
+var inp=document.getElementById('todo-input');
+inp.placeholder='✨ 解析中...';
+inp.disabled=true;
+var now=new Date();
+var dateStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+var timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+var weekday=['日','一','二','三','四','五','六'][now.getDay()];
+
+var sysPrompt='你是待办解析器。用户输入一句话，可能包含多个待办事项。\n'+
+'返回JSON格式：\n'+
+'{"todos":[{"t":"精简标题（动词开头）","dl":"截止时间或备注，可为空","time":"YYYY-MM-DD HH:mm，可为空","cat":"工作|生活|学习|健康|财务|社交|休闲","actions":["navigation","shopping","call","mail","movie","food","health","study"],"location":"地点","keyword":"搜索关键词","contact":"联系方式","remind_min":提前分钟数}],"follow_up":"智能追问，可为空"}\n'+
+'规则：\n'+
+'- 一句话可能拆出多个待办（如"出差北京，见张总，买伴手礼"=3个）\n'+
+'- 没有时间的待办不设提醒\n'+
+'- 有明确截止日但无时间的类型（还信用卡、交房租），follow_up问用户要不要设提醒\n'+
+'- today是'+dateStr+' '+timeStr+' 星期'+weekday+'\n'+
+'- 只返回JSON，不要其他文字';
+
+fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},
+body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:sysPrompt},{role:'user',content:raw}]})
+}).then(function(r){return r.json()}).then(function(d){
+var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
+try{
+  var cleaned=reply.trim().replace(/```json\n?/g,'').replace(/```\n?/g,'');
+  var p=JSON.parse(cleaned);
+  todoPreview=[];
+  if(p.todos&&p.todos.length){
+    p.todos.forEach(function(item){
+      todoPreview.push({t:item.t||raw,d:false,dl:item.dl||'',time:item.time||'',cat:item.cat||'',actions:buildActions(item),remind:item.remind_min||0,raw:raw});
+    });
+  }else{
+    todoPreview=[{t:raw,d:false,dl:''}];
+  }
+  showTodoPreview(p.follow_up||'');
+}catch(e){
+  todos.push({t:raw,d:false,dl:''});sortTodos();sTodos();
+}
+}).catch(function(){todos.push({t:raw,d:false,dl:''});sortTodos();sTodos()}).finally(function(){
+inp.placeholder='添加待办... ✨自动解析';inp.disabled=false;
+})}
+
+function showTodoPreview(followUp){
+var html='<div id="todo-preview" style="background:#1a1a22;border:1px solid #2563eb;border-radius:10px;padding:10px;margin-top:6px;font-size:12px">';
+html+='<div style="color:#60a5fa;font-weight:600;margin-bottom:6px">✨ 解析结果：</div>';
+todoPreview.forEach(function(t,i){
+var catBadge=t.cat?'<span style="display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;color:#fff;background:'+(catColors[t.cat]||'#52525b')+';margin-left:4px">'+t.cat+'</span>':'';
+html+='<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #1e1e24">';
+html+='<span style="color:#e4e4e7">'+t.t+'</span>'+catBadge;
+if(t.dl)html+='<span style="color:#52525b;font-size:11px">'+t.dl+'</span>';
+if(t.actions)html+='<span style="margin-left:auto">'+t.actions+'</span>';
+html+='</div>';
+});
+if(followUp){
+html+='<div style="color:#f59e0b;margin-top:6px;padding:6px 8px;background:#1a1205;border-radius:6px">'+followUp+'</div>';
+}
+html+='<div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-sm" onclick="confirmTodoPreview()">全部确认</button><button class="btn btn-sm btn-ghost" onclick="cancelTodoPreview()">取消</button></div>';
+html+='</div>';
+// Insert after input
+var inputRow=document.getElementById('todo-input').parentNode;
+var existing=document.getElementById('todo-preview');
+if(existing)existing.remove();
+inputRow.insertAdjacentHTML('afterend',html);
+}
+
+function confirmTodoPreview(){
+todoPreview.forEach(function(t){todos.push(t)});
+todoPreview=[];
+sortTodos();sTodos();
+var el=document.getElementById('todo-preview');if(el)el.remove();
+// Check for follow-up reminder
+var lastTodo=todos[todos.length-1];
+if(lastTodo.remind>0&&lastTodo.time){
+  setReminder(lastTodo);
+}
+}
+
+function cancelTodoPreview(){todoPreview=[];var el=document.getElementById('todo-preview');if(el)el.remove()}
+
+// Sorting: time-based by urgency, no-time below
+function sortTodos(){
+todos.sort(function(a,b){
+  if(a.time&&b.time)return new Date(a.time)-new Date(b.time);
+  if(a.time)return -1;
+  if(b.time)return 1;
+  return 0;
+});
+}
+
+// Browser notification reminder
+function setReminder(todo){
+if(!todo.time||!todo.remind)return;
+if(Notification&&Notification.permission!=='granted')Notification.requestPermission();
+var target=new Date(todo.time).getTime()-todo.remind*60*1000;
+var delay=target-Date.now();
+if(delay>0&&delay<24*60*60*1000){
+  setTimeout(function(){
+    if(Notification&&Notification.permission==='granted'){
+      new Notification('⏰ '+todo.t,{body:todo.dl||'待办提醒',icon:'⏰'});
+    }
+  },delay);
+}
+}
+
+// 22:30 daily summary
+function scheduleDailySummary(){
+var now=new Date();
+var target=new Date(now);
+target.setHours(22,30,0,0);
+if(target<now)target.setDate(target.getDate()+1);
+var delay=target-now;
+setTimeout(function(){
+  var noTime=todos.filter(function(t){return !t.d&&!t.time});
+  if(noTime.length>0&&Notification.permission==='granted'){
+    var summary=noTime.map(function(t){return '⬜ '+t.t}).join('\n');
+    new Notification('📋 今日待办清理',{body:noTime.length+'个未完成待办',tag:'daily-summary'});
+  }
+  scheduleDailySummary();
+},delay);
+}
+
+// Voice input
+function startVoiceInput(){
+if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){alert('浏览器不支持语音输入');return}
+var SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+var rec=new SpeechRecognition();
+rec.lang='zh-CN';rec.interimResults=false;rec.maxAlternatives=1;
+var btn=document.getElementById('voice-btn');
+btn.textContent='🔴';btn.style.color='#ef4444';
+rec.onresult=function(e){var text=e.results[0][0].transcript;document.getElementById('todo-input').value=text;addTodo()};
+rec.onerror=function(){btn.textContent='🎙️';btn.style.color=''};
+rec.onend=function(){btn.textContent='🎙️';btn.style.color=''};
+rec.start();
+}
+
+function rTodos(){
+sortTodos();
+var html='';
+for(var i=0;i<todos.length;i++){
+  var t=todos[i];
+  var catBadge=t.cat?'<span style="display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;color:#fff;background:'+(catColors[t.cat]||'#52525b')+';margin-left:6px">'+t.cat+'</span>':'';
+  var timeBadge=t.time?'<span style="font-size:10px;color:#f59e0b;margin-left:6px">⏰ '+t.time.slice(5)+'</span>':'';
+  html+='<div class="todo"><input type="checkbox" class="todo-check" '+(t.d?'checked':'')+' onchange="togT('+i+')"><div style="flex:1;min-width:0"><div class="'+(t.d?'todo-done':'')+'">'+t.t+catBadge+timeBadge+'</div>'+(t.dl?'<div class="todo-detail">'+t.dl+'</div>':'')+(t.actions?'<div style="margin-top:3px">'+t.actions+'</div>':'')+'</div><button onclick="delTodo('+i+')" style="background:none;border:none;color:#3f3f46;cursor:pointer;font-size:14px;padding:0 2px">×</button></div>';
+}
+document.getElementById('sidebar-todos').innerHTML=html;
+}
+function delTodo(i){todos.splice(i,1);sTodos()}
+function togT(i){todos[i].d=!todos[i].d;sTodos()}
+function sTodos(){localStorage.setItem('td',JSON.stringify(todos));rTodos()}
+rTodos();
+if('Notification' in window){Notification.requestPermission();scheduleDailySummary()}
+
+// Topics
+var topics=JSON.parse(localStorage.getItem('topics')||'null');
+if(!topics)topics=[
+{id:0,type:'official',title:'你希望健康区加什么功能？',votes:1289,voted:false,comments:[{a:'官方团队',t:'本周',text:'投票结果直接影响开发排期。'}]},
+{id:1,type:'community',title:'经期到底能不能运动？',votes:1024,voted:false,comments:[{a:'张医生',t:'3天前',text:'适度运动有益，建议快走、瑜伽。'},{a:'小王',t:'2天前',text:'要听身体信号。'}]},
+{id:2,type:'community',title:'30岁前最重要的能力',votes:891,voted:false,comments:[{a:'匿名用户',t:'5天前',text:'学会拒绝。讨好所有人只会失去自己。'}]},
+{id:3,type:'official',title:'下版本数据存储方案选择',votes:567,voted:false,comments:[{a:'官方团队',t:'本周',text:'A:云端 B:本地 请选择'}]},
+{id:4,type:'community',title:'被套多久换洗一次',votes:234,voted:false,comments:[{a:'生活达人',t:'1周前',text:'建议1-2周换洗。'}]}
+];
+function renderTopics(){topics.sort(function(a,b){return b.votes-a.votes});var html='';for(var i=0;i<topics.length;i++){var t=topics[i];var badge=t.type==='official'?'<span class="tag blue">官方</span>':'<span class="tag green">社区</span>';html+='<div class="topic-row" onclick="toggleTopic('+i+')"><div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0"><span class="topic-rank">'+(i+1)+'</span>'+badge+'<span style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+t.title+'</span></div><span class="topic-votes">'+t.votes+'票</span></div><div class="topic-detail" id="td-'+i+'">';for(var j=0;j<t.comments.length;j++){var c=t.comments[j];html+='<div class="cm"><div class="cm-head"><span class="cm-author">'+c.a+'</span><span class="cm-time">'+c.t+'</span></div><div class="cm-text">'+c.text+'</div></div>'}html+='<div style="display:flex;gap:6px;margin-top:8px"><input class="inp" placeholder="说说你的看法..." id="ri-'+i+'" style="flex:1"><button class="btn btn-sm" onclick="event.stopPropagation();addReply('+i+')">发</button></div><div style="text-align:right;margin-top:6px"><button class="btn btn-sm '+(t.voted?'btn-ghost':'')+'" onclick="event.stopPropagation();vote('+i+')" '+(t.voted?'disabled':'')+'>'+(t.voted?'已投票':'投票')+'</button></div></div>'}document.getElementById('topic-list').innerHTML=html}
+function toggleTopic(i){var d=document.getElementById('td-'+i);if(d)d.classList.toggle('open')}
+function vote(i){if(topics[i].voted)return;topics[i].votes++;topics[i].voted=true;localStorage.setItem('topics',JSON.stringify(topics));renderTopics()}
+function addReply(i){var inp=document.getElementById('ri-'+i);if(!inp||!inp.value.trim())return;topics[i].comments.push({a:'我',t:'刚刚',text:inp.value.trim()});inp.value='';localStorage.setItem('topics',JSON.stringify(topics));renderTopics();document.getElementById('td-'+i).classList.add('open')}
+function createTopic(){var title=prompt('话题标题：');if(!title||!title.trim())return;topics.push({id:Date.now(),type:'community',title:title.trim(),votes:1,voted:true,comments:[]});localStorage.setItem('topics',JSON.stringify(topics));renderTopics()}
+function submitDaily(){var v=document.getElementById('daily-ans');if(!v||!v.value.trim())return;document.getElementById('daily-answers').innerHTML+='<div class="cm"><div class="cm-head"><span class="cm-author">我</span><span class="cm-time">刚刚</span></div><div class="cm-text">'+v.value.trim().replace(/</g,'&lt;')+'</div></div>';v.value=''}
+renderTopics();
+
+// Mood — 完整版：推荐池/上下文感知/心情日记/趋势图/×待办联动
+var moodScore={'😔':1,'😤':2,'😐':3,'😊':4,'🤩':5};
+var moodPools={
+  1:{read:['读《被讨厌的勇气》','读《当下的力量》','翻翻漫画'],move:['散步20分钟','拉伸15分钟','深呼吸练习'],listen:['轻音乐','白噪音','雨声'],other:['写三件感恩的事','给朋友发消息','早点睡']},
+  2:{read:['读《被讨厌的勇气》','写日记发泄','看搞笑视频'],move:['跳绳5分钟','跑步10分钟','打球发泄','拳击'],listen:['摇滚歌单','大声唱歌','重金属'],other:['写三件感恩的事','洗个热水澡','找人聊聊']},
+  3:{read:['随便翻翻','刷知乎/即刻','看短篇小说'],move:['散步10分钟','拉伸10分钟','做家务'],listen:['lo-fi音乐','爵士','ASMR'],other:['整理桌面','泡杯茶','看窗外发呆']},
+  4:{read:['读《人类简史》','学点新东西','看纪录片'],move:['跑步30分钟','HIIT训练','游泳'],listen:['欢快歌单','电子音乐','播客'],other:['学做新菜','写周报','搞副业']},
+  5:{read:['挑战深度阅读','读专业书','学新技能'],move:['高强度运动','长跑','篮球'],listen:['最爱的歌单','跟着跳舞','创作音乐'],other:['做有挑战的事','写文章','搞创作']}
+};
+var moodRecent=JSON.parse(localStorage.getItem('moodRecent')||'[]'); // last 6 rec keys
+var moodHistory=JSON.parse(localStorage.getItem('moodHistory')||'{}'); // {date: {mood, energy, note}}
+
+function getMoodRecs(score){
+  var pool=moodPools[score]||moodPools[3];
+  var all=[];
+  Object.keys(pool).forEach(function(cat){pool[cat].forEach(function(item){all.push({text:item,cat:cat})})});
+  // Filter out recent
+  var filtered=all.filter(function(r){return moodRecent.indexOf(r.text)===-1});
+  if(filtered.length<3)filtered=all; // reset if pool exhausted
+  // Shuffle and pick 3
+  for(var i=filtered.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=filtered[i];filtered[i]=filtered[j];filtered[j]=tmp}
+  return filtered.slice(0,3);
+}
+
+function selMood(el,m){
+  el.parentNode.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('sel')});
+  el.classList.add('sel');
+  moodState.mood=m;
+  saveMood();
+  
+  // Show one recommendation with context
+  var score=moodScore[m]||3;
+  var recs=getMoodRecs(score);
+  moodRecent=recs.map(function(r){return r.text}).concat(moodRecent).slice(0,12);
+  localStorage.setItem('moodRecent',JSON.stringify(moodRecent));
+  
+  var recEl=document.getElementById('mood-rec');
+  // Check todos for context
+  var tds=JSON.parse(localStorage.getItem('td')||'[]');
+  var undone=tds.filter(function(t){return !t.d});
+  var contextMsg='';
+  if(score<=2&&undone.length>0){
+    var urgent=undone.filter(function(t){return t.time});
+    if(urgent.length)contextMsg='⚠️ 你有'+urgent.length+'个有时间的待办，先处理必须今天做的。';
+    else contextMsg='💡 '+undone.length+'个待办不急，先照顾好自己。';
+  }
+  
+  var rec=recs[0];
+  recEl.innerHTML=(contextMsg?'<div style="font-size:11px;color:#f59e0b;margin-bottom:6px">'+contextMsg+'</div>':'')+
+    '<div style="display:flex;align-items:center;gap:6px"><span style="font-size:13px;color:#a1a1aa;flex:1">'+rec.text+'</span><button onclick="tryRec()" style="background:none;border:1px solid #27272a;color:#60a5fa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">试试</button><button onclick="swapRec()" style="background:none;border:1px solid #27272a;color:#a1a1aa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">换一个</button></div>';
+  recEl.style.display='block';
+  recEl.dataset.recs=JSON.stringify(recs);
+  recEl.dataset.idx='0';
+  
+  // Save to history
+  var today=new Date().toISOString().slice(0,10);
+  if(!moodHistory[today])moodHistory[today]={};
+  moodHistory[today].mood=m;
+  moodHistory[today].score=score;
+  localStorage.setItem('moodHistory',JSON.stringify(moodHistory));
+  renderMoodTrend();
+}
+
+function tryRec(){document.getElementById('mood-rec').querySelector('button').textContent='✅ 已记录'}
+function swapRec(){
+  var el=document.getElementById('mood-rec');
+  var recs=JSON.parse(el.dataset.recs||'[]');
+  var idx=(parseInt(el.dataset.idx||'0')+1)%recs.length;
+  el.dataset.idx=String(idx);
+  var rec=recs[idx];
+  var btns=el.querySelector('div:last-child');
+  el.querySelector('span').textContent=rec.text;
+}
+
+function saveMoodNote(){
+  var v=document.getElementById('mood-note');
+  if(!v||!v.value.trim())return;
+  var today=new Date().toISOString().slice(0,10);
+  if(!moodHistory[today])moodHistory[today]={};
+  moodHistory[today].note=v.value.trim();
+  localStorage.setItem('moodHistory',JSON.stringify(moodHistory));
+  v.value='';v.placeholder='✅ 已保存';
+  setTimeout(function(){v.placeholder='一句话记录为什么...'},2000);
+}
+
+function saveMood(){localStorage.setItem('mood',JSON.stringify(moodState))}
+
+var energyLv=moodState.energy||3;
+document.getElementById('energy-dots').innerHTML=[1,2,3,4,5].map(function(i){return '<span class="e-dot'+(i<=energyLv?' on':'')+'" onclick="selEnergy(this,'+i+')"></span>'}).join('');
+function selEnergy(el,n){
+  el.parentNode.querySelectorAll('.e-dot').forEach(function(d,i){d.classList.toggle('on',i<n)});
+  moodState.energy=n;saveMood();
+  var today=new Date().toISOString().slice(0,10);
+  if(!moodHistory[today])moodHistory[today]={};
+  moodHistory[today].energy=n;
+  localStorage.setItem('moodHistory',JSON.stringify(moodHistory));
+}
+
+// Mood trend — 7 day bar chart
+function renderMoodTrend(){
+  var barEl=document.getElementById('mood-trend');
+  var labelEl=document.getElementById('mood-trend-labels');
+  var insightEl=document.getElementById('mood-insight');
+  var bars='';var labels='';
+  var scores=[];
+  var dayNames=['日','一','二','三','四','五','六'];
+  for(var i=6;i>=0;i--){
+    var d=new Date();d.setDate(d.getDate()-i);
+    var key=d.toISOString().slice(0,10);
+    var entry=moodHistory[key];
+    var score=entry?entry.score:0;
+    scores.push({day:dayNames[d.getDay()],score:score,key:key});
+    var h=score?score*10+5:3;
+    var bg=score<=2?'#ef4444':score<=3?'#f59e0b':score<=4?'#60a5fa':'#22c55e';
+    bars+='<div style="width:20px;height:'+h+'px;background:'+(score?bg:'#1e1e24')+';border-radius:3px" title="'+key+': '+(score?['','😔','😤','😐','😊','🤩'][score]:'无记录')+'"></div>';
+    labels+='<span style="width:20px;text-align:center">'+dayNames[d.getDay()]+'</span>';
+  }
+  barEl.innerHTML=bars;
+  labelEl.innerHTML=labels;
+  
+  // Insight
+  var recorded=scores.filter(function(s){return s.score>0});
+  if(recorded.length>=3){
+    var avg=recorded.reduce(function(s,x){return s+x.score},0)/recorded.length;
+    var lows=recorded.filter(function(s){return s.score<=2});
+    var highs=recorded.filter(function(s){return s.score>=4});
+    var text='';
+    if(avg>=4)text='😊 这周心情不错，平均'+avg.toFixed(1)+'分';
+    else if(avg<=2.5)text='😔 这周偏低落，'+lows.length+'天心情不太好';
+    else text='😐 这周心情平稳，平均'+avg.toFixed(1)+'分';
+    if(lows.length>0){
+      var lowDays=lows.map(function(s){return s.day}).join('、');
+      text+='<br>低落日：'+lowDays;
+    }
+    insightEl.innerHTML=text;
+    insightEl.style.display='block';
+  }else{
+    insightEl.style.display='none';
+  }
+}
+
+// Restore today's mood if exists
+(function(){
+  var today=new Date().toISOString().slice(0,10);
+  var entry=moodHistory[today];
+  if(entry&&entry.mood){
+    document.querySelectorAll('.mood-btn').forEach(function(b){
+      if(b.textContent.trim()===entry.mood)b.classList.add('sel');
+    });
+  }
+})();
+renderMoodTrend();
+
+// Habits — 完整版：连续天数/日历/分类/今日建议/每日重置
+var habitCat='all';
+var catEmojis={健康:'🏥',生活:'🏠',学习:'📚'};
+
+function getHabits(){return JSON.parse(localStorage.getItem('habits')||'null')||[{text:'喝水 8杯',cat:'健康',done:false,streak:0,longest:0,history:{}},{text:'运动 30分钟',cat:'健康',done:false,streak:0,longest:0,history:{}},{text:'23:00前入睡',cat:'健康',done:false,streak:0,longest:0,history:{}}]}
+function saveHabits(items){localStorage.setItem('habits',JSON.stringify(items))}
+
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function yesterdayKey(){var d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10)}
+
+function calcStreak(h){
+  var count=0;var d=new Date();
+  // Check today first
+  var key=d.toISOString().slice(0,10);
+  if(!h.history||!h.history[key]){d.setDate(d.getDate()-1)} // if not done today, start from yesterday
+  while(true){
+    key=d.toISOString().slice(0,10);
+    if(h.history&&h.history[key]){count++;d.setDate(d.getDate()-1)}
+    else break;
+  }
+  return count;
+}
+
+function renderHabits(){
+  var items=getHabits();
+  var today=todayKey();
+  // Daily reset: if today not in history, mark as not done
+  items.forEach(function(h){
+    if(!h.history)h.history={};
+    h.done=!!h.history[today];
+    h.streak=calcStreak(h);
+    if(h.streak>h.longest)h.longest=h.streak;
+  });
+  saveHabits(items);
+  
+  // Overall streak (min across all habits)
+  var minStreak=items.length?Math.min.apply(null,items.map(function(h){return h.streak})):0;
+  document.getElementById('habit-streak').textContent=minStreak+'天 · 最长'+Math.max.apply(null,items.map(function(h){return h.longest||0}))+'天';
+  
+  // Calendar (last 28 days)
+  var cal='';
+  var dayNames=['日','一','二','三','四','五','六'];
+  // Day headers
+  dayNames.forEach(function(d){cal+='<div style="font-size:9px;color:#52525b;text-align:center">'+d+'</div>'});
+  // Fill from 28 days ago to today
+  var start=new Date();start.setDate(start.getDate()-27);
+  var startDay=start.getDay();
+  for(var i=0;i<startDay;i++)cal+='<div></div>'; // padding
+  for(var d=new Date(start);d<=new Date();d.setDate(d.getDate()+1)){
+    var key=d.toISOString().slice(0,10);
+    var total=items.length;
+    var done=items.filter(function(h){return h.history&&h.history[key]}).length;
+    var pct=total?done/total:0;
+    var bg=pct===0?'#1a1a1f':pct<0.5?'#1a3a1f':pct<1?'#0d4a1f':'#0a6b2a';
+    cal+='<div style="background:'+bg+';border-radius:3px;aspect-ratio:1" title="'+key+': '+done+'/'+total+'"></div>';
+  }
+  document.getElementById('habit-calendar').innerHTML=cal;
+  
+  // Habit list
+  var filtered=habitCat==='all'?items:items.filter(function(h){return h.cat===habitCat});
+  var html='';
+  filtered.forEach(function(h){
+    var idx=items.indexOf(h);
+    var catIcon=catEmojis[h.cat]||'';
+    html+='<li class="cli'+(h.done?' done':'')+'"><input type="checkbox" '+(h.done?'checked':'')+' onchange="toggleHabit('+idx+')"><span style="flex:1">'+catIcon+' '+h.text+'</span>';
+    if(h.streak>0)html+='<span style="font-size:10px;color:#f59e0b">🔥'+h.streak+'</span>';
+    html+='<button onclick="delHabit('+idx+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px;padding:0 4px">×</button></li>';
+  });
+  document.getElementById('habit-list').innerHTML=html;
+  
+  // Today suggestions based on weather
+  showHabitSuggestions(items);
+}
+
+function toggleHabit(i){
+  var items=getHabits();
+  var today=todayKey();
+  if(!items[i].history)items[i].history={};
+  items[i].done=!items[i].done;
+  if(items[i].done){items[i].history[today]=true}
+  else{delete items[i].history[today]}
+  saveHabits(items);
+  renderHabits();
+}
+
+function addHabit(){
+  var v=document.getElementById('habit-inp');
+  var cat=document.getElementById('habit-cat-sel').value;
+  if(!v||!v.value.trim())return;
+  var items=getHabits();
+  items.push({text:v.value.trim(),cat:cat,done:false,streak:0,longest:0,history:{}});
+  v.value='';saveHabits(items);renderHabits();
+}
+
+function delHabit(i){
+  if(!confirm('删除习惯？历史记录也会丢失'))return;
+  var items=getHabits();items.splice(i,1);saveHabits(items);renderHabits();
+}
+
+function filterHabitCat(cat,el){
+  habitCat=cat;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  renderHabits();
+}
+
+// Weather-based daily suggestions
+function showHabitSuggestions(items){
+  var sug=document.getElementById('habit-suggestions');
+  var hints=[];
+  var existingTexts=items.map(function(h){return h.text});
+  
+  // Weather suggestions (read from weather state if available)
+  var wtEl=document.getElementById('wt-temp');
+  var temp=wtEl?parseInt(wtEl.textContent):20;
+  var descEl=document.getElementById('wt-desc');
+  var desc=descEl?descEl.textContent:'';
+  
+  if(temp>28&&!existingTexts.some(function(t){return t.indexOf('防晒')>-1}))
+    hints.push({text:'涂防晒霜',cat:'健康',reason:'今天'+temp+'°C，紫外线强'});
+  if(temp>30&&!existingTexts.some(function(t){return t.indexOf('多喝水')>-1}))
+    hints.push({text:'多喝水（+2杯）',cat:'健康',reason:'高温天气注意补水'});
+  if(desc.indexOf('雨')>-1&&!existingTexts.some(function(t){return t.indexOf('带伞')>-1}))
+    hints.push({text:'出门带伞',cat:'生活',reason:'今天有雨'});
+  if(temp<10&&!existingTexts.some(function(t){return t.indexOf('保暖')>-1}))
+    hints.push({text:'注意保暖',cat:'健康',reason:'今天只有'+temp+'°C'});
+  
+  // Time-based suggestions
+  var dow=new Date().getDay();
+  if(dow===0||dow===6){ // Weekend
+    if(!existingTexts.some(function(t){return t.indexOf('大扫除')>-1}))
+      hints.push({text:'整理房间',cat:'生活',reason:'周末适合整理'});
+  }
+  
+  if(!hints.length){sug.innerHTML='';return}
+  sug.innerHTML='<div style="font-size:11px;color:#52525b;margin-bottom:4px">💡 今日建议</div>'+
+  hints.map(function(h){
+    return '<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:4px;font-size:12px"><span style="flex:1;color:#a1a1aa">'+(catEmojis[h.cat]||'')+' '+h.text+' <span style="color:#52525b;font-size:10px">'+h.reason+'</span></span><button onclick="adoptSuggestion(\''+h.text.replace(/'/g,"\\'")+'\',\''+h.cat+'\')" style="background:none;border:1px solid #27272a;color:#60a5fa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">+固定</button></div>';
+  }).join('');
+}
+
+function adoptSuggestion(text,cat){
+  var items=getHabits();
+  if(items.some(function(h){return h.text===text}))return;
+  items.push({text:text,cat:cat,done:false,streak:0,longest:0,history:{}});
+  saveHabits(items);renderHabits();
+}
+
+renderHabits();
+
+// Expenses — 完整版：分类/饼图/预算/月度对比/收支切换
+var moneyType='expense';
+var expenseCats={餐饮:'#ef4444',交通:'#3b82f6',购物:'#a855f7',娱乐:'#06b6d4',医疗:'#f97316',教育:'#eab308',居住:'#22c55e',其他:'#6b7280'};
+var incomeCats={工资:'#22c55e',副业:'#3b82f6',理财:'#a855f7',红包:'#ef4444',其他:'#6b7280'};
+
+function getExpenses(){return JSON.parse(localStorage.getItem('expenses')||'[]')}
+function getBudget(){return JSON.parse(localStorage.getItem('budget')||'{}')}
+
+function updateCatSelect(){
+  var sel=document.getElementById('money-cat');
+  var cats=moneyType==='expense'?expenseCats:incomeCats;
+  sel.innerHTML=Object.keys(cats).map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('');
+}
+
+function switchMoneyType(type,el){
+  moneyType=type;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  updateCatSelect();
+  renderExpenses();
+}
+
+function renderExpenses(){
+  var items=getExpenses();
+  var month=new Date().toISOString().slice(0,7);
+  var monthItems=items.filter(function(e){return e.date.startsWith(month)&&e.type===moneyType});
+  var total=monthItems.reduce(function(s,e){return s+e.amount},0);
+  
+  document.getElementById('money-total').textContent='¥'+total;
+  document.getElementById('money-month-label').textContent=moneyType==='expense'?'本月支出':'本月收入';
+  document.getElementById('money-total').style.color=moneyType==='expense'?'#f59e0b':'#22c55e';
+  
+  // Last month comparison
+  var lastMonth=new Date();lastMonth.setMonth(lastMonth.getMonth()-1);
+  var lmKey=lastMonth.toISOString().slice(0,7);
+  var lmTotal=items.filter(function(e){return e.date.startsWith(lmKey)&&e.type===moneyType}).reduce(function(s,e){return s+e.amount},0);
+  var diff=total-lmTotal;
+  var compareEl=document.getElementById('money-compare');
+  if(lmTotal>0){
+    var pct=Math.round(diff/lmTotal*100);
+    var arrow=diff>0?'↑':diff<0?'↓':'→';
+    var color=diff>0?(moneyType==='expense'?'#ef4444':'#22c55e'):(moneyType==='expense'?'#22c55e':'#ef4444');
+    compareEl.innerHTML='<span style="color:'+color+'">'+arrow+' '+Math.abs(pct)+'%</span> 较上月';
+  }else{compareEl.innerHTML=''}
+  
+  // Budget bar (expense only)
+  var budgetBar=document.getElementById('money-budget-bar');
+  var budget=getBudget();
+  if(moneyType==='expense'&&budget.monthly>0){
+    budgetBar.style.display='block';
+    var pct=Math.min(100,Math.round(total/budget.monthly*100));
+    var fill=document.getElementById('money-budget-fill');
+    fill.style.width=pct+'%';
+    fill.style.background=pct>=80?(pct>=100?'#ef4444':'#f59e0b'):'#22c55e';
+    document.getElementById('money-budget-text').textContent='已用'+pct+'%（¥'+total+'/'+budget.monthly+'）';
+    if(pct>=80&&pct<100)document.getElementById('money-budget-text').style.color='#f59e0b';
+    else if(pct>=100)document.getElementById('money-budget-text').style.color='#ef4444';
+    else document.getElementById('money-budget-text').style.color='#52525b';
+  }else{budgetBar.style.display='none'}
+  document.getElementById('money-budget-cur').textContent=budget.monthly?'预算 ¥'+budget.monthly+'/月':'';
+  document.getElementById('money-budget-inp').value=budget.monthly||'';
+  
+  // Pie chart
+  var cats=moneyType==='expense'?expenseCats:incomeCats;
+  var catTotals={};
+  monthItems.forEach(function(e){catTotals[e.cat]=(catTotals[e.cat]||0)+e.amount});
+  var pieColors=[];
+  var pieLabels=[];
+  var cumPct=0;
+  var pieEl=document.getElementById('money-pie');
+  var centerEl=document.getElementById('money-pie-center');
+  var catLegEl=document.getElementById('money-cats');
+  
+  if(total>0){
+    var gradientParts=[];
+    var keys=Object.keys(catTotals).sort(function(a,b){return catTotals[b]-catTotals[a]});
+    keys.forEach(function(cat){
+      var pct=catTotals[cat]/total*100;
+      var color=cats[cat]||'#6b7280';
+      gradientParts.push(color+' '+cumPct+'% '+(cumPct+pct)+'%');
+      pieLabels.push('<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#a1a1aa"><span style="width:8px;height:8px;border-radius:2px;background:'+color+';display:inline-block"></span>'+cat+' '+Math.round(pct)+'%</span>');
+      cumPct+=pct;
+    });
+    pieEl.style.background='conic-gradient('+gradientParts.join(',')+')';
+    centerEl.textContent='¥'+total;
+    catLegEl.innerHTML=pieLabels.join('');
+  }else{
+    pieEl.style.background='#1e1e24';
+    centerEl.textContent='暂无数据';
+    catLegEl.innerHTML='';
+  }
+  
+  // List
+  var list=document.getElementById('expense-list');
+  var monthReversed=monthItems.slice().reverse();
+  list.innerHTML=monthReversed.map(function(e,i){
+    var catColor=cats[e.cat]||'#6b7280';
+    var realIdx=items.length-1-items.slice().reverse().findIndex(function(x){return x===e});
+    return '<li class="todo"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+catColor+';flex-shrink:0;margin-top:6px"></span><span style="flex:1;margin-left:4px">'+e.desc+' <span style="color:'+(moneyType==='expense'?'#f59e0b':'#22c55e')+'">¥'+e.amount+'</span> <span style="font-size:10px;color:#3f3f46">'+e.cat+'</span></span><span style="font-size:10px;color:#52525b">'+e.date.slice(5)+'</span><button onclick="delExpense('+realIdx+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px;padding:0 2px">×</button></li>';
+  }).join('');
+}
+
+function addExpense(){
+  var desc=document.getElementById('money-desc');
+  var amt=document.getElementById('money-amt');
+  var cat=document.getElementById('money-cat').value;
+  if(!amt.value)return;
+  var items=getExpenses();
+  items.push({desc:desc.value.trim()||cat,amount:parseFloat(amt.value),date:new Date().toISOString().slice(0,10),type:moneyType,cat:cat});
+  localStorage.setItem('expenses',JSON.stringify(items));
+  desc.value='';amt.value='';renderExpenses();
+}
+
+function delExpense(i){
+  var items=getExpenses();items.splice(i,1);localStorage.setItem('expenses',JSON.stringify(items));renderExpenses();
+}
+
+function setBudget(){
+  var v=document.getElementById('money-budget-inp').value;
+  localStorage.setItem('budget',JSON.stringify({monthly:parseFloat(v)||0}));
+  renderExpenses();
+}
+
+updateCatSelect();
+renderExpenses();
+
+// Career — 增强版：进度条+下一步
+var careerData={
+UI设计:{path:['Adobe认证','交互设计','视觉设计主管','设计总监'],avg:'8-25K',skills:'Figma、用户研究、设计系统',next:'① Adobe认证（3个月）→ 跳槽涨薪30%\n② Figma高级功能（1个月）→ 面试必问\n③ 做1个完整交互项目 → 作品集必备'},
+软件开发:{path:['编程基础','全栈开发','架构师','技术总监'],avg:'12-40K',skills:'算法、系统设计、云服务',next:'① 刷LeetCode 100题\n② 做1个完整项目部署上线\n③ 学Docker+K8s → 进大厂必备'},
+产品经理:{path:['需求分析','产品规划','产品总监','VP'],avg:'15-35K',skills:'用户洞察、数据分析',next:'① 学SQL → 数据驱动决策\n② 做竞品分析报告\n③ 看《启示录》'},
+会计:{path:['初级会计','中级会计','CPA','财务总监'],avg:'6-20K',skills:'财务报表、税务筹划',next:'① 初级会计考试（每年5月）\n② 积累实操经验\n③ 准备CPA'},
+教师:{path:['教师资格证','学科带头人','教研主任','校长'],avg:'6-15K',skills:'教学设计、课堂管理',next:'① 教师资格证（3月/11月）\n② 准备试讲\n③ 选学科方向'},
+护理:{path:['护士证','护师','主管护师','护士长'],avg:'5-12K',skills:'临床护理、急救技能',next:'① 护士资格证考试\n② 积累临床经验\n③ 选专科方向'},
+市场营销:{path:['市场专员','品牌经理','市场总监','CMO'],avg:'8-30K',skills:'品牌策划、数据分析',next:'① 学Google Analytics\n② 做1个完整的营销案例\n③ 积累媒体资源'},
+人力资源:{path:['HR专员','HRBP','HRD','CHO'],avg:'6-20K',skills:'招聘、绩效、劳动法',next:'① 学劳动法基础\n② 考人力资源管理师\n③ 积累面试经验'}
+};
+
+function pickCareer(el){
+  el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});
+  el.classList.add('set');
+  var name=el.textContent;
+  var d=careerData[name];
+  if(!d){document.getElementById('career-info').innerHTML='';return}
+  // Progress bar
+  var steps=d.path;
+  var html='<div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;overflow-x:auto">';
+  steps.forEach(function(s,i){
+    html+='<div style="padding:4px 8px;border-radius:6px;font-size:11px;white-space:nowrap;background:#0a0a0f;border:1px solid '+(i===0?'#2563eb':'#1e1e24')+';color:'+(i===0?'#93c5fd':'#52525b')+'">'+s+'</div>';
+    if(i<steps.length-1)html+='<span style="color:#27272a">→</span>';
+  });
+  html+='</div>';
+  document.getElementById('career-roadmap').innerHTML=html;
+  document.getElementById('career-info').innerHTML='💰 平均薪资：'+d.avg+'<br>🔧 核心技能：'+d.skills;
+  var nextEl=document.getElementById('career-next');
+  nextEl.innerHTML=d.next.replace(/\n/g,'<br>');
+  nextEl.style.display='block';
+  localStorage.setItem('career',name);
+}
+
+// Exam time database
+var examData=[
+{name:'CPA注册会计师',cat:'财会',signup:'4月',exam:'8月/10月',note:'6科，难度大'},
+{name:'初级会计',cat:'财会',signup:'12月',exam:'5月',note:'入门必备'},
+{name:'中级会计',cat:'财会',signup:'6月',exam:'9月',note:'需要工作经验'},
+{name:'教师资格证',cat:'教育',signup:'1月/9月',exam:'3月/11月',note:'笔试+面试'},
+{name:'考研',cat:'教育',signup:'10月',exam:'12月',note:'提前一年准备'},
+{name:'PMP项目管理',cat:'IT',signup:'随时',exam:'每季度',note:'需要项目经验'},
+{name:'软考',cat:'IT',signup:'3月/8月',exam:'5月/11月',note:'中级/高级'},
+{name:'计算机二级',cat:'IT',signup:'12月/6月',exam:'3月/9月',note:'基础认证'},
+{name:'雅思IELTS',cat:'语言',signup:'随时',exam:'每月多次',note:'留学/移民'},
+{name:'托福TOEFL',cat:'语言',signup:'随时',exam:'每月多次',note:'留学'},
+{name:'日语N1-N5',cat:'语言',signup:'3月/8月',exam:'7月/12月',note:'5级分级'},
+{name:'驾照C1/C2',cat:'其他',signup:'随时',exam:'随时',note:'平均3.5个月'}
+];
+var examCat='all';
+function filterExam(cat,el){
+  examCat=cat;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  renderExams();
+}
+function renderExams(){
+  var items=examCat==='all'?examData:examData.filter(function(e){return e.cat===examCat});
+  document.getElementById('exam-list').innerHTML=items.map(function(e){
+    return '<div style="padding:8px 10px;border-bottom:1px solid #1a1a1f;font-size:12px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="color:#e4e4e7;font-weight:500">'+e.name+'</span><span style="font-size:10px;color:#52525b">'+e.cat+'</span></div><div style="color:#a1a1aa;margin-top:2px">📝报名：'+e.signup+' · 📅考试：'+e.exam+'</div><div style="font-size:10px;color:#52525b;margin-top:1px">'+e.note+'</div></div>';
+  }).join('');
+}
+renderExams();
+
+// Skills (unchanged)
+function loadSkills(){var items=JSON.parse(localStorage.getItem('skills')||'null');if(!items)items=[{text:'巴氏刷牙法',done:false},{text:'被套1-2周换洗',done:false},{text:'煮饭煮面',done:false},{text:'烫伤冷水冲15分钟',done:false},{text:'社保怎么查',done:false}];renderSkills(items)}
+function renderSkills(items){document.getElementById('skills-list').innerHTML=items.map(function(s,i){return '<li class="cli'+(s.done?' done':'')+'"><input type="checkbox" '+(s.done?'checked':'')+' onchange="toggleSkill('+i+')">'+s.text+'<button class="btn-ghost" onclick="delSkill('+i+')" style="margin-left:auto;border:none;color:#52525b;cursor:pointer;font-size:16px;padding:0 4px">×</button></li>'}).join('');localStorage.setItem('skills',JSON.stringify(items))}
+function toggleSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items[i].done=!items[i].done;renderSkills(items)}
+function delSkill(i){var items=JSON.parse(localStorage.getItem('skills'));items.splice(i,1);renderSkills(items)}
+loadSkills();
+
+// Letters — 写给未来的信
+function getLetters(){return JSON.parse(localStorage.getItem('letters')||'[]')}
+function saveLetter(){
+  var text=document.getElementById('letter-text');
+  var date=document.getElementById('letter-date');
+  if(!text.value.trim()||!date.value)return;
+  var letters=getLetters();
+  letters.push({text:text.value.trim(),openDate:date.value,created:new Date().toISOString().slice(0,10),opened:false});
+  localStorage.setItem('letters',JSON.stringify(letters));
+  text.value='';date.value='';renderLetters();
+}
+function renderLetters(){
+  var letters=getLetters();
+  var today=new Date().toISOString().slice(0,10);
+  if(!letters.length){document.getElementById('letter-list').innerHTML='<div class="ph">还没有写过信</div>';return}
+  // Check for letters that should open
+  letters.forEach(function(l){
+    if(!l.opened&&l.openDate<=today)l.opened=true;
+  });
+  localStorage.setItem('letters',JSON.stringify(letters));
+  document.getElementById('letter-list').innerHTML=letters.map(function(l,i){
+    var isOpen=l.opened;
+    var daysLeft=isOpen?0:Math.ceil((new Date(l.openDate)-new Date(today))/(1000*60*60*24));
+    var status=isOpen?'📬 已开启':'🔒 距开启'+daysLeft+'天';
+    var statusColor=isOpen?'#22c55e':'#f59e0b';
+    return '<div style="padding:10px;border:1px solid '+(isOpen?'#22c55e':'#1e1e24')+';border-radius:8px;margin-bottom:8px;background:'+(isOpen?'#052e16':'#0a0a0f')+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:'+statusColor+'">'+status+'</span><button onclick="delLetter('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px">×</button></div><div style="font-size:11px;color:#52525b;margin-bottom:4px">写于 '+l.created+' · 设定 '+l.openDate+' 开启</div>'+(isOpen?'<div style="font-size:13px;color:#e4e4e7;line-height:1.6">'+l.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>':'<div style="font-size:12px;color:#3f3f46;font-style:italic">内容已封存，到期才能看</div>')+'</div>';
+  }).reverse().join('');
+}
+function delLetter(i){var letters=getLetters();letters.splice(i,1);localStorage.setItem('letters',JSON.stringify(letters));renderLetters()}
+renderLetters();
+
+// Body milestones
+var milestoneData={
+male:{
+  12:{body:['可能开始遗精','开始长体毛'],action:['正常现象，不用紧张','内裤备多几条'],shop:'纯棉内裤'},
+  13:{body:['开始长胡子','声音变粗'],action:['可以买电动剃须刀','变声期别大喊'],shop:'旋转式剃须刀'},
+  14:{body:['青春痘常见','身高开始加速'],action:['温和洗面奶，别用手挤','注意补钙+牛奶'],shop:'温和洗面奶'},
+  15:{body:['身高猛增期','肌肉发育'],action:['每天8小时睡眠','多运动促生长'],shop:''},
+  16:{body:['体型趋于稳定','性发育基本完成'],action:['建立运动习惯','了解健康知识'],shop:''},
+  18:{body:['身高基本定型','代谢开始变慢'],action:['保持运动','注意体态'],shop:''},
+  25:{body:['代谢下降','肌肉流失加速'],action:['力量训练很重要','每年体检'],shop:''},
+  30:{body:['精力可能下降','慢性病风险增加'],action:['定期体检','控制饮食'],shop:''}
+},
+female:{
+  12:{body:['可能来初潮','胸部开始发育'],action:['跟妈妈聊聊','准备卫生巾/安心裤'],shop:'少女内衣/卫生巾'},
+  13:{body:['经期可能不规律','体型变化'],action:['记录周期','正常现象'],shop:'经期记录本'},
+  14:{body:['青春痘常见','身高加速'],action:['温和护肤','注意营养'],shop:'温和护肤品'},
+  15:{body:['身高趋于稳定','体态比身高重要'],action:['保持运动','注意站姿坐姿'],shop:''},
+  16:{body:['经期趋于规律','皮肤状态变化'],action:['记录经期','建立护肤习惯'],shop:''},
+  18:{body:['身高基本定型','体重管理'],action:['健康比瘦重要','建立运动习惯'],shop:''},
+  25:{body:['皮肤胶原蛋白流失','代谢变慢'],action:['防晒+保湿','力量训练'],shop:''},
+  30:{body:['生育力关注','骨质开始流失'],action:['补钙+VD','定期体检'],shop:''}
+}
+};
+
+function renderMilestones(){
+  var age=parseInt(document.getElementById('milestone-age').value);
+  var gender=document.getElementById('milestone-gender').value;
+  var data=milestoneData[gender]||milestoneData.male;
+  // Find closest age milestone
+  var keys=Object.keys(data).map(Number).sort(function(a,b){return a-b});
+  var key=keys[0];
+  for(var i=0;i<keys.length;i++){if(keys[i]<=age)key=keys[i]}
+  var m=data[key];
+  if(!m){document.getElementById('milestone-list').innerHTML='';return}
+  localStorage.setItem('milestone',JSON.stringify({age:age,gender:gender}));
+  var html='<div style="padding:8px 10px;background:#0a0a0f;border-radius:8px;border-left:3px solid #2563eb">';
+  html+='<div style="font-size:12px;color:#60a5fa;font-weight:600;margin-bottom:6px">身体变化（'+key+'岁阶段）</div>';
+  m.body.forEach(function(b){html+='<div style="font-size:12px;color:#a1a1aa;margin:3px 0">• '+b+'</div>'});
+  html+='<div style="font-size:12px;color:#22c55e;font-weight:600;margin:8px 0 6px">建议行动</div>';
+  m.action.forEach(function(a){html+='<div style="font-size:12px;color:#a1a1aa;margin:3px 0">→ '+a+'</div>'});
+  if(m.shop)html+='<div style="margin-top:6px"><a href="https://s.taobao.com/search?q='+encodeURIComponent(m.shop)+'" target="_blank" style="font-size:11px;color:#60a5fa;text-decoration:none">🛒 去看看：'+m.shop+'</a></div>';
+  html+='</div>';
+  document.getElementById('milestone-list').innerHTML=html;
+}
+// Restore
+(function(){
+  var saved=JSON.parse(localStorage.getItem('milestone')||'{}');
+  if(saved.age)document.getElementById('milestone-age').value=saved.age;
+  if(saved.gender)document.getElementById('milestone-gender').value=saved.gender;
+  renderMilestones();
+})();
+
+// Growth album (height/weight tracking)
+function getAlbum(){return JSON.parse(localStorage.getItem('growthAlbum')||'[]')}
+function addAlbumRecord(){
+  var h=document.getElementById('album-height');
+  var w=document.getElementById('album-weight');
+  var d=document.getElementById('album-date');
+  if(!h.value&&!w.value)return;
+  var items=getAlbum();
+  items.push({height:parseFloat(h.value)||0,weight:parseFloat(w.value)||0,date:d.value||new Date().toISOString().slice(0,10)});
+  items.sort(function(a,b){return a.date<b.date?-1:1});
+  localStorage.setItem('growthAlbum',JSON.stringify(items));
+  h.value='';w.value='';d.value='';renderAlbum();
+}
+function renderAlbum(){
+  var items=getAlbum();
+  var chartEl=document.getElementById('album-chart');
+  var listEl=document.getElementById('album-records');
+  if(!items.length){chartEl.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:12px;color:#52525b">记录身高体重，追踪成长</div>';listEl.innerHTML='';return}
+  // Simple line chart using SVG
+  var svgW=300;var svgH=80;
+  var hPoints=[];var wPoints=[];
+  var hMin=Infinity,hMax=-Infinity,wMin=Infinity,wMax=-Infinity;
+  items.forEach(function(r){
+    if(r.height){hMin=Math.min(hMin,r.height);hMax=Math.max(hMax,r.height)}
+    if(r.weight){wMin=Math.min(wMin,r.weight);wMax=Math.max(wMax,r.weight)}
+  });
+  if(hMin===Infinity)hMin=150;hMax=hMax===-Infinity?180:hMax;
+  if(wMin===Infinity)wMin=40;wMax=wMax===-Infinity?80:wMax;
+  var hRange=hMax-hMin||1;var wRange=wMax-wMin||1;
+  items.forEach(function(r,i){
+    var x=i/(Math.max(items.length-1,1))*svgW;
+    if(r.height)hPoints.push(x+','+(svgH-10-(r.height-hMin)/hRange*(svgH-20)));
+    if(r.weight)wPoints.push(x+','+(svgH-10-(r.weight-wMin)/wRange*(svgH-20)));
+  });
+  var svg='<svg width="100%" height="100%" viewBox="0 0 '+svgW+' '+svgH+'" preserveAspectRatio="none">';
+  if(hPoints.length>1)svg+='<polyline points="'+hPoints.join(' ')+'" fill="none" stroke="#60a5fa" stroke-width="2"/>';
+  if(wPoints.length>1)svg+='<polyline points="'+wPoints.join(' ')+'" fill="none" stroke="#f59e0b" stroke-width="2"/>';
+  // Dots
+  hPoints.forEach(function(p){var xy=p.split(',');svg+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="3" fill="#60a5fa"/>'});
+  wPoints.forEach(function(p){var xy=p.split(',');svg+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="3" fill="#f59e0b"/>'});
+  svg+='</svg>';
+  chartEl.innerHTML=svg;
+  // List
+  listEl.innerHTML=items.slice(-8).reverse().map(function(r,i){
+    return '<div style="display:flex;gap:8px;padding:3px 0;font-size:11px;color:#a1a1aa;border-bottom:1px solid #1a1a1f"><span style="width:70px;color:#52525b">'+r.date.slice(5)+'</span>'+(r.height?'<span>📏'+r.height+'cm</span>':'')+(r.weight?'<span>⚖️'+r.weight+'kg</span>':'')+'</div>';
+  }).join('');
+}
+renderAlbum();
+
+// Weekly/Monthly review
+var reviewMode='week';
+function switchReview(mode,el){
+  reviewMode=mode;
+  el.parentNode.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  renderReview();
+}
+function renderReview(){
+  var el=document.getElementById('review-content');
+  var days=reviewMode==='week'?7:30;
+  var since=new Date();since.setDate(since.getDate()-days);
+  var sinceKey=since.toISOString().slice(0,10);
+  var label=reviewMode==='week'?'本周':'本月';
+  var html='';
+  // Todos
+  var tds=JSON.parse(localStorage.getItem('td')||'[]');
+  var recent=tds.filter(function(t){return t.d});
+  var done=recent.length;
+  var undone=tds.filter(function(t){return !t.d}).length;
+  html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">📋 '+label+'待办：完成 <b style="color:#22c55e">'+done+'</b> 个，未完成 <b style="color:#f59e0b">'+undone+'</b> 个'+(done+undone>0?'（完成率'+Math.round(done/(done+undone)*100)+'%）':'')+'</div>';
+  // Habits
+  var habits=JSON.parse(localStorage.getItem('habits')||'[]');
+  var streakInfo=habits.filter(function(h){return h.streak>0}).map(function(h){return h.text+' 连续'+h.streak+'天'}).join('、');
+  if(streakInfo)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">💪 习惯：'+streakInfo+'</div>';
+  // Expenses
+  var exps=JSON.parse(localStorage.getItem('expenses')||'[]');
+  var monthKey=new Date().toISOString().slice(0,7);
+  var monthExp=exps.filter(function(e){return e.date.startsWith(monthKey)&&e.type==='expense'}).reduce(function(s,e){return s+e.amount},0);
+  if(monthExp>0)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">💰 '+label+'支出：<b style="color:#f59e0b">¥'+monthExp+'</b></div>';
+  // Mood
+  var moods=JSON.parse(localStorage.getItem('moodHistory')||'{}');
+  var recentMoods=[];var moodSum=0;
+  for(var d=new Date(since);d<=new Date();d.setDate(d.getDate()+1)){
+    var key=d.toISOString().slice(0,10);
+    if(moods[key]&&moods[key].score){recentMoods.push(moods[key].score);moodSum+=moods[key].score}
+  }
+  if(recentMoods.length){
+    var avg=(moodSum/recentMoods.length).toFixed(1);
+    var emojis=['','😔','😤','😐','😊','🤩'];
+    html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">😊 心情：平均 '+avg+' 分（'+emojis[Math.round(avg)]+'），记录了'+recentMoods.length+'天</div>';
+  }
+  // Sleep
+  var sleepLog=JSON.parse(localStorage.getItem('sleepLog')||'{}');
+  var sleepTotal=0;var sleepCount=0;
+  for(var d2=new Date(since);d2<=new Date();d2.setDate(d2.getDate()+1)){
+    var k=d2.toISOString().slice(0,10);
+    if(sleepLog[k]&&sleepLog[k].hours){sleepTotal+=sleepLog[k].hours;sleepCount++}
+  }
+  if(sleepCount)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">😴 睡眠：平均'+(sleepTotal/sleepCount).toFixed(1)+'h/晚</div>';
+  // Symptoms
+  var syms=JSON.parse(localStorage.getItem('symptoms')||'[]');
+  var recentSyms=syms.filter(function(s){return s.date>=sinceKey});
+  if(recentSyms.length)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">🤒 症状：记录了'+recentSyms.length+'次 '+recentSyms.map(function(s){return s.symptom}).join('、')+'</div>';
+  // Sports
+  var sports=JSON.parse(localStorage.getItem('sports')||'[]');
+  var weekSports=sports.filter(function(s){return s.date>=sinceKey});
+  var sportMin=weekSports.reduce(function(s,x){return s+x.min},0);
+  if(weekSports.length)html+='<div style="padding:6px 8px;background:#0a0a0f;border-radius:6px;margin-bottom:6px">🏃 运动：'+weekSports.length+'次，共'+sportMin+'分钟'+(sportMin>=150?' ✅达标':'')+'</div>';
+  el.innerHTML=html||'<div class="ph">暂无数据</div>';
+}
+renderReview();
+
+// Stage (enhanced with milestone actions)
+var stageData={
+teen:{title:'青春期（12-17岁）',items:['身体发育与性教育','学习方法与时间管理','情绪管理初步','同伴关系处理','网络安全意识','基本生活自理'],src:'国家卫健委青少年健康指南'},
+young:{title:'青年期（18-25岁）',items:['独立生活基础','心理健康自我觉察','职业规划入门','建立健康的社交边界','学会理财基础','基本法律常识'],src:'WHO青年健康指南'},
+adult:{title:'成年期（26-35岁）',items:['职业深耕或转型','长期伴侣关系经营','理财进阶','定期体检习惯','父母健康关注','工作-生活平衡'],src:'国家卫健委成年期健康管理'}
+};
+function pickStage(el,key){
+  el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});
+  el.classList.add('set');
+  var d=stageData[key];
+  document.getElementById('stage-info').innerHTML=d.title+'<br>'+d.items.map(function(i){return '- '+i}).join('<br>')+'<br><span style="color:#52525b">'+d.src+'</span>';
+  localStorage.setItem('stage',key);
+}
+
+// Health — 完整版：睡眠追踪/基础档案/症状+用药
+
+// Sleep
+function getSleepLog(){return JSON.parse(localStorage.getItem('sleepLog')||'{}')}
+function logSleep(){
+  var inn=document.getElementById('sleep-in').value;
+  var out=document.getElementById('sleep-out').value;
+  if(!inn||!out)return;
+  var inMin=parseInt(inn.split(':')[0])*60+parseInt(inn.split(':')[1]);
+  var outMin=parseInt(out.split(':')[0])*60+parseInt(out.split(':')[1]);
+  if(outMin<inMin)outMin+=24*60; // overnight
+  var hours=((outMin-inMin)/60).toFixed(1);
+  document.getElementById('sleep-hours').textContent=hours+'h';
+  document.getElementById('sleep-hours').style.color=hours<6?'#ef4444':hours<7?'#f59e0b':'#60a5fa';
+  var today=new Date().toISOString().slice(0,10);
+  var log=getSleepLog();
+  log[today]={in:inn,out:out,hours:parseFloat(hours),quality:log[today]?log[today].quality:0};
+  localStorage.setItem('sleepLog',JSON.stringify(log));
+  renderSleepChart();
+}
+function setSleepQuality(q,el){
+  el.parentNode.querySelectorAll('.tag').forEach(function(t){t.classList.remove('set')});
+  el.classList.add('set');
+  var today=new Date().toISOString().slice(0,10);
+  var log=getSleepLog();
+  if(!log[today])log[today]={in:'',out:'',hours:0,quality:0};
+  log[today].quality=q;
+  localStorage.setItem('sleepLog',JSON.stringify(log));
+}
+function renderSleepChart(){
+  var log=getSleepLog();
+  var barEl=document.getElementById('sleep-chart');
+  var avgEl=document.getElementById('sleep-avg');
+  var dayNames=['日','一','二','三','四','五','六'];
+  var bars='';var total=0;var count=0;
+  for(var i=6;i>=0;i--){
+    var d=new Date();d.setDate(d.getDate()-i);
+    var key=d.toISOString().slice(0,10);
+    var entry=log[key];
+    var h=entry?entry.hours:0;
+    if(h>0){total+=h;count++}
+    var barH=h?Math.max(10,h*5):3;
+    var bg=h<6?'#ef4444':h<7?'#f59e0b':h>=8?'#22c55e':'#60a5fa';
+    bars+='<div style="width:20px;height:'+barH+'px;background:'+(h?bg:'#1e1e24')+';border-radius:3px" title="'+key+': '+(h?h+'h':'无记录')+'"></div>';
+  }
+  barEl.innerHTML=bars;
+  avgEl.textContent=count?'本周平均'+(total/count).toFixed(1)+'h':'暂无记录';
+}
+// Restore sleep inputs
+(function(){
+  var log=getSleepLog();
+  var today=new Date().toISOString().slice(0,10);
+  var entry=log[today];
+  if(entry){
+    if(entry.in)document.getElementById('sleep-in').value=entry.in;
+    if(entry.out)document.getElementById('sleep-out').value=entry.out;
+    if(entry.hours){document.getElementById('sleep-hours').textContent=entry.hours+'h';document.getElementById('sleep-hours').style.color=entry.hours<6?'#ef4444':entry.hours<7?'#f59e0b':'#60a5fa'}
+    if(entry.quality){
+      document.querySelectorAll('#sleep-quality-row .tag').forEach(function(t,i){if(i+1===entry.quality)t.classList.add('set')});
+    }
+  }
+  renderSleepChart();
+})();
+
+// Profile (基础档案)
+function getProfile2(){return JSON.parse(localStorage.getItem('healthProfile')||'{}')}
+function saveProfile(){
+  var p={blood:document.getElementById('prof-blood').value,height:parseFloat(document.getElementById('prof-height').value)||0,weight:parseFloat(document.getElementById('prof-weight').value)||0,allergy:document.getElementById('prof-allergy').value,chronic:document.getElementById('prof-chronic').value,emerName:document.getElementById('prof-emer-name').value,emerPhone:document.getElementById('prof-emer-phone').value};
+  localStorage.setItem('healthProfile',JSON.stringify(p));
+  calcBMI();
+}
+function calcBMI(){
+  var h=parseFloat(document.getElementById('prof-height').value);
+  var w=parseFloat(document.getElementById('prof-weight').value);
+  var el=document.getElementById('prof-bmi');
+  if(h>0&&w>0){
+    var bmi=(w/(h/100)*(h/100)>0)?(w/((h/100)*(h/100))):0;
+    bmi=bmi.toFixed(1);
+    var status=bmi<18.5?'偏瘦':bmi<24?'正常':bmi<28?'偏胖':'肥胖';
+    var color=bmi<18.5?'#f59e0b':bmi<24?'#22c55e':bmi<28?'#f59e0b':'#ef4444';
+    el.innerHTML=bmi+'<span style="font-size:10px;color:'+color+';margin-left:4px">'+status+'</span>';
+  }else{el.textContent='--'}
+}
+(function(){
+  var p=getProfile2();
+  if(p.blood)document.getElementById('prof-blood').value=p.blood;
+  if(p.height)document.getElementById('prof-height').value=p.height;
+  if(p.weight)document.getElementById('prof-weight').value=p.weight;
+  if(p.allergy)document.getElementById('prof-allergy').value=p.allergy;
+  if(p.chronic)document.getElementById('prof-chronic').value=p.chronic;
+  if(p.emerName)document.getElementById('prof-emer-name').value=p.emerName;
+  if(p.emerPhone)document.getElementById('prof-emer-phone').value=p.emerPhone;
+  calcBMI();
+})();
+
+// Symptoms (enhanced)
+function getSymptoms(){return JSON.parse(localStorage.getItem('symptoms')||'[]')}
+function renderSymptoms(){
+  var items=getSymptoms();
+  if(!items.length){document.getElementById('symptom-list').innerHTML='<div class="ph">暂无记录</div>';return}
+  var levels={1:'轻微',2:'中等',3:'严重'};
+  var levelColors={1:'#22c55e',2:'#f59e0b',3:'#ef4444'};
+  document.getElementById('symptom-list').innerHTML=items.map(function(s,i){
+    var p=items.filter(function(x){return x.symptom===s.symptom}).length;
+    var lvColor=levelColors[s.level]||'#52525b';
+    return '<div class="sym-item"><div style="font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>'+s.symptom+' <span style="font-size:10px;color:'+lvColor+'">'+(levels[s.level]||'')+'</span></span><button onclick="delSymptom('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:16px">×</button></div><div class="sym-meta">'+s.date+(s.cause?' · '+s.cause:'')+'</div>'+(p>1?'<div class="sym-pattern">已记录'+p+'次 · '+(s.cause?'可能跟'+s.cause+'有关':'建议关注规律')+'</div>':'')+'</div>';
+  }).reverse().join('');
+}
+function addSymptom(){
+  var desc=document.getElementById('sym-desc');
+  var level=document.getElementById('sym-level').value;
+  var cause=document.getElementById('sym-cause');
+  if(!desc.value.trim())return;
+  var items=getSymptoms();
+  items.push({symptom:desc.value.trim(),level:parseInt(level),cause:(cause.value||'').trim(),date:new Date().toISOString().slice(0,10)});
+  localStorage.setItem('symptoms',JSON.stringify(items));
+  desc.value='';cause.value='';renderSymptoms();
+}
+function delSymptom(i){var items=getSymptoms();items.splice(i,1);localStorage.setItem('symptoms',JSON.stringify(items));renderSymptoms()}
+renderSymptoms();
+
+// Medication
+function getMeds(){return JSON.parse(localStorage.getItem('meds')||'[]')}
+function renderMeds(){
+  var items=getMeds();
+  if(!items.length){document.getElementById('med-list').innerHTML='<div class="ph">暂无用药记录</div>';return}
+  document.getElementById('med-list').innerHTML=items.map(function(m,i){
+    var lastStr=m.lastUse?'最近：'+m.lastUse:'';
+    var countStr=m.uses?'本月'+m.uses+'次':'';
+    var warn=m.uses>=7?'<div style="font-size:10px;color:#ef4444;margin-top:2px">⚠️ 连续使用较多，建议就医排查</div>':'';
+    return '<div class="sym-item"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">💊 '+m.name+' <span style="font-size:11px;color:#52525b">'+m.useFor+'</span></span><div><button onclick="useMed('+i+')" style="background:none;border:1px solid #27272a;color:#60a5fa;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer">服用</button><button onclick="delMed('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px;padding:0 4px">×</button></div></div><div class="sym-meta">'+[lastStr,countStr].filter(Boolean).join(' · ')+'</div>'+warn+'</div>';
+  }).join('');
+}
+function addMed(){
+  var name=document.getElementById('med-name');
+  var useFor=document.getElementById('med-use');
+  if(!name.value.trim())return;
+  var items=getMeds();
+  items.push({name:name.value.trim(),useFor:useFor.value.trim(),lastUse:'',uses:0,log:[]});
+  localStorage.setItem('meds',JSON.stringify(items));
+  name.value='';useFor.value='';renderMeds();
+}
+function useMed(i){
+  var items=getMeds();
+  var today=new Date().toISOString().slice(0,10);
+  items[i].lastUse=today;
+  items[i].uses=(items[i].uses||0)+1;
+  if(!items[i].log)items[i].log=[];
+  items[i].log.push(today);
+  localStorage.setItem('meds',JSON.stringify(items));
+  renderMeds();
+}
+function delMed(i){var items=getMeds();items.splice(i,1);localStorage.setItem('meds',JSON.stringify(items));renderMeds()}
+renderMeds();
+
+// Period tracking
+function getPeriodLog(){return JSON.parse(localStorage.getItem('periodLog')||'[]')}
+function logPeriod(type){
+  var log=getPeriodLog();
+  var today=new Date().toISOString().slice(0,10);
+  if(type==='start'){log.push({start:today,end:''})}
+  else if(log.length&&!log[log.length-1].end){log[log.length-1].end=today}
+  localStorage.setItem('periodLog',JSON.stringify(log));
+  renderPeriod();
+}
+function renderPeriod(){
+  var log=getPeriodLog();
+  var statusEl=document.getElementById('period-status');
+  var avgEl=document.getElementById('period-avg');
+  var lenEl=document.getElementById('period-len');
+  var nextEl=document.getElementById('period-next');
+  var timeEl=document.getElementById('period-timeline');
+  if(!log.length){statusEl.innerHTML='<span style="font-size:12px;color:#52525b">点击"开始"记录经期</span>';avgEl.textContent='--';lenEl.textContent='--';nextEl.textContent='--';timeEl.innerHTML='';return}
+  var last=log[log.length-1];
+  var today=new Date().toISOString().slice(0,10);
+  if(last.start&&!last.end){var days=Math.ceil((new Date(today)-new Date(last.start))/(1000*60*60*24))+1;statusEl.innerHTML='<span style="font-size:18px">🩸</span><div style="font-size:13px;color:#ec4899;margin-top:4px">进行中 · 第'+days+'天</div>'}
+  else{var since=Math.ceil((new Date(today)-new Date(last.end||last.start))/(1000*60*60*24));statusEl.innerHTML='<span style="font-size:18px">✅</span><div style="font-size:13px;color:#22c55e;margin-top:4px">已结束 · 距上次'+since+'天</div>'}
+  var cycles=[];var lengths=[];
+  for(var i=1;i<log.length;i++){var c=Math.ceil((new Date(log[i].start)-new Date(log[i-1].start))/(1000*60*60*24));if(c>15&&c<60)cycles.push(c)}
+  log.forEach(function(l){if(l.end){var d=Math.ceil((new Date(l.end)-new Date(l.start))/(1000*60*60*24))+1;if(d>0&&d<15)lengths.push(d)}});
+  var avgCycle=cycles.length?Math.round(cycles.reduce(function(a,b){return a+b})/cycles.length):28;
+  var avgLen=lengths.length?Math.round(lengths.reduce(function(a,b){return a+b})/lengths.length):5;
+  avgEl.textContent=avgCycle;lenEl.textContent=avgLen;
+  var nextDate=new Date(last.start);nextDate.setDate(nextDate.getDate()+avgCycle);
+  var daysToNext=Math.ceil((nextDate-new Date(today))/(1000*60*60*24));
+  nextEl.textContent=daysToNext>0?daysToNext+'天后':'已到/过期';
+  nextEl.style.color=daysToNext<=3?'#ef4444':daysToNext<=7?'#f59e0b':'#52525b';
+  var html='';
+  log.slice(-6).reverse().forEach(function(l){
+    var d=Math.ceil(((new Date(l.end||today))-new Date(l.start))/(1000*60*60*24))+1;
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;border-bottom:1px solid #1a1a1f"><span style="color:#ec4899">🩸</span><span>'+l.start+(l.end?' → '+l.end:' → 进行中')+'</span><span style="color:#52525b;margin-left:auto">'+d+'天</span></div>';
+  });
+  timeEl.innerHTML=html;
+}
+renderPeriod();
+
+// Sports
+function getSports(){return JSON.parse(localStorage.getItem('sports')||'[]')}
+function addSport(){
+  var type=document.getElementById('sport-type').value;
+  var min=document.getElementById('sport-min');
+  if(!min.value)return;
+  var items=getSports();
+  items.push({type:type,min:parseInt(min.value),date:new Date().toISOString().slice(0,10)});
+  localStorage.setItem('sports',JSON.stringify(items));
+  min.value='';renderSports();
+}
+function renderSports(){
+  var items=getSports();
+  var weekItems=items.filter(function(s){var d=new Date(s.date);var weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);return d>=weekAgo});
+  var weekTotal=weekItems.reduce(function(s,x){return s+x.min},0);
+  document.getElementById('sport-stats').innerHTML='📊 本周：'+weekItems.length+'次 · '+weekTotal+'分钟'+(weekTotal>=150?' ✅ 达标':' ⚠️ 建议150分钟/周');
+  document.getElementById('sport-list').innerHTML=items.slice(-8).reverse().map(function(s){
+    return '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;font-size:12px;border-bottom:1px solid #1a1a1f"><span>🏃</span><span style="flex:1">'+s.type+' '+s.min+'分钟</span><span style="font-size:10px;color:#52525b">'+s.date.slice(5)+'</span></div>';
+  }).join('')||'<div class="ph">暂无记录</div>';
+}
+renderSports();
+
+// Medical visits
+function getVisits(){return JSON.parse(localStorage.getItem('visits')||'[]')}
+function addVisit(){
+  var hospital=document.getElementById('visit-hospital');
+  var dept=document.getElementById('visit-dept');
+  var diag=document.getElementById('visit-diag');
+  var date=document.getElementById('visit-date');
+  if(!hospital.value.trim())return;
+  var items=getVisits();
+  items.push({hospital:hospital.value.trim(),dept:dept.value.trim(),diag:diag.value.trim(),date:date.value||new Date().toISOString().slice(0,10)});
+  localStorage.setItem('visits',JSON.stringify(items));
+  hospital.value='';dept.value='';diag.value='';date.value='';
+  renderVisits();
+}
+function renderVisits(){
+  var items=getVisits();
+  if(!items.length){document.getElementById('visit-list').innerHTML='<div class="ph">暂无就医记录</div>';return}
+  document.getElementById('visit-list').innerHTML=items.map(function(v,i){
+    return '<div style="padding:8px 10px;border-bottom:1px solid #1a1a1f"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#e4e4e7">'+v.hospital+' '+v.dept+'</span><button onclick="delVisit('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px">×</button></div><div style="font-size:12px;color:#a1a1aa;margin-top:2px">'+(v.diag||'未记录诊断')+'</div><div style="font-size:10px;color:#52525b;margin-top:1px">'+v.date+'</div></div>';
+  }).reverse().join('');
+}
+function delVisit(i){var items=getVisits();items.splice(i,1);localStorage.setItem('visits',JSON.stringify(items));renderVisits()}
+renderVisits();
+
+// Checkup
+function getCheckups(){return JSON.parse(localStorage.getItem('checkups')||'[]')}
+function addCheckup(){
+  var item=document.getElementById('checkup-item');
+  var val=document.getElementById('checkup-val');
+  var status=document.getElementById('checkup-status').value;
+  var date=document.getElementById('checkup-date');
+  if(!item.value.trim())return;
+  var items=getCheckups();
+  items.push({item:item.value.trim(),val:(val.value||'').trim(),status:status,date:date.value||new Date().toISOString().slice(0,10)});
+  localStorage.setItem('checkups',JSON.stringify(items));
+  item.value='';val.value='';date.value='';
+  renderCheckups();
+}
+function renderCheckups(){
+  var items=getCheckups();
+  if(!items.length){document.getElementById('checkup-list').innerHTML='<div class="ph">暂无体检记录</div>';document.getElementById('checkup-next').innerHTML='';return}
+  var statusColors={正常:'#22c55e',偏高:'#f59e0b',偏低:'#f59e0b',异常:'#ef4444'};
+  document.getElementById('checkup-list').innerHTML=items.map(function(c,i){
+    var color=statusColors[c.status]||'#52525b';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;border-bottom:1px solid #1a1a1f"><span style="flex:1;color:#e4e4e7">'+c.item+'</span><span style="color:#a1a1aa">'+(c.val||'-')+'</span><span style="color:'+color+';font-size:11px;padding:1px 6px;border-radius:8px;background:'+color+'22">'+c.status+'</span><span style="font-size:10px;color:#52525b">'+c.date.slice(5)+'</span><button onclick="delCheckup('+i+')" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:14px;padding:0 2px">×</button></div>';
+  }).reverse().join('');
+  var lastDate=items[items.length-1].date;
+  var monthsSince=Math.floor((new Date()-new Date(lastDate))/(1000*60*60*24*30));
+  var nextEl=document.getElementById('checkup-next');
+  if(monthsSince>=11)nextEl.innerHTML='⚠️ 距上次体检已'+monthsSince+'个月，建议安排年度体检';
+  else if(monthsSince>=9)nextEl.innerHTML='💡 距上次体检'+monthsSince+'个月，年底可以安排了';
+  else nextEl.innerHTML='上次体检：'+lastDate+'（'+monthsSince+'个月前）';
+}
+function delCheckup(i){var items=getCheckups();items.splice(i,1);localStorage.setItem('checkups',JSON.stringify(items));renderCheckups()}
+renderCheckups();
+
+// API & Chat
+function getApiConfig(){return JSON.parse(localStorage.getItem('userapi')||'{}')}
+function openApiSettings(){var p=getApiConfig();document.getElementById('api-endpoint').value=p.endpoint||'https://api.openai.com/v1/chat/completions';document.getElementById('api-key').value=p.key||'';document.getElementById('api-model').value=p.model||'gpt-4o-mini';document.getElementById('api-modal').classList.add('open')}
+function closeApiSettings(){localStorage.setItem('userapi',JSON.stringify({endpoint:document.getElementById('api-endpoint').value.trim(),key:document.getElementById('api-key').value.trim(),model:document.getElementById('api-model').value.trim()}));document.getElementById('api-modal').classList.remove('open');initChat()}
+var chatHistory=[];
+function initChat(){var cfg=getApiConfig();var btn=document.getElementById('chat-send');if(cfg.key&&cfg.endpoint){btn.disabled=false;btn.textContent='发送';btn.style.opacity='1'}else{btn.disabled=true;btn.textContent='配置API';btn.style.opacity='0.5'}}
+function sendChat(){var cfg=getApiConfig();if(!cfg.key)return;var input=document.getElementById('chat-input');var msg=input.value.trim();if(!msg)return;input.value='';chatHistory.push({role:'user',content:msg});var ctx='[用户数据]\n';var tds=JSON.parse(localStorage.getItem('td')||'[]');if(tds.length){ctx+='待办：\n';tds.forEach(function(t){ctx+=(t.d?'✅':'⬜')+' '+t.t+(t.dl?' ('+t.dl+')':'')+'\n'})}var mds=JSON.parse(localStorage.getItem('mood')||'{}');if(mds.mood)ctx+='心情：'+mds.mood+' 能量：'+(mds.energy||'-')+'/5\n';renderChat();document.getElementById('chat-send').disabled=true;document.getElementById('chat-send').textContent='思考中...';fetch(cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify({model:cfg.model||'gpt-4o-mini',messages:[{role:'system',content:ctx+'请根据用户数据回答，简洁实用。'}].concat(chatHistory)})}).then(function(r){return r.json()}).then(function(d){var reply=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'无回复';chatHistory.push({role:'assistant',content:reply});renderChat()}).catch(function(e){chatHistory.push({role:'assistant',content:'请求失败'});renderChat()}).finally(function(){document.getElementById('chat-send').disabled=false;document.getElementById('chat-send').textContent='发送'})}
+function renderChat(){var el=document.getElementById('chat-messages');el.innerHTML=chatHistory.map(function(m){var isU=m.role==='user';return '<div style="margin-bottom:8px;text-align:'+(isU?'right':'left')+'"><div style="display:inline-block;max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.5;background:'+(isU?'#2563eb':'#1e1e24')+';color:'+(isU?'#fff':'#e4e4e7')+'">'+m.content.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div></div>'}).join('');el.scrollTop=el.scrollHeight}
+initChat();
+
+// Profile
+function openProfile(){var p=JSON.parse(localStorage.getItem('profile')||'{}');document.getElementById('prof-age').value=p.age||'24';document.getElementById('prof-city').value=p.city||'上海';document.getElementById('profile-modal').classList.add('open')}
+function closeProfile(){var jobs=[];document.querySelectorAll('#prof-job .tag.set').forEach(function(t){jobs.push(t.dataset.v)});localStorage.setItem('profile',JSON.stringify({age:document.getElementById('prof-age').value,city:document.getElementById('prof-city').value,gender:document.querySelector('#prof-gender .tag.set')?document.querySelector('#prof-gender .tag.set').dataset.v:'',jobs:jobs}));document.getElementById('profile-modal').classList.remove('open')}
+</script>
+</body>
+</html>

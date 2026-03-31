@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>加密模块使用示例</title>
+</head>
+<body>
+<h2>AES-256-GCM 加密模块测试</h2>
+
+<div>
+  <h3>1. 设置密码</h3>
+  <input type="password" id="pwd" placeholder="输入加密密码">
+  <button onclick="setPwd()">设置密码</button>
+  <span id="pwd-status"></span>
+</div>
+
+<div>
+  <h3>2. 加密/解密测试</h3>
+  <textarea id="plain" placeholder="输入要加密的文本" rows="3" cols="50"></textarea><br>
+  <button onclick="doEncrypt()">加密</button>
+  <button onclick="doDecrypt()">解密</button>
+  <br>
+  <textarea id="cipher" placeholder="密文" rows="3" cols="50"></textarea>
+</div>
+
+<div>
+  <h3>3. localStorage 模拟</h3>
+  <button onclick="testStorage()">测试加密存储</button>
+  <pre id="storage-result"></pre>
+</div>
+
+<div>
+  <h3>4. 状态</h3>
+  <button onclick="showStatus()">查看状态</button>
+  <pre id="status-result"></pre>
+</div>
+
+<script src="encryption.js"></script>
+<script>
+async function setPwd() {
+  const pwd = document.getElementById('pwd').value;
+  if (!pwd) { alert('请输入密码'); return; }
+  await Encryption.setPassword(pwd);
+  document.getElementById('pwd-status').textContent = '✅ 已设置';
+}
+
+async function doEncrypt() {
+  const plain = document.getElementById('plain').value;
+  const encrypted = await Encryption.encrypt(plain);
+  document.getElementById('cipher').value = encrypted;
+}
+
+async function doDecrypt() {
+  const cipher = document.getElementById('cipher').value;
+  const decrypted = await Encryption.decrypt(cipher);
+  document.getElementById('plain').value = decrypted;
+}
+
+async function testStorage() {
+  const result = [];
+  
+  // 模拟需要加密的数据
+  const moodData = JSON.stringify({mood: '😊', score: 4, note: '今天心情不错'});
+  const encrypted = await Encryption.wrapForStorage('mood', moodData);
+  result.push('【加密前】');
+  result.push(moodData);
+  result.push('');
+  result.push('【加密后】');
+  result.push(encrypted);
+  result.push('');
+  
+  // 模拟从 localStorage 读取
+  const decrypted = await Encryption.unwrapFromStorage('mood', encrypted);
+  result.push('【解密后】');
+  result.push(decrypted);
+  result.push('');
+  
+  // 模拟不需要加密的数据
+  const weatherData = JSON.stringify({city: '上海', temp: 22});
+  const weatherWrapped = await Encryption.wrapForStorage('weather', weatherData);
+  result.push('【天气（不加密）】');
+  result.push(weatherWrapped);
+  result.push('是否被加密: ' + (weatherWrapped !== weatherData));
+  
+  document.getElementById('storage-result').textContent = result.join('\n');
+}
+
+function showStatus() {
+  const status = Encryption.getStatus();
+  document.getElementById('status-result').textContent = JSON.stringify(status, null, 2);
+}
+</script>
+</body>
+</html>

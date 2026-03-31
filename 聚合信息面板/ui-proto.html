@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>UI Prototype</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#0a0a0f;color:#e4e4e7;line-height:1.5}
+.header{background:#141418;border-bottom:1px solid #1e1e24;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.header h1{font-size:18px;color:#fff}
+.header-btns{display:flex;gap:12px}
+.header-btns span{font-size:20px;cursor:pointer}
+
+/* Desktop layout */
+@media(min-width:768px){
+  .app{display:flex;height:100vh}
+  .sidebar{width:320px;background:#141418;border-right:1px solid #1e1e24;overflow-y:auto;padding:16px;flex-shrink:0}
+  .main{flex:1;overflow-y:auto;padding:16px}
+  .mobile-nav{display:none}
+}
+
+/* Mobile layout */
+@media(max-width:767px){
+  .app{display:flex;flex-direction:column;height:100vh}
+  .sidebar{display:none}
+  .main{flex:1;overflow-y:auto;padding:12px 12px 70px}
+  .mobile-nav{display:flex}
+}
+
+.card{background:#141418;border-radius:12px;border:1px solid #1e1e24;padding:14px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.btn{padding:8px 14px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-size:13px;cursor:pointer}
+.btn-ghost{background:transparent;border:1px solid #27272a;color:#a1a1aa}
+.inp{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #27272a;background:#0a0a0f;color:#e4e4e7;font-size:13px;outline:none}
+.inp:focus{border-color:#2563eb}
+.tag{display:inline-block;padding:4px 10px;border-radius:14px;font-size:12px;border:1px solid #27272a;color:#a1a1aa;margin:2px}
+.tag.blue{border-color:#2563eb;color:#93c5fd;background:#1e3a5f}
+.tag.green{border-color:#22c55e;color:#86efac;background:#052e16}
+
+/* Mobile nav */
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,24,.95);backdrop-filter:blur(12px);border-top:1px solid #1e1e24;justify-content:space-around;padding:6px 0 10px;z-index:50}
+.nav-btn{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#52525b;border:none;background:none;gap:2px;padding:6px 10px;min-width:44px;cursor:pointer}
+.nav-btn.on{color:#60a5fa}
+.nav-btn span{font-size:20px}
+
+/* Tab pages */
+.page{display:none}.page.on{display:block}
+
+/* Topic row */
+.topic-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#0a0a0f;border-radius:8px;border:1px solid #1e1e24;margin-bottom:6px;cursor:pointer}
+.topic-row:hover{border-color:#27272a}
+.topic-votes{font-size:12px;color:#f59e0b;font-weight:600}
+.topic-rank{font-size:11px;color:#52525b;width:20px;text-align:center}
+
+/* Progress bar */
+.progress{height:4px;background:#1e1e24;border-radius:2px;margin-top:6px}
+.progress-bar{height:100%;border-radius:2px;background:#2563eb}
+
+/* Weather mini */
+.weather-mini{display:flex;align-items:center;gap:8px;font-size:13px}
+.weather-temp{font-size:22px;font-weight:700;color:#60a5fa}
+
+/* Todo item */
+.todo{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1a1a1f;font-size:13px}
+.todo:last-child{border:none}
+.todo-check{width:16px;height:16px;accent-color:#2563eb;flex-shrink:0}
+.todo-detail{font-size:11px;color:#52525b;margin-top:2px}
+
+/* Sub tabs */
+.sub-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.sub-tabs::-webkit-scrollbar{display:none}
+.sub-tab{padding:5px 12px;border-radius:16px;font-size:12px;cursor:pointer;border:1px solid #27272a;background:transparent;color:#a1a1aa;white-space:nowrap}
+.sub-tab.on{background:#1e3a5f;border-color:#2563eb;color:#93c5fd}
+
+/* Section tabs for desktop main area */
+.section-tabs{display:flex;gap:6px;margin-bottom:16px}
+.section-tab{padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #27272a;background:transparent;color:#a1a1aa}
+.section-tab.on{background:#2563eb;border-color:#2563eb;color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Sidebar (Desktop) -->
+<div class="sidebar">
+  <div class="card">
+    <div class="weather-mini">
+      <span style="font-size:28px">&#x2600;</span>
+      <div>
+        <div class="weather-temp">17&#xB0;C</div>
+        <div style="font-size:11px;color:#71717a">上海 &#xB7; 多云 &#xB7; 风速4km/h</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:#71717a">
+      <span>今天 17&#xB0;</span>
+      <span>明天 15&#xB0;</span>
+      <span>后天 21&#xB0;</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#x1F4BC; 待办</div>
+    <div id="todo-list"></div>
+    <div class="todo"><input type="checkbox" class="todo-check"><div><div>去市里开会</div><div class="todo-detail">地铁1转2 &#xB7; 9:00前出发</div></div></div>
+    <div class="todo"><input type="checkbox" class="todo-check"><div><div>回复客户邮件</div><div class="todo-detail">王总方案反馈，下班前</div></div></div>
+    <div class="todo"><input type="checkbox" class="todo-check"><div>整理周报</div></div>
+    <div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="todo-input" placeholder="添加待办..." onkeydown="if(event.key==='Enter')addTodo()" style="flex:1"><button class="btn btn-sm" onclick="addTodo()">+</button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#x2728; 今日推荐</div>
+    <div style="font-size:13px;color:#a1a1aa;font-style:italic;line-height:1.6">"千里之行，始于足下。"<div style="font-size:11px;color:#52525b;margin-top:4px">&#x2014; 老子</div></div>
+    <div style="font-size:12px;color:#71717a;margin-top:8px">&#x1F4A1; 每天进步一点点</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#x1F4AC; AI 助手</div>
+    <div style="font-size:12px;color:#52525b;text-align:center;padding:12px">配置API后即可对话</div>
+    <div style="display:flex;gap:6px"><input class="inp" placeholder="输入消息..." style="flex:1"><button class="btn" style="opacity:0.5">发送</button></div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+<!-- Mobile Header -->
+<div class="header" style="margin:-12px -12px 12px -12px;display:none" id="mobile-header">
+  <h1>聚合信息面板</h1>
+  <div class="header-btns"><span>&#x2699;</span><span>&#x1F464;</span></div>
+</div>
+
+<!-- Section Tabs (Desktop) -->
+<div class="section-tabs" id="desktop-tabs">
+  <span class="section-tab on" onclick="showSection('collab',this)">&#x1F4A1; 共创</span>
+  <span class="section-tab" onclick="showSection('life',this)">&#x1F33F; 生活</span>
+  <span class="section-tab" onclick="showSection('grow',this)">&#x1F4D6; 成长</span>
+  <span class="section-tab" onclick="showSection('health',this)">&#x2764; 健康</span>
+</div>
+
+<!-- ===== COLLAB PAGE ===== -->
+<div class="page on" id="page-collab">
+  <div class="card">
+    <div class="card-title">&#x1F4A1; 共创 &#xB7; 本周</div>
+    <div style="font-size:12px;color:#52525b;margin-bottom:10px">按投票数排名 &#xB7; 周五结束</div>
+    <div id="topic-list"></div>
+    <div style="margin-top:12px"><button class="btn btn-ghost" style="width:100%">+ 发起话题</button></div>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <div style="font-size:12px;color:#52525b">今日一问</div>
+    <div style="font-size:16px;font-weight:600;margin:10px 0">你后悔没早点知道的一件事是什么？</div>
+    <div style="display:flex;gap:6px;justify-content:center"><input class="inp" style="max-width:240px" placeholder="你的回答..."><button class="btn btn-sm">发</button></div>
+  </div>
+</div>
+
+<!-- ===== LIFE PAGE ===== -->
+<div class="page" id="page-life">
+  <div class="sub-tabs">
+    <span class="sub-tab on">天气</span>
+    <span class="sub-tab">心情</span>
+    <span class="sub-tab">习惯</span>
+    <span class="sub-tab">记账</span>
+  </div>
+  <div class="card">
+    <div style="text-align:center">
+      <div style="font-size:36px">&#x2600;</div>
+      <div style="font-size:32px;font-weight:700;color:#60a5fa;margin:8px 0">17&#xB0;C</div>
+      <div style="color:#71717a">多云 &#xB7; 风速4.3km/h &#xB7; 湿度82%</div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:12px;color:#a1a1aa">
+        <div><div>今天</div><div style="font-size:16px;margin:4px 0">&#x2602;</div><div>9&#xB0;~17&#xB0;</div></div>
+        <div><div>明天</div><div style="font-size:16px;margin:4px 0">&#x1F327;</div><div>9&#xB0;~15&#xB0;</div><div style="color:#60a5fa">75%</div></div>
+        <div><div>后天</div><div style="font-size:16px;margin:4px 0">&#x1F324;</div><div>5&#xB0;~21&#xB0;</div></div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#a1a1aa">小雨带伞 &#xB7; &#x1F353; 草莓 &#xB7; &#x1F331; 春笋 &#xB7; &#x1F96C; 荠菜</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GROW PAGE ===== -->
+<div class="page" id="page-grow">
+  <div class="sub-tabs">
+    <span class="sub-tab on">职业</span>
+    <span class="sub-tab">必修课</span>
+    <span class="sub-tab">阶段</span>
+  </div>
+  <div class="card">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+      <span class="tag blue">UI设计</span>
+      <span class="tag">软件开发</span>
+      <span class="tag">产品经理</span>
+      <span class="tag">会计</span>
+      <span class="tag">教师</span>
+      <span class="tag">护理</span>
+      <span class="tag">市场营销</span>
+      <span class="tag">人力资源</span>
+    </div>
+    <div style="font-size:12px;color:#a1a1aa;line-height:1.8">
+      路径：Adobe认证 &#x2192; 交互设计 &#x2192; 设计管理<br>
+      平均薪资：8-25K<br>
+      核心技能：Figma、用户研究、设计系统
+    </div>
+  </div>
+</div>
+
+<!-- ===== HEALTH PAGE ===== -->
+<div class="page" id="page-health">
+  <div class="sub-tabs">
+    <span class="sub-tab on">睡前</span>
+    <span class="sub-tab">身体</span>
+    <span class="sub-tab">症状</span>
+  </div>
+  <div class="card" style="text-align:center">
+    <div style="font-size:32px;font-weight:700;color:#60a5fa">23:00</div>
+    <div style="font-size:12px;color:#52525b;margin-bottom:12px">建议入睡时间（保证8小时）</div>
+    <div style="text-align:left">
+      <div class="todo"><input type="checkbox" class="todo-check"> 刷牙</div>
+      <div class="todo"><input type="checkbox" class="todo-check"> 设备充电</div>
+      <div class="todo"><input type="checkbox" class="todo-check"> 明天的待办看一眼</div>
+      <div class="todo"><input type="checkbox" class="todo-check"> 门窗检查</div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile-only: Summary cards on collab page -->
+<div id="mobile-weather" style="display:none">
+  <div class="card" style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:24px">&#x2600;</span>
+    <div><span style="font-size:18px;font-weight:700;color:#60a5fa">17&#xB0;</span> <span style="font-size:12px;color:#71717a">多云</span></div>
+    <div style="margin-left:auto;font-size:11px;color:#52525b">明天 15&#xB0; &#xB7; 后天 21&#xB0;</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<div class="mobile-nav">
+  <button class="nav-btn on" onclick="showMobile('collab',this)"><span>&#x1F4A1;</span>共创</button>
+  <button class="nav-btn" onclick="showMobile('life',this)"><span>&#x1F33F;</span>生活</button>
+  <button class="nav-btn" onclick="showMobile('grow',this)"><span>&#x1F4D6;</span>成长</button>
+  <button class="nav-btn" onclick="showMobile('health',this)"><span>&#x2764;</span>健康</button>
+  <button class="nav-btn" onclick="showMobile('more',this)"><span>&#x2261;</span>更多</button>
+</div>
+
+<script>
+function showSection(id,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  document.getElementById('page-'+id).classList.add('on');
+  document.querySelectorAll('.section-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+}
+function showMobile(id,el){
+  if(id==='more'){alert('设置 / 档案 / 推荐');return}
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  document.getElementById('page-'+id).classList.add('on');
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on')});
+  el.classList.add('on');
+  document.querySelector('.main').scrollTop=0;
+}
+// Detect mobile
+if(window.innerWidth<768){
+  document.getElementById('mobile-header').style.display='flex';
+  document.getElementById('desktop-tabs').style.display='none';
+  // Default to collab page
+  showMobile('collab',document.querySelector('.nav-btn'));
+}
+</script>
+<script src="_proto.js"></script>
+</body>
+</html>

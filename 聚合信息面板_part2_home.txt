@@ -1,0 +1,153 @@
+﻿<body>
+<div class="c">
+<h1>聚合信息面板 <a href="javascript:void(0)" onclick="openApiSettings()" style="float:right;font-size:14px;text-decoration:none;margin-left:8px">⚙️</a><a href="javascript:void(0)" onclick="openProfile()" style="float:right;font-size:14px;text-decoration:none">👤</a></h1>
+
+<div class="news-bar"><div class="news-ticker" id="news-ticker"></div><div class="news-detail" id="news-detail"></div></div>
+
+<div class="g5">
+
+<div class="sc">
+<div class="title">💼 工作</div>
+<div style="display:flex;gap:6px;margin-bottom:10px"><input class="inp" id="todo-inp" placeholder="添加待办..." onkeydown="if(event.key==='Enter')addTodo()"><button class="btn" onclick="addTodo()">+</button></div>
+<ul class="tl" id="todo-list"></ul>
+</div>
+
+<div class="sc">
+<div class="title">🌿 生活</div>
+<div class="sub-tabs" id="life-tabs">
+<span class="sub-tab on" onclick="switchTab('life',this,'weather')">天气</span>
+<span class="sub-tab" onclick="switchTab('life',this,'mood')">心情</span>
+<span class="sub-tab" onclick="switchTab('life',this,'habit')">习惯</span>
+<span class="sub-tab" onclick="switchTab('life',this,'money')">记账</span>
+</div>
+<div id="life-weather">
+<div style="font-size:24px;text-align:center" id="wt-now">⏳ 加载中...</div>
+<div style="text-align:center;font-size:12px;color:#71717a;margin:4px 0" id="wt-detail"></div>
+<div id="wt-forecast" style="display:flex;gap:8px;justify-content:center;margin:8px 0"></div>
+<div style="padding:8px;font-size:12px;color:#a1a1aa" id="wt-advice">🥬 时令：春笋、草莓、荠菜</div>
+</div>
+<div id="life-mood" style="display:none">
+<div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">你现在的心情</div>
+<div class="mood-row">
+<button class="mood-btn" onclick="selMood(this,'😔')">😔</button>
+<button class="mood-btn" onclick="selMood(this,'😤')">😤</button>
+<button class="mood-btn" onclick="selMood(this,'😐')">😐</button>
+<button class="mood-btn" onclick="selMood(this,'😊')">😊</button>
+<button class="mood-btn" onclick="selMood(this,'🤩')">🤩</button>
+</div>
+<div style="text-align:center;font-size:11px;color:#52525b;margin:4px 0">能量值</div>
+<div class="energy-row" id="energy-dots"></div>
+<div class="mood-rec" id="mood-rec" style="display:none"></div>
+</div>
+<div id="life-habit" style="display:none">
+<ul class="cl" id="habit-list"></ul>
+<div style="margin-top:8px;display:flex;gap:6px"><input class="inp" id="habit-inp" placeholder="添加习惯..." onkeydown="if(event.key==='Enter')addHabit()" style="flex:1"><button class="btn btn-sm" onclick="addHabit()">+</button></div>
+</div>
+<div id="life-money" style="display:none">
+<div style="text-align:center;font-size:12px;color:#71717a;margin-bottom:6px">本月支出</div>
+<div style="text-align:center;font-size:24px;font-weight:700;color:#f59e0b" id="money-total">¥0</div>
+<div style="display:flex;gap:6px;margin:10px 0"><input class="inp" id="money-desc" placeholder="项目" style="flex:1"><input class="inp" id="money-amt" placeholder="金额" type="number" style="width:70px"><button class="btn btn-sm" onclick="addExpense()">+</button></div>
+<ul class="tl" id="expense-list" style="max-height:100px"></ul>
+</div>
+</div>
+
+<div class="sc">
+<div class="title">📖 成长</div>
+<div class="sub-tabs">
+<span class="sub-tab on" onclick="switchTab('grow',this,'career')">职业</span>
+<span class="sub-tab" onclick="switchTab('grow',this,'skills')">必修课</span>
+<span class="sub-tab" onclick="switchTab('grow',this,'stage')">阶段</span>
+</div>
+<div id="grow-career">
+<div class="prof" id="career-tags">
+<span class="prof-tag set" onclick="pickCareer(this)">UI设计</span>
+<span class="prof-tag" onclick="pickCareer(this)">软件开发</span>
+<span class="prof-tag" onclick="pickCareer(this)">产品经理</span>
+<span class="prof-tag" onclick="pickCareer(this)">会计</span>
+<span class="prof-tag" onclick="pickCareer(this)">教师</span>
+<span class="prof-tag" onclick="pickCareer(this)">护理</span>
+<span class="prof-tag" onclick="pickCareer(this)">市场营销</span>
+<span class="prof-tag" onclick="pickCareer(this)">人力资源</span>
+</div>
+<div style="padding:10px;font-size:12px;color:#a1a1aa" id="career-info">📋 路径：Adobe认证 → 交互设计 → 设计管理<br>💰 平均薪资：8-25K<br>🎯 核心技能：Figma、用户研究、设计系统</div>
+</div>
+<div id="grow-skills" style="display:none"><ul class="cl" id="skills-list"></ul></div>
+<div id="grow-stage" style="display:none">
+<div class="prof" id="stage-tags">
+<span class="prof-tag" onclick="pickStage(this,'teen')">青春期 12-17</span>
+<span class="prof-tag set" onclick="pickStage(this,'young')">青年期 18-25</span>
+<span class="prof-tag" onclick="pickStage(this,'adult')">成年期 26-35</span>
+</div>
+<div style="padding:10px;font-size:12px;color:#a1a1aa" id="stage-info">🧑 青年期（18-25岁）<br>· 独立生活基础<br>· 心理健康自我觉察<br>· 职业规划入门<br>· 建立健康的社交边界<br>· 学会理财基础<br><span style="color:#52525b">📖 引用：WHO青年健康指南</span></div>
+</div>
+</div>
+
+<div class="sc" style="grid-column:1/-1">
+<div class="title">💡 共创 · 本周</div>
+<div id="topic-list"></div>
+<div style="margin-top:10px;display:flex;gap:6px">
+<button class="btn btn-ghost btn-sm" onclick="createTopic()" style="flex:1">➕ 发起话题</button>
+</div>
+<div style="margin-top:12px;padding:10px;background:#0a0a0f;border-radius:8px;text-align:center">
+<div style="font-size:12px;color:#52525b">今日一问</div>
+<div style="font-size:15px;font-weight:600;margin:8px 0">你后悔没早点知道的一件事是什么？</div>
+<div style="display:flex;gap:6px;justify-content:center"><input class="inp" style="max-width:200px" id="daily-ans" placeholder="你的回答..." onkeydown="if(event.key==='Enter')submitDaily()"><button class="btn btn-sm" onclick="submitDaily()">发</button></div>
+<div id="daily-answers" style="text-align:left;margin-top:10px"></div>
+</div>
+</div>
+
+<div class="sc" style="grid-column:1/-1">
+<div class="title">❤️ 健康</div>
+<div class="sub-tabs">
+<span class="sub-tab on" onclick="switchTab('health',this,'sleep')">睡前</span>
+<span class="sub-tab" onclick="switchTab('health',this,'body')">身体</span>
+<span class="sub-tab" onclick="switchTab('health',this,'symptom')">症状</span>
+</div>
+<div id="health-sleep">
+<div class="sleep-time">23:00</div>
+<div class="sleep-sub">建议入睡时间（保证8小时）</div>
+<ul class="cl" style="margin-top:10px">
+<li class="cli"><input type="checkbox"> 刷牙</li>
+<li class="cli"><input type="checkbox"> 设备充电</li>
+<li class="cli"><input type="checkbox"> 明天的待办看一眼</li>
+<li class="cli"><input type="checkbox"> 门窗检查</li>
+</ul>
+</div>
+<div id="health-body" style="display:none">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div class="card" style="background:#0a0a0f;padding:10px;text-align:center"><div style="font-size:11px;color:#52525b">BMI</div><div style="font-size:20px;font-weight:700;color:#60a5fa">22.4</div><div style="font-size:11px;color:#22c55e">正常</div></div>
+<div class="card" style="background:#0a0a0f;padding:10px;text-align:center"><div style="font-size:11px;color:#52525b">体检</div><div style="font-size:13px;margin-top:4px">建议每年一次</div><div style="font-size:11px;color:#f59e0b">引用卫健委指南</div></div>
+</div>
+</div>
+<div id="health-symptom" style="display:none">
+<div id="symptom-list"></div>
+<button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="addSymptom()">+ 记录症状</button>
+</div>
+</div>
+
+</div>
+
+<div class="card" style="margin-top:10px">
+<div style="font-size:15px;font-weight:600;margin-bottom:10px">✨ 今日推荐</div>
+<div style="padding:10px;background:#0a0a0f;border-radius:8px;font-size:13px;line-height:1.6;margin-bottom:8px;border:1px solid #1e1e24">"千里之行，始于足下。"<div style="font-size:11px;color:#52525b;margin-top:4px">— 老子</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="background:#0a0a0f;border-radius:8px;padding:10px;border:1px solid #1e1e24"><div style="font-size:12px;color:#a1a1aa">💡 每天进步一点点</div></div>
+<div style="background:#0a0a0f;border-radius:8px;padding:10px;border:1px solid #1e1e24"><div style="font-size:12px;color:#a1a1aa">🎯 出门散步15分钟</div></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:10px">
+<div style="font-size:15px;font-weight:600;margin-bottom:10px">💬 AI 助手</div>
+<div id="chat-messages" style="height:180px;overflow-y:auto;background:#0a0a0f;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #1e1e24;font-size:13px"><div style="color:#52525b;text-align:center;padding:20px">点击 ⚙️ 配置 API 后即可对话</div></div>
+<div style="display:flex;gap:6px"><input class="inp" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1"><button class="btn" id="chat-send" onclick="sendChat()" disabled style="opacity:0.5">配置API</button></div>
+</div>
+
+</div>
+
+<div class="mobile-nav">
+<button class="nav-btn on" onclick="showPage('home',this)"><span>🏠</span>首页</button>
+<button class="nav-btn" onclick="showPage('life',this)"><span>🌿</span>生活</button>
+<button class="nav-btn" onclick="showPage('grow',this)"><span>📖</span>成长</button>
+<button class="nav-btn" onclick="showPage('create',this)"><span>💡</span>共创</button>
+<button class="nav-btn" onclick="showPage('health',this)"><span>❤️</span>健康</button>
+</div>
